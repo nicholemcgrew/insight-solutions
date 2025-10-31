@@ -1,23 +1,37 @@
-import React, { useState, useEffect } from 'react';
+// src/sections/Contact.tsx
+import React, { useState, useEffect, useRef } from 'react';
 import { Box, Container, Typography, TextField, Button, Grid2 } from '@mui/material';
 import axios from 'axios';
 
 interface ContactProps {
-  selectedService?: string; // From App for pre-fill
+  selectedService?: string;
 }
 
-const Contact: React.FC<ContactProps> = ({ selectedService }) => {
-  const [formData, setFormData] = useState({ name: '', email: '', message: selectedService ? `Interested in ${selectedService}.` : '' });
+const Contact = ({ selectedService }: ContactProps) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: selectedService ? `Interested in ${selectedService}. Please provide more details.` : ''
+  });
   const [errors, setErrors] = useState({ name: '', email: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
+  // Focus first input on mount
+  useEffect(() => {
+    nameInputRef.current?.focus();
+  }, []);
+
+  // Update message if service selected
   useEffect(() => {
     if (selectedService) {
-      setFormData(prev => ({ ...prev, message: `Interested in ${selectedService}. Please provide more details.` }));
+      setFormData(prev => ({
+        ...prev,
+        message: `Interested in ${selectedService}. Please provide more details.`
+      }));
     }
   }, [selectedService]);
 
-  // Validation and submit logic (as before)
   const validateForm = () => {
     const newErrors = { name: '', email: '', message: '' };
     let isValid = true;
@@ -30,7 +44,7 @@ const Contact: React.FC<ContactProps> = ({ selectedService }) => {
       newErrors.email = 'Email is required';
       isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = 'Please enter a valid email';
       isValid = false;
     }
     if (!formData.message.trim()) {
@@ -46,37 +60,83 @@ const Contact: React.FC<ContactProps> = ({ selectedService }) => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        await axios.post('https://formspree.io/f/xpwowzwo', formData); 
+        await axios.post('https://formspree.io/f/xpwowzwo', formData);
         setSubmitted(true);
-        alert('Message sent successfully!');
         setFormData({ name: '', email: '', message: '' });
+        setTimeout(() => setSubmitted(false), 5000);
       } catch (error) {
         alert('Error sending message. Please try again.');
       }
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: '' });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   return (
-    <Box sx={{ py: 4, bgcolor: 'background.default' }} id="contact" role="region" aria-label="Contact form">
+    <Box
+      component="main"
+      id="main-content"
+      tabIndex={-1}
+      sx={{
+        py: { xs: 8, md: 10 },
+        bgcolor: 'background.default',
+      }}
+      itemScope
+      itemType="https://schema.org/ContactPage"
+    >
       <Container maxWidth="md">
-        <Typography variant="h2" align="center" gutterBottom color="text.primary">
-          Contact Me
-        </Typography>
-        <Typography variant="body1" align="center" gutterBottom color="text.secondary">
-          Ready to elevate your online presence? Get in touch for a custom quote!
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: '600px', mx: 'auto' }} noValidate>
-          <Grid2 container spacing={2}>
+        <Box
+          component="section"
+          aria-labelledby="contact-heading"
+          sx={{ textAlign: 'center' }}
+        >
+          <Typography
+            id="contact-heading"
+            variant="h2"
+            gutterBottom
+            color="text.primary"
+            sx={{ fontWeight: 700, mb: 3 }}
+            itemProp="name"
+          >
+            Contact Me
+          </Typography>
+
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            maxWidth="600px"
+            mx="auto"
+            paragraph
+            itemProp="description"
+          >
+            Ready to elevate your online presence? Get in touch for a custom quote!
+          </Typography>
+        </Box>
+
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          noValidate
+          sx={{
+            maxWidth: { xs: '100%', sm: 600 },
+            mx: 'auto',
+            p: { xs: 2, sm: 0 },
+          }}
+          itemProp="potentialAction"
+          itemScope
+          itemType="https://schema.org/Action"
+        >
+          <Grid2 container spacing={3}>
             <Grid2 size={{ xs: 12 }}>
               <TextField
+                inputRef={nameInputRef}
                 fullWidth
                 id="name-input"
-                label="Name"
+                label="Your Name"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
@@ -85,18 +145,25 @@ const Contact: React.FC<ContactProps> = ({ selectedService }) => {
                 aria-describedby="name-error"
                 error={!!errors.name}
                 helperText={errors.name}
-                InputLabelProps={{ style: { color: 'text.secondary' } }}
-                sx={{ input: { color: 'text.primary' } }}
+                InputLabelProps={{ shrink: true }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '&.Mui-focused fieldset': { borderColor: 'secondary.main' }
+                  }
+                }}
               />
-              <div id="name-error" role="alert" aria-live="polite">
-                {errors.name && <Typography variant="caption" color="error">{errors.name}</Typography>}
-              </div>
+              {errors.name && (
+                <Typography id="name-error" role="alert" color="error" variant="caption" sx={{ ml: 2 }}>
+                  {errors.name}
+                </Typography>
+              )}
             </Grid2>
+
             <Grid2 size={{ xs: 12 }}>
               <TextField
                 fullWidth
                 id="email-input"
-                label="Email"
+                label="Your Email"
                 name="email"
                 type="email"
                 value={formData.email}
@@ -106,21 +173,28 @@ const Contact: React.FC<ContactProps> = ({ selectedService }) => {
                 aria-describedby="email-error"
                 error={!!errors.email}
                 helperText={errors.email}
-                InputLabelProps={{ style: { color: 'text.secondary' } }}
-                sx={{ input: { color: 'text.primary' } }}
+                InputLabelProps={{ shrink: true }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '&.Mui-focused fieldset': { borderColor: 'secondary.main' }
+                  }
+                }}
               />
-              <div id="email-error" role="alert" aria-live="polite">
-                {errors.email && <Typography variant="caption" color="error">{errors.email}</Typography>}
-              </div>
+              {errors.email && (
+                <Typography id="email-error" role="alert" color="error" variant="caption" sx={{ ml: 2 }}>
+                  {errors.email}
+                </Typography>
+              )}
             </Grid2>
+
             <Grid2 size={{ xs: 12 }}>
               <TextField
                 fullWidth
                 id="message-input"
-                label="Message"
+                label="Your Message"
                 name="message"
                 multiline
-                rows={4}
+                rows={5}
                 value={formData.message}
                 onChange={handleChange}
                 required
@@ -128,25 +202,64 @@ const Contact: React.FC<ContactProps> = ({ selectedService }) => {
                 aria-describedby="message-error"
                 error={!!errors.message}
                 helperText={errors.message || 'Tell me about your project'}
-                InputLabelProps={{ style: { color: 'text.secondary' } }}
-                sx={{ textarea: { color: 'text.primary' } }}
+                InputLabelProps={{ shrink: true }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '&.Mui-focused fieldset': { borderColor: 'secondary.main' }
+                  }
+                }}
               />
-              <div id="message-error" role="alert" aria-live="polite">
-                {errors.message && <Typography variant="caption" color="error">{errors.message}</Typography>}
-              </div>
+              {errors.message && (
+                <Typography id="message-error" role="alert" color="error" variant="caption" sx={{ ml: 2 }}>
+                  {errors.message}
+                </Typography>
+              )}
             </Grid2>
+
             <Grid2 size={{ xs: 12 }}>
-              <Button type="submit" variant="contained" color="secondary" fullWidth aria-label="Send contact message">
+              <Button
+                type="submit"
+                variant="contained"
+                color="secondary"
+                size="large"
+                fullWidth
+                aria-label="Send your message"
+                sx={{
+                  py: 1.5,
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  '&:hover': { transform: 'translateY(-2px)' },
+                }}
+              >
                 Send Message
               </Button>
             </Grid2>
           </Grid2>
+
+          {/* Success Message */}
+          {submitted && (
+            <Box
+              role="status"
+              aria-live="polite"
+              sx={{
+                mt: 3,
+                p: 3,
+                bgcolor: 'success.light',
+                color: 'success.contrastText',
+                borderRadius: 2,
+                textAlign: 'center',
+                boxShadow: 1,
+              }}
+            >
+              <Typography variant="h6" fontWeight={600}>
+                Thank You!
+              </Typography>
+              <Typography>
+                Your message has been sent successfully. I’ll get back to you within 24 hours.
+              </Typography>
+            </Box>
+          )}
         </Box>
-        {submitted && (
-          <Box sx={{ mt: 2, p: 2, bgcolor: 'success.light', borderRadius: 1 }} role="status" aria-live="polite">
-            <Typography>Thank you! Your message has been sent.</Typography>
-          </Box>
-        )}
       </Container>
     </Box>
   );
