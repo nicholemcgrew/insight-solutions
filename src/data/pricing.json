@@ -1,46 +1,54 @@
 [
   {
-    "name": "Starter",
-    "price": 700,
-    "description": "Perfect for freelancers launching fast",
+    "title": "Starter",
+    "subtitle": "Perfect for small sites",
+    "price": "$799",
+    "period": "/project",
+    "description": "A clean, responsive landing page with SEO and accessibility.",
+    "cta": "Get Started",
     "features": [
-      "1-Page Portfolio",
-      "Mobile Responsive",
-      "SEO Basics",
-      "Formspree Contact Form",
-      "1 Round of Revisions"
-    ],
-    "notIncluded": ["Custom Domain", "Analytics Dashboard"],
-    "popular": false
+      { "text": "1-Page Website", "included": true },
+      { "text": "Mobile Responsive", "included": true },
+      { "text": "Basic SEO", "included": true },
+      { "text": "WCAG AA Compliance", "included": true },
+      { "text": "Contact Form", "included": true },
+      { "text": "Analytics Setup", "included": false },
+      { "text": "E-commerce", "included": false }
+    ]
   },
   {
-    "name": "Professional",
-    "price": 1400,
-    "description": "Ideal for growing brands",
+    "title": "Professional",
+    "subtitle": "Best for growing businesses",
+    "price": "$1,999",
+    "period": "/project",
+    "description": "Multi-page site with advanced UX, analytics, and performance.",
+    "cta": "Most Popular",
+    "popular": true,
     "features": [
-      "3-Page Site",
-      "Custom Domain Setup",
-      "Advanced SEO",
-      "Google Analytics",
-      "WCAG AA Audit",
-      "2 Rounds of Revisions"
-    ],
-    "notIncluded": [],
-    "popular": true
+      { "text": "Up to 5 Pages", "included": true },
+      { "text": "Custom Design", "included": true },
+      { "text": "Advanced SEO", "included": true },
+      { "text": "WCAG AA + Performance", "included": true },
+      { "text": "Google Analytics", "included": true },
+      { "text": "Blog Integration", "included": true },
+      { "text": "E-commerce", "included": false }
+    ]
   },
   {
-    "name": "Enterprise",
-    "price": 2400,
-    "description": "Full custom solution",
+    "title": "Enterprise",
+    "subtitle": "Full-scale solutions",
+    "price": "Custom",
+    "period": "",
+    "description": "Large-scale apps, dashboards, and enterprise systems.",
+    "cta": "Contact Us",
     "features": [
-      "5+ Pages",
-      "Custom CMS",
-      "E-commerce Ready",
-      "Full Accessibility Audit",
-      "Ongoing Support",
-      "Unlimited Revisions"
-    ],
-    "notIncluded": [],
-    "popular": false
+      { "text": "Unlimited Pages", "included": true },
+      { "text": "Custom Backend", "included": true },
+      { "text": "API Integration", "included": true },
+      { "text": "Advanced Security", "included": true },
+      { "text": "Ongoing Support", "included": true },
+      { "text": "Training & Docs", "included": true },
+      { "text": "E-commerce + CRM", "included": true }
+    ]
   }
 ]

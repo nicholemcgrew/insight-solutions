@@ -7,24 +7,29 @@ import {
   Grid2,
   Card,
   CardContent,
+  CardActions,
   Button,
   Chip,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
+  Divider,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import pricingData from "../data/pricing.json";
 
+interface Feature {
+  text: string;
+  included: boolean;
+}
+
 interface Plan {
-  name: string;
-  price: number;
+  title: string;
+  subtitle: string;
+  price: string;
+  period: string;
   description: string;
-  features: string[];
-  notIncluded: string[];
-  popular: boolean;
+  features: Feature[];
+  cta: string;
+  popular?: boolean;
 }
 
 const PricingPage = () => {
@@ -32,72 +37,74 @@ const PricingPage = () => {
 
   return (
     <Box
-      component="main"
-      id="main-content"
-      tabIndex={-1}
-      sx={{ py: { xs: 6, md: 8 }, bgcolor: "background.paper" }}
+      component="section"
+      id="pricing"
+      sx={{
+        py: { xs: 8, md: 12 },
+        bgcolor: "background.default",
+      }}
+      itemScope
+      itemType="https://schema.org/Service"
     >
       <Container maxWidth="lg">
-        {/* SEO + Accessibility: Section with heading */}
-        <Box
-          component="section"
-          aria-labelledby="pricing-heading"
-          sx={{ textAlign: "center", mb: 6 }}
-        >
+        {/* Page Header */}
+        <Box textAlign="center" mb={6}>
           <Typography
-            id="pricing-heading"
             variant="h2"
             gutterBottom
             color="text.primary"
             sx={{ fontWeight: 700 }}
+            itemProp="name"
           >
             Transparent Pricing
           </Typography>
           <Typography
             variant="body1"
+            color="text.secondary"
             maxWidth="700px"
             mx="auto"
             paragraph
-            color="text.secondary"
           >
-            Choose the plan that fits your goals. All plans include fast delivery
-            and WCAG-compliant design.
+            Choose the perfect plan for your project. All packages include
+            WCAG-compliant accessibility, SEO optimization, and mobile-first
+            design.
           </Typography>
         </Box>
 
-        <Grid2 container spacing={{ xs: 3, md: 4 }}>
+        {/* Pricing Cards */}
+        <Grid2 container spacing={{ xs: 3, md: 4 }} justifyContent="center">
           {plans.map((plan, index) => (
-            <Grid2 size={{ xs: 12, md: 4 }} key={plan.name}>
+            <Grid2
+              size={{ xs: 12, sm: 6, md: 4 }}
+              key={index}
+              sx={{
+                display: "flex",
+                justifyContent: "stretch",
+              }}
+            >
               <Card
-                elevation={0}
+                elevation={plan.popular ? 12 : 3}
                 sx={{
-                  height: "100%",
-                  minHeight: { xs: 480, md: 520 }, // Equal height
-                  bgcolor: "background.paper",
-                  border: "1px solid",
-                  borderColor: plan.popular ? "secondary.main" : "divider",
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "column",
                   borderRadius: 3,
-                  boxShadow: 1,
                   position: "relative",
+                  border: plan.popular
+                    ? "2px solid"
+                    : "1px solid",
+                  borderColor: plan.popular ? "secondary.main" : "divider",
                   transition: "all 0.3s ease",
                   "&:hover": {
-                    boxShadow: 8,
                     transform: "translateY(-8px)",
-                  },
-                  "&:focus-visible": {
-                    outline: "3px solid",
-                    outlineColor: "secondary.main",
-                    outlineOffset: "2px",
+                    boxShadow: plan.popular ? 16 : 8,
                   },
                 }}
-                tabIndex={0}
-                role="article"
-                aria-labelledby={`plan-${index}-title`}
               >
                 {/* Popular Badge */}
                 {plan.popular && (
                   <Chip
-                    label="MOST POPULAR"
+                    label="Most Popular"
                     color="secondary"
                     size="small"
                     sx={{
@@ -111,70 +118,82 @@ const PricingPage = () => {
                   />
                 )}
 
-                <CardContent
-                  sx={{
-                    flexGrow: 1,
-                    pt: plan.popular ? 5 : 4,
-                    pb: 2,
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
+                <CardContent sx={{ flexGrow: 1, pt: plan.popular ? 5 : 3 }}>
                   <Typography
-                    id={`plan-${index}-title`}
                     variant="h5"
+                    gutterBottom
+                    color="text.primary"
                     fontWeight={700}
+                  >
+                    {plan.title}
+                  </Typography>
+                  <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
                     gutterBottom
                   >
-                    {plan.name}
+                    {plan.subtitle}
                   </Typography>
+
+                  <Box sx={{ my: 2 }}>
+                    <Typography
+                      variant="h3"
+                      component="span"
+                      color="primary.main"
+                      fontWeight={800}
+                    >
+                      {plan.price}
+                    </Typography>
+                    <Typography
+                      component="span"
+                      color="text.secondary"
+                      sx={{ ml: 0.5 }}
+                    >
+                      {plan.period}
+                    </Typography>
+                  </Box>
 
                   <Typography
-                    variant="h3"
-                    color="primary"
-                    fontWeight={800}
-                    itemProp="offers"
-                    itemScope
-                    itemType="https://schema.org/Offer"
+                    variant="body2"
+                    color="text.secondary"
+                    paragraph
                   >
-                    <meta itemProp="priceCurrency" content="USD" />
-                    <span itemProp="price">${plan.price}</span>
-                  </Typography>
-
-                  <Typography color="text.secondary" gutterBottom>
-                    one-time
-                  </Typography>
-
-                  <Typography variant="body2" color="text.secondary" paragraph>
                     {plan.description}
                   </Typography>
 
+                  <Divider sx={{ my: 2 }} />
+
                   {/* Features List */}
-                  <List role="list" aria-label={`${plan.name} plan features`}>
-                    {plan.features.map((f) => (
-                      <ListItem key={f} disablePadding sx={{ py: 0.75 }}>
-                        <ListItemIcon sx={{ minWidth: 36 }}>
-                          <CheckCircleIcon color="success" fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText primary={f} />
-                      </ListItem>
+                  <Box component="ul" sx={{ m: 0, p: 0, listStyle: "none" }}>
+                    {plan.features.map((feature, i) => (
+                      <Box
+                        component="li"
+                        key={i}
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          mb: 1,
+                          color: feature.included ? "success.main" : "text.disabled",
+                        }}
+                      >
+                        {feature.included ? (
+                          <CheckCircleIcon fontSize="small" sx={{ mr: 1 }} />
+                        ) : (
+                          <CancelIcon fontSize="small" sx={{ mr: 1 }} />
+                        )}
+                        <Typography variant="body2">
+                          {feature.text}
+                        </Typography>
+                      </Box>
                     ))}
-                    {plan.notIncluded.map((f) => (
-                      <ListItem key={f} disablePadding sx={{ py: 0.75, opacity: 0.6 }}>
-                        <ListItemIcon sx={{ minWidth: 36 }}>
-                          <CancelIcon color="error" fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText primary={f} />
-                      </ListItem>
-                    ))}
-                  </List>
+                  </Box>
                 </CardContent>
 
-                <Box sx={{ p: 3, pt: 2 }}>
+                <CardActions sx={{ p: 3, pt: 0 }}>
                   <Button
-                    fullWidth
                     variant={plan.popular ? "contained" : "outlined"}
                     color="secondary"
+                    fullWidth
                     size="large"
                     href="#contact"
                     onClick={(e) => {
@@ -183,24 +202,39 @@ const PricingPage = () => {
                         .getElementById("contact")
                         ?.scrollIntoView({ behavior: "smooth" });
                     }}
-                    aria-label={`Choose ${plan.name} plan and go to contact form`}
                     sx={{
                       py: 1.5,
                       fontWeight: 600,
-                      "&:focus-visible": {
-                        outline: "3px solid",
-                        outlineColor: "secondary.main",
-                        outlineOffset: "2px",
-                      },
+                      textTransform: "none",
                     }}
                   >
-                    Choose {plan.name}
+                    {plan.cta}
                   </Button>
-                </Box>
+                </CardActions>
               </Card>
             </Grid2>
           ))}
         </Grid2>
+
+        {/* CTA Footer */}
+        <Box textAlign="center" mt={8}>
+          <Typography variant="body1" color="text.secondary">
+            Need a custom quote?{" "}
+            <Button
+              variant="text"
+              color="secondary"
+              href="#contact"
+              onClick={(e) => {
+                e.preventDefault();
+                document
+                  .getElementById("contact")
+                  ?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Get in Touch
+            </Button>
+          </Typography>
+        </Box>
       </Container>
     </Box>
   );
