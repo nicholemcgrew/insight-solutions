@@ -1,11 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Container, Typography, TextField, Button, Grid2 } from '@mui/material';
 import axios from 'axios';
 
-const Contact: React.FC = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const [errors, setErrors] = useState({ name: '', email: '', message: '' });
+interface ContactProps {
+  selectedService?: string; // From App for pre-fill
+}
 
+const Contact: React.FC<ContactProps> = ({ selectedService }) => {
+  const [formData, setFormData] = useState({ name: '', email: '', message: selectedService ? `Interested in ${selectedService}.` : '' });
+  const [errors, setErrors] = useState({ name: '', email: '', message: '' });
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (selectedService) {
+      setFormData(prev => ({ ...prev, message: `Interested in ${selectedService}. Please provide more details.` }));
+    }
+  }, [selectedService]);
+
+  // Validation and submit logic (as before)
   const validateForm = () => {
     const newErrors = { name: '', email: '', message: '' };
     let isValid = true;
@@ -30,16 +42,13 @@ const Contact: React.FC = () => {
     return isValid;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: '' });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
       try {
         await axios.post('https://formspree.io/f/xpwowzwo', formData); 
+        setSubmitted(true);
+        alert('Message sent successfully!');
         setFormData({ name: '', email: '', message: '' });
       } catch (error) {
         alert('Error sending message. Please try again.');
@@ -47,47 +56,67 @@ const Contact: React.FC = () => {
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: '' });
+  };
+
   return (
-    <Box sx={{ py: 8, bgcolor: 'background.default' }} id="contact">
-      <Container>
-        <Typography variant="h2" align="center" gutterBottom>
+    <Box sx={{ py: 4, bgcolor: 'background.default' }} id="contact" role="region" aria-label="Contact form">
+      <Container maxWidth="md">
+        <Typography variant="h2" align="center" gutterBottom color="text.primary">
           Contact Me
         </Typography>
-        <Typography variant="body1" align="center" gutterBottom>
-          Ready to elevate your online presence with Insight Web Solutions? Get in touch!
+        <Typography variant="body1" align="center" gutterBottom color="text.secondary">
+          Ready to elevate your online presence? Get in touch for a custom quote!
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: '600px', mx: 'auto' }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: '600px', mx: 'auto' }} noValidate>
           <Grid2 container spacing={2}>
             <Grid2 size={{ xs: 12 }}>
               <TextField
                 fullWidth
+                id="name-input"
                 label="Name"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 required
-                aria-label="Your name"
+                aria-required="true"
+                aria-describedby="name-error"
                 error={!!errors.name}
                 helperText={errors.name}
+                InputLabelProps={{ style: { color: 'text.secondary' } }}
+                sx={{ input: { color: 'text.primary' } }}
               />
+              <div id="name-error" role="alert" aria-live="polite">
+                {errors.name && <Typography variant="caption" color="error">{errors.name}</Typography>}
+              </div>
             </Grid2>
             <Grid2 size={{ xs: 12 }}>
               <TextField
                 fullWidth
+                id="email-input"
                 label="Email"
                 name="email"
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
                 required
-                aria-label="Your email"
+                aria-required="true"
+                aria-describedby="email-error"
                 error={!!errors.email}
                 helperText={errors.email}
+                InputLabelProps={{ style: { color: 'text.secondary' } }}
+                sx={{ input: { color: 'text.primary' } }}
               />
+              <div id="email-error" role="alert" aria-live="polite">
+                {errors.email && <Typography variant="caption" color="error">{errors.email}</Typography>}
+              </div>
             </Grid2>
             <Grid2 size={{ xs: 12 }}>
               <TextField
                 fullWidth
+                id="message-input"
                 label="Message"
                 name="message"
                 multiline
@@ -95,18 +124,29 @@ const Contact: React.FC = () => {
                 value={formData.message}
                 onChange={handleChange}
                 required
-                aria-label="Your message"
+                aria-required="true"
+                aria-describedby="message-error"
                 error={!!errors.message}
-                helperText={errors.message}
+                helperText={errors.message || 'Tell me about your project'}
+                InputLabelProps={{ style: { color: 'text.secondary' } }}
+                sx={{ textarea: { color: 'text.primary' } }}
               />
+              <div id="message-error" role="alert" aria-live="polite">
+                {errors.message && <Typography variant="caption" color="error">{errors.message}</Typography>}
+              </div>
             </Grid2>
             <Grid2 size={{ xs: 12 }}>
-              <Button type="submit" variant="contained" color="primary" fullWidth>
+              <Button type="submit" variant="contained" color="secondary" fullWidth aria-label="Send contact message">
                 Send Message
               </Button>
             </Grid2>
           </Grid2>
         </Box>
+        {submitted && (
+          <Box sx={{ mt: 2, p: 2, bgcolor: 'success.light', borderRadius: 1 }} role="status" aria-live="polite">
+            <Typography>Thank you! Your message has been sent.</Typography>
+          </Box>
+        )}
       </Container>
     </Box>
   );

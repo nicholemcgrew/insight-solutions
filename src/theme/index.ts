@@ -3,17 +3,17 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1565C0', // Deep Blue
+      main: '#1E3A8A', // Deeper Navy Blue for trust
     },
     secondary: {
-      main: '#F9A825', // Warm Yellow
+      main: '#F59E0B', // Warm Amber for energy
     },
     background: {
-      default: '#F5F5F5', // Light Gray
+      default: '#F8FAFC', // Soft Slate for calm
     },
     text: {
-      primary: '#212121', // Dark Gray
-      secondary: '#757575', // Medium Gray
+      primary: '#0F172A', // Dark Slate for readability
+      secondary: '#64748B', // Medium Slate for secondary text
     },
   },
   typography: {

@@ -3,7 +3,7 @@ import { Box, Container, Typography } from '@mui/material';
 
 const About: React.FC = () => {
   return (
-    <Box sx={{ py: 8 }} id="about">
+    <Box sx={{ py: 4 }} id="about">
       <Container>
         <Typography variant="h2" align="center" gutterBottom>
           About Me

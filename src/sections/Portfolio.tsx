@@ -26,7 +26,7 @@ const projects = [
 
 const Portfolio: React.FC = () => {
   return (
-    <Box sx={{ py: 8, bgcolor: 'background.default' }} id="portfolio">
+    <Box sx={{ py: 4, bgcolor: 'background.default' }} id="portfolio">
       <Container>
         <Typography variant="h2" align="center" gutterBottom color="text.primary">
           My Portfolio
@@ -82,6 +82,7 @@ const Portfolio: React.FC = () => {
 
                 <Box sx={{ p: 2, pt: 0 }}>
                   <Button
+                  aria-label={`View ${project.title} project`}
                     variant="contained"
                     color="secondary"
                     href={project.link}

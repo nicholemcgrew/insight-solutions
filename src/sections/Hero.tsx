@@ -7,7 +7,7 @@ const Hero: React.FC = () => {
       sx={{
         bgcolor: 'primary.main',
         color: 'white',
-        py: 8,
+        py: 6,
         textAlign: 'center',
       }}
       id="home"

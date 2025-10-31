@@ -11,8 +11,10 @@ import About from './sections/About';
 import Contact from './sections/Contact';
 import Footer from './components/Footer';
 
+
 const App: React.FC = () => {
   return (
+    <main id="main-content">
     <HelmetProvider>
       <Helmet>
         <title>Insight Web Solutions</title>
@@ -47,6 +49,7 @@ const App: React.FC = () => {
         <Footer />
       </ThemeProvider>
     </HelmetProvider>
+    </main>
   );
 };
 
