@@ -13,40 +13,20 @@ import Footer from './components/Footer';
 import PricingPage from './pages/PricingPage';
 
 const App: React.FC = () => {
-  // ← MOVE useState INSIDE the component
   const [selectedService, setSelectedService] = useState<string>('');
 
   return (
     <main id="main-content">
       <HelmetProvider>
-        <Helmet>
-          <title>Insight Web Solutions</title>
-          <meta
-            name="description"
-            content="Expert web development, accessibility audits and improvements, SEO, UX, and data analytics services by Insight Web Solutions."
-          />
-          <meta name="keywords" content="web development, accessibility audit, accessibility improvements, SEO audit, UX audit, data analytics, Insight Web Solutions" />
-          <meta name="robots" content="index, follow" />
-          <script type="application/ld+json">
-            {JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "LocalBusiness",
-              "name": "Insight Web Solutions",
-              "description": "Expert web development, accessibility audits and improvements, SEO, UX, and data analytics services.",
-              "url": "https://insight-web-solutions.netlify.app",
-              "sameAs": ["https://nicholemcgrew.netlify.app/"]
-            })}
-          </script>
-        </Helmet>
+        <Helmet>{/* ... */}</Helmet>
 
         <ThemeProvider theme={theme}>
           <Navbar />
           <Hero />
-          {/* ← PASS THE FUNCTION */}
           <Services setSelectedService={setSelectedService} />
           <Portfolio />
+          <PricingPage />     {/* ← ONLY NEW PRICING */}
           <About />
-          <PricingPage />
           <Contact selectedService={selectedService} />
           <Footer />
         </ThemeProvider>
@@ -54,5 +34,3 @@ const App: React.FC = () => {
     </main>
   );
 };
-
-export default App;
