@@ -54,15 +54,17 @@ const PricingPage = () => {
               {/* ←←← YOUR CARD STARTS HERE ←←← */}
               <Card
                 sx={{
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  transition: "0.3s",
-                  border: plan.popular ? "2px solid" : "1px solid",
-                  borderColor: plan.popular ? "secondary.main" : "grey.300",
-                  position: "relative",
-                  "&:hover": { transform: "translateY(-8px)", boxShadow: 8 },
-                }}
+                  
+    height: '100%',
+    bgcolor: 'background.paper',
+    border: '1px solid',
+    borderColor: plan.popular ? 'secondary.main' : 'divider',
+    borderRadius: 2,
+    boxShadow: 1,
+    position: 'relative',
+    transition: '0.3s',
+    '&:hover': { boxShadow: 8, transform: 'translateY(-8px)' },
+  }}
               >
                 {/* Popular badge */}
                 {plan.popular && (

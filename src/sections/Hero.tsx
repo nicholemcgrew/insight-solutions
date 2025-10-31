@@ -2,17 +2,18 @@
 import React from 'react';
 import { Box, Container, Typography, Button } from '@mui/material';
 
-const Hero: React.FC = () => {
+const Hero = () => {
   return (
     <Box
       sx={{
         bgcolor: 'primary.main',
         color: 'white',
-        minHeight: { xs: 'calc(100vh - 70px)', md: '80vh' }, // ← PERFECT
-        py: { xs: 4, md: 6 },                               // ← REDUCED
+        minHeight: '100dvh',           // ← NEW: Dynamic viewport (excludes navbar)
+        pt: { xs: 10, md: 12 },        // ← Push content below navbar
+        pb: { xs: 6, md: 8 },
         textAlign: 'center',
         display: 'flex',
-        alignItems: 'center',
+        flexDirection: 'column',
         justifyContent: 'center',
       }}
       id="home"
@@ -25,35 +26,33 @@ const Hero: React.FC = () => {
           Affordable web development, accessibility, SEO, UX, and data analytics by Insight Web Solutions.
         </Typography>
 
-        <Button
-          variant="contained"
-          color="secondary"
-          size="large"
-          component="a"
-          href="#pricing"
-          sx={{ mt: 3, mx: 1 }}
-          onClick={(e) => {
-            e.preventDefault();
-            document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
-          }}
-        >
-          View Pricing Plans
-        </Button>
+        <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="large"
+            href="#pricing"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
+            View Pricing Plans
+          </Button>
 
-        <Button
-          variant="contained"
-          color="secondary"
-          size="large"
-          component="a"
-          href="#contact"
-          sx={{ mt: 3, mx: 1 }}
-          onClick={(e) => {
-            e.preventDefault();
-            document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-          }}
-        >
-          Get Started
-        </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="large"
+            href="#contact"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
+            Get Started
+          </Button>
+        </Box>
       </Container>
     </Box>
   );

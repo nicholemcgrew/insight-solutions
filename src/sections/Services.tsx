@@ -83,15 +83,20 @@ const Services = ({ setSelectedService }: ServicesProps) => {
                 aria-label={`Learn more about ${service.title}`}
               >
                 <Card
-                  sx={{
-                    bgcolor: "white",
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    textAlign: "center",
-                    p: 2,
-                  }}
+                
+                    sx={{
+    height: '100%',
+    bgcolor: 'background.paper',     // ← MUI paper (white in light, dark in dark)
+    border: '1px solid',
+    borderColor: 'divider',          // ← Subtle border
+    borderRadius: 2,
+    boxShadow: 1,
+    transition: '0.3s',
+    '&:hover': {
+      boxShadow: 6,
+      transform: 'translateY(-4px)',
+    },
+  }}
                 >
                   <Box sx={{ mb: 2, mt: 1 }}>{iconMap[service.icon]}</Box>
                   <CardContent sx={{ flexGrow: 1, p: 0 }}>
