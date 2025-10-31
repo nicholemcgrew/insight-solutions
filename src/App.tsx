@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { ThemeProvider, CssBaseline, Box } from "@mui/material";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom"; // ← Only Routes & Route
 import theme from "./theme";
 import Navbar from "./components/Navbar";
 import Hero from "./sections/Hero";
@@ -21,7 +21,6 @@ const App = () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
 
-        {/* GLOBAL SEO & META */}
         <Helmet>
           <html lang="en" />
           <meta charSet="utf-8" />
@@ -31,7 +30,7 @@ const App = () => {
           <style>{`html { scroll-behavior: smooth; }`}</style>
         </Helmet>
 
-        {/* SKIP LINK — ONLY HERE */}
+        {/* SKIP LINK */}
         <Box
           component="a"
           href="#main-content"
@@ -60,71 +59,65 @@ const App = () => {
           Skip to main content
         </Box>
 
-        <BrowserRouter>
-          <Navbar />
+        {/* NO <BrowserRouter> HERE */}
+        <Navbar />
 
-          <Routes>
-            {/* HOMEPAGE */}
-            <Route
-              path="/"
-              element={
-                <>
-                  <Helmet>
-                    <title>Insight Web Solutions | Web Development, Accessibility, SEO</title>
-                    <meta
-                      name="description"
-                      content="Professional web development, WCAG-compliant accessibility, SEO, UX, and data analytics. Build fast, inclusive, high-converting websites."
-                    />
-                  </Helmet>
-
-                  <main id="main-content" tabIndex={-1}>
-                    <Hero />
-                    <Services setSelectedService={setSelectedService} />
-                    <Portfolio />
-                    <About />
-                    <Contact selectedService={selectedService} />
-                    <Footer />
-                  </main>
-                </>
-              }
-            />
-
-            {/* PRICING PAGE */}
-            <Route
-              path="/pricing"
-              element={
-                <>
-                  <Helmet>
-                    <title>Pricing | Insight Web Solutions</title>
-                    <meta
-                      name="description"
-                      content="Transparent pricing for web development, accessibility audits, SEO, UX, and analytics. Choose the plan that fits your goals."
-                    />
-                    <link rel="canonical" href="https://insightwebsolutions.com/pricing" />
-                  </Helmet>
-
-                  <main id="main-content" tabIndex={-1}>
-                    <PricingPage />
-                    <Footer />
-                  </main>
-                </>
-              }
-            />
-
-            {/* 404 */}
-            <Route
-              path="*"
-              element={
-                <main id="main-content" style={{ padding: "2rem", textAlign: "center" }}>
-                  <h1>404 - Page Not Found</h1>
-                  <p>
-                    <a href="/">Return Home</a>
-                  </p>
+        <Routes>
+          {/* HOMEPAGE */}
+          <Route
+            path="/"
+            element={
+              <>
+                <Helmet>
+                  <title>Insight Web Solutions | Web Development, Accessibility, SEO</title>
+                  <meta
+                    name="description"
+                    content="Professional web development, WCAG-compliant accessibility, SEO, UX, and data analytics."
+                  />
+                </Helmet>
+                <main id="main-content" tabIndex={-1}>
+                  <Hero />
+                  <Services setSelectedService={setSelectedService} />
+                  <Portfolio />
+                  <About />
+                  <Contact selectedService={selectedService} />
+                  <Footer />
                 </main>
-              }
-            />
-          </Routes>
-        </BrowserRouter>
+              </>
+            }
+          />
+
+          {/* PRICING PAGE */}
+          <Route
+            path="/pricing"
+            element={
+              <>
+                <Helmet>
+                  <title>Pricing | Insight Web Solutions</title>
+                  <meta
+                    name="description"
+                    content="Transparent pricing for web development, accessibility, SEO, UX, and analytics."
+                  />
+                </Helmet>
+                <main id="main-content" tabIndex={-1}>
+                  <PricingPage />
+                  <Footer />
+                </main>
+              </>
+            }
+          />
+
+          {/* 404 */}
+          <Route
+            path="*"
+            element={
+              <main id="main-content" style={{ padding: "2rem", textAlign: "center" }}>
+                <h1>404 - Page Not Found</h1>
+                <p><a href="/">Return Home</a></p>
+              </main>
+            }
+          />
+        </Routes>
       </ThemeProvider>
     </HelmetProvider>
   );
