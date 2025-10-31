@@ -1,54 +1,51 @@
 [
   {
-    "title": "Starter",
-    "subtitle": "Perfect for small sites",
-    "price": "$799",
-    "period": "/project",
-    "description": "A clean, responsive landing page with SEO and accessibility.",
-    "cta": "Get Started",
-    "features": [
-      { "text": "1-Page Website", "included": true },
-      { "text": "Mobile Responsive", "included": true },
-      { "text": "Basic SEO", "included": true },
-      { "text": "WCAG AA Compliance", "included": true },
-      { "text": "Contact Form", "included": true },
-      { "text": "Analytics Setup", "included": false },
-      { "text": "E-commerce", "included": false }
-    ]
+    "title": "Web Development",
+    "description": "Custom, responsive websites built with modern technologies for seamless desktop, tablet, and mobile experiences.",
+    "price": "$500–$2,500",
+    "cta": "Get Quote",
+    "icon": "Web"
   },
   {
-    "title": "Professional",
-    "subtitle": "Best for growing businesses",
-    "price": "$1,999",
-    "period": "/project",
-    "description": "Multi-page site with advanced UX, analytics, and performance.",
-    "cta": "Most Popular",
-    "popular": true,
-    "features": [
-      { "text": "Up to 5 Pages", "included": true },
-      { "text": "Custom Design", "included": true },
-      { "text": "Advanced SEO", "included": true },
-      { "text": "WCAG AA + Performance", "included": true },
-      { "text": "Google Analytics", "included": true },
-      { "text": "Blog Integration", "included": true },
-      { "text": "E-commerce", "included": false }
-    ]
+    "title": "Accessibility Audit & Optimization",
+    "description": "Ensure your website is inclusive with WCAG-compliant audits, remediation, and ongoing optimization for all users.",
+    "price": "$1,000–$2,500",
+    "cta": "Get Quote",
+    "icon": "Accessibility"
   },
   {
-    "title": "Enterprise",
-    "subtitle": "Full-scale solutions",
-    "price": "Custom",
-    "period": "",
-    "description": "Large-scale apps, dashboards, and enterprise systems.",
-    "cta": "Contact Us",
-    "features": [
-      { "text": "Unlimited Pages", "included": true },
-      { "text": "Custom Backend", "included": true },
-      { "text": "API Integration", "included": true },
-      { "text": "Advanced Security", "included": true },
-      { "text": "Ongoing Support", "included": true },
-      { "text": "Training & Docs", "included": true },
-      { "text": "E-commerce + CRM", "included": true }
-    ]
+    "title": "SEO Services",
+    "description": "Full SEO package: audit, keyword research, on-page optimization, content strategy, and technical fixes to boost rankings.",
+    "price": "$1,000–$2,800",
+    "cta": "Get Quote",
+    "icon": "Search"
+  },
+  {
+    "title": "UX Improvements",
+    "description": "Enhance user experience with data-driven, responsive designs for all devices.",
+    "price": "$800–$1,800",
+    "cta": "Get Quote",
+    "icon": "DesignServices"
+  },
+  {
+    "title": "Excel & Custom Analytics",
+    "description": "Unlock actionable insights with Excel analysis, custom dashboards, and performance tracking.",
+    "price": "$600–$1,800",
+    "cta": "Get Quote",
+    "icon": "BarChart"
+  },
+  {
+    "title": "Portfolio Building",
+    "description": "Professional, responsive portfolio built with React & TypeScript. SEO-optimized, WCAG-compliant, and designed to convert.",
+    "price": "$800–$1,500",
+    "cta": "Get Quote",
+    "icon": "Collections"
+  },
+  {
+    "title": "Maintenance & Support",
+    "description": "Ongoing updates, security patches, performance monitoring, and priority support to keep your site running smoothly.",
+    "price": "$150–$400/month",
+    "cta": "Get Quote",
+    "icon": "Support"
   }
 ]

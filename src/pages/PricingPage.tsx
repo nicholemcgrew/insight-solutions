@@ -9,232 +9,108 @@ import {
   CardContent,
   CardActions,
   Button,
-  Chip,
-  Divider,
 } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
+import WebIcon from "@mui/icons-material/Web";
+import AccessibilityIcon from "@mui/icons-material/Accessibility";
+import SearchIcon from "@mui/icons-material/Search";
+import DesignServicesIcon from "@mui/icons-material/DesignServices";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import CollectionsIcon from "@mui/icons-material/Collections";
+import SupportIcon from "@mui/icons-material/Support";
+
 import pricingData from "../data/pricing.json";
 
-interface Feature {
-  text: string;
-  included: boolean;
+interface Service {
+  title: string;
+  description: string;
+  price: string;
+  cta: string;
+  icon: string;
 }
 
-interface Plan {
-  title: string;
-  subtitle: string;
-  price: string;
-  period: string;
-  description: string;
-  features: Feature[];
-  cta: string;
-  popular?: boolean;
-}
+const iconMap = {
+  Web: <WebIcon fontSize="large" color="primary" />,
+  Accessibility: <AccessibilityIcon fontSize="large" color="primary" />,
+  Search: <SearchIcon fontSize="large" color="primary" />,
+  DesignServices: <DesignServicesIcon fontSize="large" color="primary" />,
+  BarChart: <BarChartIcon fontSize="large" color="primary" />,
+  Collections: <CollectionsIcon fontSize="large" color="primary" />,
+  Support: <SupportIcon fontSize="large" color="primary" />,
+} as const;
+
+type IconKey = keyof typeof iconMap;
 
 const PricingPage = () => {
-  const plans: Plan[] = pricingData as Plan[];
+  const services: Service[] = pricingData as Service[];
 
   return (
-    <Box
-      component="section"
-      id="pricing"
-      sx={{
-        py: { xs: 8, md: 12 },
-        bgcolor: "background.default",
-      }}
-      itemScope
-      itemType="https://schema.org/Service"
-    >
+    <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: "background.default" }} id="pricing">
       <Container maxWidth="lg">
-        {/* Page Header */}
-        <Box textAlign="center" mb={6}>
-          <Typography
-            variant="h2"
-            gutterBottom
-            color="text.primary"
-            sx={{ fontWeight: 700 }}
-            itemProp="name"
-          >
-            Transparent Pricing
-          </Typography>
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            maxWidth="700px"
-            mx="auto"
-            paragraph
-          >
-            Choose the perfect plan for your project. All packages include
-            WCAG-compliant accessibility, SEO optimization, and mobile-first
-            design.
-          </Typography>
-        </Box>
+        <Typography variant="h2" align="center" gutterBottom color="text.primary" sx={{ fontWeight: 700, mb: 3 }}>
+          Transparent Pricing
+        </Typography>
+        <Typography variant="body1" align="center" maxWidth="700px" mx="auto" paragraph color="text.secondary">
+          Clear, fair pricing for every service. No surprises — just results.
+        </Typography>
 
-        {/* Pricing Cards */}
-        <Grid2 container spacing={{ xs: 3, md: 4 }} justifyContent="center">
-          {plans.map((plan, index) => (
-            <Grid2
-              size={{ xs: 12, sm: 6, md: 4 }}
-              key={index}
-              sx={{
-                display: "flex",
-                justifyContent: "stretch",
-              }}
-            >
+        <Grid2 container spacing={4} justifyContent="center" mt={2}>
+          {services.map((service, index) => (
+            <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={index}>
               <Card
-                elevation={plan.popular ? 12 : 3}
                 sx={{
-                  width: "100%",
+                  height: "100%",
                   display: "flex",
                   flexDirection: "column",
-                  borderRadius: 3,
-                  position: "relative",
-                  border: plan.popular
-                    ? "2px solid"
-                    : "1px solid",
-                  borderColor: plan.popular ? "secondary.main" : "divider",
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    transform: "translateY(-8px)",
-                    boxShadow: plan.popular ? 16 : 8,
-                  },
+                  borderRadius: 2,
+                  boxShadow: 3,
+                  bgcolor: "background.paper", // ← WHITE-ON-WHITE FIXED
+                  transition: "0.3s",
+                  "&:hover": { boxShadow: 8, transform: "translateY(-8px)" },
                 }}
               >
-                {/* Popular Badge */}
-                {plan.popular && (
-                  <Chip
-                    label="Most Popular"
-                    color="secondary"
-                    size="small"
-                    sx={{
-                      position: "absolute",
-                      top: -12,
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      fontWeight: 600,
-                      zIndex: 1,
-                    }}
-                  />
-                )}
-
-                <CardContent sx={{ flexGrow: 1, pt: plan.popular ? 5 : 3 }}>
-                  <Typography
-                    variant="h5"
-                    gutterBottom
-                    color="text.primary"
-                    fontWeight={700}
-                  >
-                    {plan.title}
-                  </Typography>
-                  <Typography
-                    variant="subtitle2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    {plan.subtitle}
-                  </Typography>
-
-                  <Box sx={{ my: 2 }}>
-                    <Typography
-                      variant="h3"
-                      component="span"
-                      color="primary.main"
-                      fontWeight={800}
-                    >
-                      {plan.price}
-                    </Typography>
-                    <Typography
-                      component="span"
-                      color="text.secondary"
-                      sx={{ ml: 0.5 }}
-                    >
-                      {plan.period}
-                    </Typography>
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+                    {iconMap[service.icon as IconKey]}
                   </Box>
 
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    paragraph
-                  >
-                    {plan.description}
+                  <Typography variant="h5" gutterBottom color="text.primary" fontWeight={700} align="center">
+                    {service.title}
                   </Typography>
 
-                  <Divider sx={{ my: 2 }} />
+                  <Typography variant="h4" color="primary.main" fontWeight={800} align="center" sx={{ my: 2 }}>
+                    {service.price}
+                  </Typography>
 
-                  {/* Features List */}
-                  <Box component="ul" sx={{ m: 0, p: 0, listStyle: "none" }}>
-                    {plan.features.map((feature, i) => (
-                      <Box
-                        component="li"
-                        key={i}
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          mb: 1,
-                          color: feature.included ? "success.main" : "text.disabled",
-                        }}
-                      >
-                        {feature.included ? (
-                          <CheckCircleIcon fontSize="small" sx={{ mr: 1 }} />
-                        ) : (
-                          <CancelIcon fontSize="small" sx={{ mr: 1 }} />
-                        )}
-                        <Typography variant="body2">
-                          {feature.text}
-                        </Typography>
-                      </Box>
-                    ))}
-                  </Box>
+                  <Typography variant="body2" color="text.secondary" align="center" paragraph>
+                    {service.description}
+                  </Typography>
                 </CardContent>
 
                 <CardActions sx={{ p: 3, pt: 0 }}>
                   <Button
-                    variant={plan.popular ? "contained" : "outlined"}
+                    variant="contained"
                     color="secondary"
                     fullWidth
                     size="large"
-                    href="#contact"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document
-                        .getElementById("contact")
-                        ?.scrollIntoView({ behavior: "smooth" });
+                    onClick={() => {
+                      const contact = document.getElementById("contact");
+                      if (contact) {
+                        sessionStorage.setItem("selectedService", service.title);
+                        contact.scrollIntoView({ behavior: "smooth" });
+                      } else {
+                        sessionStorage.setItem("selectedService", service.title);
+                        window.location.href = "/#contact";
+                      }
                     }}
-                    sx={{
-                      py: 1.5,
-                      fontWeight: 600,
-                      textTransform: "none",
-                    }}
+                    sx={{ py: 1.5, fontWeight: 600, textTransform: "none" }}
                   >
-                    {plan.cta}
+                    {service.cta}
                   </Button>
                 </CardActions>
               </Card>
             </Grid2>
           ))}
         </Grid2>
-
-        {/* CTA Footer */}
-        <Box textAlign="center" mt={8}>
-          <Typography variant="body1" color="text.secondary">
-            Need a custom quote?{" "}
-            <Button
-              variant="text"
-              color="secondary"
-              href="#contact"
-              onClick={(e) => {
-                e.preventDefault();
-                document
-                  .getElementById("contact")
-                  ?.scrollIntoView({ behavior: "smooth" });
-              }}
-            >
-              Get in Touch
-            </Button>
-          </Typography>
-        </Box>
       </Container>
     </Box>
   );

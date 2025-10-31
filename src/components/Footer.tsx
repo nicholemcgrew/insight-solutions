@@ -1,6 +1,8 @@
 // src/components/Footer.tsx
 import React from "react";
-import { Box, Container, Typography, Link, Stack } from "@mui/material";
+import { Box, Container, Typography, Link as MuiLink, Stack } from "@mui/material";
+import { NavLink } from "react-router-dom";
+import { Link as ScrollLink } from "react-scroll";
 import navItems from "../data/navItems.json";
 
 interface NavItem {
@@ -12,6 +14,62 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   const navLinks: NavItem[] = navItems as NavItem[];
 
+  // Helper – decide which link component to use
+  const FooterLink = ({ item }: { item: NavItem }) => {
+    const isPricing = item.to === "/pricing";
+
+    if (isPricing) {
+      return (
+        <MuiLink
+          component={NavLink}
+          to={item.to}
+          end
+          color="inherit"
+          underline="hover"
+          sx={{
+            fontWeight: 500,
+            fontSize: { xs: "0.9375rem", sm: "1rem" },
+            transition: "color 0.2s",
+            "&:hover": { color: "secondary.main" },
+            "&:focus-visible": {
+              outline: "2px solid white",
+              outlineOffset: "2px",
+              borderRadius: 1,
+            },
+          }}
+        >
+          {item.label}
+        </MuiLink>
+      );
+    }
+
+    // All other links → smooth scroll on the same page
+    return (
+      <MuiLink
+        component={ScrollLink}
+        to={item.to}
+        smooth
+        duration={500}
+        color="inherit"
+        underline="hover"
+        sx={{
+          fontWeight: 500,
+          fontSize: { xs: "0.9375rem", sm: "1rem" },
+          transition: "color 0.2s",
+          cursor: "pointer",
+          "&:hover": { color: "secondary.main" },
+          "&:focus-visible": {
+            outline: "2px solid white",
+            outlineOffset: "2px",
+            borderRadius: 1,
+          },
+        }}
+      >
+        {item.label}
+      </MuiLink>
+    );
+  };
+
   return (
     <Box
       component="footer"
@@ -21,7 +79,7 @@ const Footer = () => {
         bgcolor: "primary.main",
         color: "white",
         py: { xs: 3, md: 4 },
-        mt: "auto", // Push to bottom in flex layout
+        mt: "auto",
       }}
     >
       <Container>
@@ -31,40 +89,14 @@ const Footer = () => {
           sx={{ textAlign: { xs: "center", sm: "left" } }}
         >
           {/* Navigation Links */}
-          <Box
-            component="nav"
-            aria-label="Footer navigation"
-            sx={{ width: "100%" }}
-          >
+          <Box component="nav" aria-label="Footer navigation" sx={{ width: "100%" }}>
             <Stack
               direction={{ xs: "column", sm: "row" }}
               spacing={3}
               justifyContent="center"
             >
               {navLinks.map((item) => (
-                <Link
-                  key={item.label}
-                  href={`#${item.to}`}
-                  color="inherit"
-                  underline="hover"
-                  sx={{
-                    fontWeight: 500,
-                    fontSize: { xs: "0.9375rem", sm: "1rem" },
-                    transition: "color 0.2s",
-                    "&:hover": { color: "secondary.main" },
-                    "&:focus-visible": {
-                      outline: "2px solid white",
-                      outlineOffset: "2px",
-                      borderRadius: 1,
-                    },
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById(item.to)?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                >
-                  {item.label}
-                </Link>
+                <FooterLink key={item.label} item={item} />
               ))}
             </Stack>
           </Box>
@@ -77,8 +109,10 @@ const Footer = () => {
             itemProp="copyrightNotice"
           >
             © {currentYear}{" "}
-            <Link
-              href="/"
+            <MuiLink
+              component={NavLink}
+              to="/"
+              end
               color="inherit"
               underline="hover"
               sx={{
@@ -90,28 +124,28 @@ const Footer = () => {
               itemProp="copyrightHolder"
             >
               Insight Web Solutions
-            </Link>
+            </MuiLink>
             . All rights reserved.
           </Typography>
 
           {/* Legal Links */}
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2} fontSize="0.8125rem">
-            <Link
+            <MuiLink
               href="/privacy"
               color="inherit"
               underline="hover"
               sx={{ "&:focus-visible": { outline: "2px solid white", outlineOffset: "2px" } }}
             >
               Privacy Policy
-            </Link>
-            <Link
+            </MuiLink>
+            <MuiLink
               href="/terms"
               color="inherit"
               underline="hover"
               sx={{ "&:focus-visible": { outline: "2px solid white", outlineOffset: "2px" } }}
             >
               Terms of Service
-            </Link>
+            </MuiLink>
           </Stack>
         </Stack>
       </Container>

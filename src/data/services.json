@@ -2,31 +2,43 @@
   {
     "title": "Web Development",
     "description": "Custom, responsive websites built with modern technologies for seamless desktop, tablet, and mobile experiences.",
+    "price": "$500–$2,500",
     "icon": "Web"
   },
   {
-    "title": "Accessibility Audits & Improvements",
-    "description": "Ensure your website is inclusive with WCAG-compliant audits and tailored improvements for all users.",
+    "title": "Accessibility Audit & Optimization",
+    "description": "Ensure your website is inclusive with WCAG-compliant audits, remediation, and ongoing optimization for all users.",
+    "price": "$1,000–$2,500",
     "icon": "Accessibility"
   },
   {
-    "title": "SEO Audits",
+    "title": "SEO Audit",
     "description": "Optimize your site for search engines to drive traffic and improve visibility.",
+    "price": "$500–$1,200",
+    "icon": "Search"
+  },
+  {
+    "title": "SEO Optimization",
+    "description": "Ongoing keyword research, content strategy, and technical SEO to boost rankings and conversions.",
+    "price": "$800–$2,000",
     "icon": "Search"
   },
   {
     "title": "UX Improvements",
     "description": "Enhance user experience with data-driven, responsive designs for all devices.",
+    "price": "$800–$1,800",
     "icon": "DesignServices"
   },
   {
-    "title": "Data Analytics",
-    "description": "Unlock actionable insights with performance tracking, user behavior analysis, and custom dashboards.",
-    "icon": "Analytics"
+    "title": "Excel & Custom Analytics",
+    "description": "Unlock actionable insights with Excel analysis, custom dashboards, and performance tracking.",
+    "price": "$600–$1,800",
+    "icon": "BarChart"
   },
   {
     "title": "Portfolio Building",
     "description": "Launch a professional, responsive portfolio in 7 days. SEO-optimized, WCAG-compliant, and built to convert.",
+    "price": "$600–$1,200",
     "icon": "Collections"
   }
 ]
