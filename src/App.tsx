@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { ThemeProvider, CssBaseline, Box } from "@mui/material";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-import { Link } from "react-scroll";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import theme from "./theme";
 import Navbar from "./components/Navbar";
 import Hero from "./sections/Hero";
@@ -20,80 +20,111 @@ const App = () => {
     <HelmetProvider>
       <ThemeProvider theme={theme}>
         <CssBaseline />
+
+        {/* GLOBAL SEO & META */}
         <Helmet>
           <html lang="en" />
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta name="theme-color" content={theme.palette.primary.main} />
-          
-          {/* Primary SEO */}
-          <title>Insight Web Solutions | Web Development, Accessibility, SEO & UX</title>
-          <meta
-            name="description"
-            content="Professional web development, WCAG-compliant accessibility, SEO, UX design, and data analytics. Build fast, accessible, high-converting websites."
-          />
           <link rel="canonical" href="https://insightwebsolutions.com" />
-
-          {/* Open Graph / Social */}
-          <meta property="og:title" content="Insight Web Solutions" />
-          <meta
-            property="og:description"
-            content="Web development, accessibility, SEO, and UX by Nichole McGrew."
-          />
-          <meta property="og:type" content="website" />
-          <meta property="og:url" content="https://insightwebsolutions.com" />
-          <meta property="og:image" content="https://insightwebsolutions.com/og-image.jpg" />
-          <meta property="og:site_name" content="Insight Web Solutions" />
-
-          {/* Twitter */}
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content="Insight Web Solutions" />
-          <meta name="twitter:description" content="Web dev, accessibility, SEO, UX." />
-          <meta name="twitter:image" content="https://insightwebsolutions.com/og-image.jpg" />
-
-          {/* Favicon */}
-          <link rel="icon" href="/favicon.ico" />
-          <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-          <link rel="manifest" href="/site.webmanifest" />
-
-          {/* Smooth Scroll */}
           <style>{`html { scroll-behavior: smooth; }`}</style>
         </Helmet>
 
-        {/* SKIP LINK — MUST BE FIRST TABBABLE */}
+        {/* SKIP LINK — ONLY HERE */}
         <Box
           component="a"
           href="#main-content"
           sx={{
-            position: "absolute",
+            position: "fixed",
             top: -9999,
             left: -9999,
-            bg: "white",
+            bg: "background.paper",
             color: "primary.main",
             p: 2,
             fontWeight: 600,
             zIndex: theme.zIndex.appBar + 2,
             borderRadius: 1,
             boxShadow: 3,
+            transition: "all 0.2s ease",
             "&:focus": {
               top: 16,
               left: 16,
+              outline: "3px solid",
+              outlineColor: "secondary.main",
             },
           }}
+          tabIndex={0}
+          aria-label="Skip to main content"
         >
           Skip to main content
         </Box>
 
-        <main id="main-content" tabIndex={-1}>
+        <BrowserRouter>
           <Navbar />
-          <Hero />
-          <Services setSelectedService={setSelectedService} />
-          <Portfolio />
-          <PricingPage />
-          <About />
-          <Contact selectedService={selectedService} />
-          <Footer />
-        </main>
+
+          <Routes>
+            {/* HOMEPAGE */}
+            <Route
+              path="/"
+              element={
+                <>
+                  <Helmet>
+                    <title>Insight Web Solutions | Web Development, Accessibility, SEO</title>
+                    <meta
+                      name="description"
+                      content="Professional web development, WCAG-compliant accessibility, SEO, UX, and data analytics. Build fast, inclusive, high-converting websites."
+                    />
+                  </Helmet>
+
+                  <main id="main-content" tabIndex={-1}>
+                    <Hero />
+                    <Services setSelectedService={setSelectedService} />
+                    <Portfolio />
+                    <About />
+                    <Contact selectedService={selectedService} />
+                    <Footer />
+                  </main>
+                </>
+              }
+            />
+
+            {/* PRICING PAGE */}
+            <Route
+              path="/pricing"
+              element={
+                <>
+                  <Helmet>
+                    <title>Pricing | Insight Web Solutions</title>
+                    <meta
+                      name="description"
+                      content="Transparent pricing for web development, accessibility audits, SEO, UX, and analytics. Choose the plan that fits your goals."
+                    />
+                    <link rel="canonical" href="https://insightwebsolutions.com/pricing" />
+                  </Helmet>
+
+                  <main id="main-content" tabIndex={-1}>
+                    <PricingPage />
+                    <Footer />
+                  </main>
+                </>
+              }
+            />
+
+            {/* 404 */}
+            <Route
+              path="*"
+              element={
+                <main id="main-content" style={{ padding: "2rem", textAlign: "center" }}>
+                  <h1>404 - Page Not Found</h1>
+                  <p>
+                    <a href="/">Return Home</a>
+                  </p>
+                </main>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
       </ThemeProvider>
     </HelmetProvider>
   );

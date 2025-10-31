@@ -18,6 +18,7 @@ import {
   Fab,
   Fade,
 } from "@mui/material";
+import { NavLink } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -32,7 +33,7 @@ interface NavItem {
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [showScrollTop, setShowScrollTop] = useState(false); // ← NEW
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -40,7 +41,6 @@ const Navbar = () => {
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
-  // ← SCROLL TO TOP LOGIC
   useEffect(() => {
     const toggleVisibility = () => {
       setShowScrollTop(window.pageYOffset > 300);
@@ -51,6 +51,15 @@ const Navbar = () => {
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleMobileClick = (to: string) => {
+    handleDrawerToggle();
+    if (!to.startsWith("/")) {
+      setTimeout(() => {
+        document.getElementById(to)?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
   };
 
   const drawer = (
@@ -64,17 +73,15 @@ const Navbar = () => {
       <List>
         {navItems.map((item) => (
           <ListItem key={item.label} disablePadding>
-            <ListItemButton
-              onClick={() => {
-                handleDrawerToggle();
-                document
-                  .getElementById(item.to)
-                  ?.scrollIntoView({ behavior: "smooth" });
-              }}
-              sx={{ textAlign: "center" }}
-            >
-              <ListItemText primary={item.label} />
-            </ListItemButton>
+            {item.to.startsWith("/") ? (
+              <ListItemButton component={NavLink} to={item.to} onClick={handleDrawerToggle}>
+                <ListItemText primary={item.label} />
+              </ListItemButton>
+            ) : (
+              <ListItemButton onClick={() => handleMobileClick(item.to)}>
+                <ListItemText primary={item.label} />
+              </ListItemButton>
+            )}
           </ListItem>
         ))}
       </List>
@@ -83,50 +90,7 @@ const Navbar = () => {
 
   return (
     <>
-      {/* SKIP LINK */}
-      <Box
-        sx={{
-          position: "fixed",
-          top: 0,
-          left: -9999,
-          zIndex: theme.zIndex.appBar + 1,
-          "&:focus-within": { left: 8, top: 8 },
-        }}
-      >
-        <Link
-          to="main-content"
-          smooth
-          duration={500}
-          tabIndex={0}
-          style={{
-            position: "fixed",
-            top: -9999,
-            left: -9999,
-            background: "white",
-            color: "#1976d2",
-            padding: "8px 12px",
-            fontWeight: 600,
-            zIndex: 9999,
-            borderRadius: "4px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-          }}
-          onFocus={(e) => {
-            e.target.style.top = "16px";
-            e.target.style.left = "16px";
-          }}
-          onBlur={(e) => {
-            e.target.style.top = "-9999px";
-            e.target.style.left = "-9999px";
-          }}
-        >
-          Skip to main content
-        </Link>
-      </Box>
-
-      <AppBar
-        position="sticky"
-        sx={{ bgcolor: "primary.main", zIndex: theme.zIndex.drawer + 1 }}
-      >
+      <AppBar position="sticky" sx={{ bgcolor: "primary.main", zIndex: theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1, color: "white" }}>
             Insight Web Solutions
@@ -136,43 +100,50 @@ const Navbar = () => {
             <IconButton
               color="inherit"
               aria-label="open menu"
-              aria-controls="mobile-drawer"
-              aria-expanded={mobileOpen}
               onClick={handleDrawerToggle}
             >
               <MenuIcon />
             </IconButton>
           ) : (
-            <Box
-              component="nav"
-              aria-label="Main navigation"
-              sx={{ display: "flex", gap: 2 }}
-            >
+            <Box component="nav" aria-label="Main navigation" sx={{ display: "flex", gap: 2 }}>
               {navItems.map((item) => (
-                <Button
-                  key={item.label}
-                  color="inherit"
-                  component={Link}
-                  to={item.to}
-                  smooth
-                  duration={500}
-                  aria-label={`Go to ${item.label}`}
-                  sx={{
-                    "&:focus-visible": {
-                      outline: "2px solid white",
-                      outlineOffset: "2px",
-                    },
-                  }}
-                >
-                  {item.label}
-                </Button>
+                item.to.startsWith("/") ? (
+                  <Button
+                    key={item.label}
+                    color="inherit"
+                    component={NavLink}
+                    to={item.to}
+                    end
+                    aria-label={`Go to ${item.label}`}
+                    sx={{
+                      "&.active": { fontWeight: 700 },
+                      "&:focus-visible": { outline: "2px solid white", outlineOffset: "2px" },
+                    }}
+                  >
+                    {item.label}
+                  </Button>
+                ) : (
+                  <Button
+                    key={item.label}
+                    color="inherit"
+                    component={Link}
+                    to={item.to}
+                    smooth
+                    duration={500}
+                    aria-label={`Go to ${item.label}`}
+                    sx={{
+                      "&:focus-visible": { outline: "2px solid white", outlineOffset: "2px" },
+                    }}
+                  >
+                    {item.label}
+                  </Button>
+                )
               ))}
             </Box>
           )}
         </Toolbar>
 
         <Drawer
-          id="mobile-drawer"
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
@@ -186,7 +157,6 @@ const Navbar = () => {
         </Drawer>
       </AppBar>
 
-      {/* SCROLL TO TOP BUTTON */}
       <Fade in={showScrollTop}>
         <Fab
           color="secondary"
@@ -199,7 +169,6 @@ const Navbar = () => {
             right: 24,
             zIndex: theme.zIndex.tooltip,
             boxShadow: 6,
-            "&:hover": { transform: "translateY(-2px)" },
           }}
         >
           <KeyboardArrowUpIcon />

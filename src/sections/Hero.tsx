@@ -1,6 +1,7 @@
 // src/sections/Hero.tsx
 import React from "react";
 import { Box, Container, Typography, Button } from "@mui/material";
+import { NavLink } from "react-router-dom";
 
 const Hero = () => {
   return (
@@ -14,7 +15,7 @@ const Hero = () => {
         bgcolor: "primary.main",
         color: "white",
         minHeight: "100dvh",
-        pt: { xs: 10, md: 12 }, // Clear sticky navbar (~64px)
+        pt: { xs: 10, md: 12 },
         pb: { xs: 8, md: 10 },
         textAlign: "center",
         display: "flex",
@@ -68,15 +69,13 @@ const Hero = () => {
             mt: 2,
           }}
         >
+          {/* PRICING BUTTON → /pricing */}
           <Button
             variant="contained"
             color="secondary"
             size="large"
-            href="#pricing"
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
-            }}
+            component={NavLink}
+            to="/pricing"
             aria-label="View pricing plans"
             sx={{
               minWidth: 200,
@@ -92,6 +91,7 @@ const Hero = () => {
             View Pricing Plans
           </Button>
 
+          {/* CONTACT BUTTON → #contact (scroll) */}
           <Button
             variant="contained"
             color="secondary"
