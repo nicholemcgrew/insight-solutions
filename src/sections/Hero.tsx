@@ -9,7 +9,7 @@ const Hero = () => {
         bgcolor: 'primary.main',
         color: 'white',
         minHeight: '100dvh',           // ← NEW: Dynamic viewport (excludes navbar)
-        pt: { xs: 10, md: 12 },        // ← Push content below navbar
+        pt: { xs: 2, md: 5 },        // ← Push content below navbar
         pb: { xs: 6, md: 8 },
         textAlign: 'center',
         display: 'flex',
