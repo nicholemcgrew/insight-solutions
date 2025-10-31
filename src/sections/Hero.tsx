@@ -9,7 +9,7 @@ const Hero: React.FC = () => {
         bgcolor: 'primary.main',
         color: 'white',
         minHeight: { xs: 'calc(100vh - 64px)', md: '80vh' }, // ← PERFECT
-        // py: { xs: 4, md: 6 },                               // ← REDUCED
+        py: { xs: 4, md: 6 },                               // ← REDUCED
         textAlign: 'center',
         display: 'flex',
         alignItems: 'center',
