@@ -8,8 +8,8 @@ const Hero: React.FC = () => {
       sx={{
         bgcolor: 'primary.main',
         color: 'white',
-        minHeight: { xs: '100vh', md: '80vh' }, // Full screen on mobile
-        // py: { xs: , md: 6 },                  // More padding on mobile
+        minHeight: { xs: 'calc(100vh - 64px)', md: '80vh' }, // ← PERFECT
+        py: { xs: 4, md: 6 },                               // ← REDUCED
         textAlign: 'center',
         display: 'flex',
         alignItems: 'center',
@@ -25,13 +25,12 @@ const Hero: React.FC = () => {
           Affordable web development, accessibility, SEO, UX, and data analytics by Insight Web Solutions.
         </Typography>
 
-        {/* CTA 1: Pricing */}
         <Button
           variant="contained"
           color="secondary"
           size="large"
           component="a"
-          href="#pricing"  // ← FIXED: #pricing, not /pricing
+          href="#pricing"
           sx={{ mt: 3, mx: 1 }}
           onClick={(e) => {
             e.preventDefault();
@@ -41,7 +40,6 @@ const Hero: React.FC = () => {
           View Pricing Plans
         </Button>
 
-        {/* CTA 2: Contact */}
         <Button
           variant="contained"
           color="secondary"
