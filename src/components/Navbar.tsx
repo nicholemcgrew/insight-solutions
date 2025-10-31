@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -13,32 +13,33 @@ import {
   ListItemText,
   useMediaQuery,
   useTheme,
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import CloseIcon from '@mui/icons-material/Close';
-import { Link } from 'react-scroll';
+  Divider,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
+import { Link } from "react-scroll";
 
 const navItems = [
-  { label: 'Home', to: 'home' },
-  { label: 'Services', to: 'services' },
-  { label: 'Pricing', to: 'pricing' },
-  { label: 'Portfolio', to: 'portfolio' },
-  { label: 'About', to: 'about' },
-  { label: 'Contact', to: 'contact' },
+  { label: "Home", to: "home" },
+  { label: "Services", to: "services" },
+  { label: "Pricing", to: "pricing" },
+  { label: "Portfolio", to: "portfolio" },
+  { label: "About", to: "about" },
+  { label: "Contact", to: "contact" },
 ];
 
 const Navbar: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md')); // md = 900px; adjust to 'sm' = 600px if needed
+  const isMobile = useMediaQuery(theme.breakpoints.down("md")); // md = 900px; adjust to 'sm' = 600px if needed
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
   const drawer = (
-    <Box sx={{ width: 250, bgcolor: 'background.default' }}>
-      <Toolbar sx={{ justifyContent: 'flex-end' }}>
+    <Box sx={{ width: 250, bgcolor: "background.default" }}>
+      <Toolbar sx={{ justifyContent: "flex-end" }}>
         <IconButton onClick={handleDrawerToggle} aria-label="close drawer">
           <CloseIcon />
         </IconButton>
@@ -52,9 +53,9 @@ const Navbar: React.FC = () => {
                 handleDrawerToggle();
                 // Scroll to section
                 const element = document.getElementById(item.to);
-                element?.scrollIntoView({ behavior: 'smooth' });
+                element?.scrollIntoView({ behavior: "smooth" });
               }}
-              sx={{ textAlign: 'center' }}
+              sx={{ textAlign: "center" }}
             >
               <ListItemText primary={item.label} />
             </ListItemButton>
@@ -65,9 +66,12 @@ const Navbar: React.FC = () => {
   );
 
   return (
-    <AppBar position="sticky" sx={{ bgcolor: 'primary.main', zIndex: theme.zIndex.drawer + 1 }}>
+    <AppBar
+      position="sticky"
+      sx={{ bgcolor: "primary.main", zIndex: theme.zIndex.drawer + 1 }}
+    >
       <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1, color: 'white' }}>
+        <Typography variant="h6" sx={{ flexGrow: 1, color: "white" }}>
           Insight Web Solutions
         </Typography>
         {isMobile ? (
@@ -80,7 +84,7 @@ const Navbar: React.FC = () => {
             <MenuIcon />
           </IconButton>
         ) : (
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: "flex", gap: 2 }}>
             {navItems.map((item) => (
               <Button
                 key={item.label}
@@ -103,9 +107,9 @@ const Navbar: React.FC = () => {
         onClose={handleDrawerToggle}
         ModalProps={{ keepMounted: true }}
         sx={{
-          display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
+          display: { xs: "block", md: "none" },
+          "& .MuiDrawer-paper": {
+            boxSizing: "border-box",
             width: 250,
           },
         }}

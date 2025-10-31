@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Web Development",
+    "description": "Custom, responsive websites built with modern technologies for seamless desktop, tablet, and mobile experiences.",
+    "icon": "Web"
+  },
+  {
+    "title": "Accessibility Audits & Improvements",
+    "description": "Ensure your website is inclusive with WCAG-compliant audits and tailored improvements for all users.",
+    "icon": "Accessibility"
+  },
+  {
+    "title": "SEO Audits",
+    "description": "Optimize your site for search engines to drive traffic and improve visibility.",
+    "icon": "Search"
+  },
+  {
+    "title": "UX Improvements",
+    "description": "Enhance user experience with data-driven, responsive designs for all devices.",
+    "icon": "DesignServices"
+  },
+  {
+    "title": "Data Analytics",
+    "description": "Unlock actionable insights with performance tracking, user behavior analysis, and custom dashboards.",
+    "icon": "Analytics"
+  },
+  {
+    "title": "Portfolio Building",
+    "description": "Launch a professional, responsive portfolio in 7 days. SEO-optimized, WCAG-compliant, and built to convert.",
+    "icon": "Collections"
+  }
+]

@@ -14,57 +14,38 @@ import AccessibilityIcon from "@mui/icons-material/Accessibility";
 import SearchIcon from "@mui/icons-material/Search";
 import DesignServicesIcon from "@mui/icons-material/DesignServices";
 import AnalyticsIcon from "@mui/icons-material/BarChart";
-import CollectionsIcon from "@mui/icons-material/Collections"; // Portfolio icon
+import CollectionsIcon from "@mui/icons-material/Collections";
 
-const services = [
-  {
-    title: "Web Development",
-    description:
-      "Custom, responsive websites built with modern technologies for seamless desktop, tablet, and mobile experiences.",
-    icon: <WebIcon fontSize="large" color="primary" />,
-  },
-  {
-    title: "Accessibility Audits & Improvements",
-    description:
-      "Ensure your website is inclusive with WCAG-compliant audits and tailored improvements for all users.",
-    icon: <AccessibilityIcon fontSize="large" color="primary" />,
-  },
-  {
-    title: "SEO Audits",
-    description:
-      "Optimize your site for search engines to drive traffic and improve visibility.",
-    icon: <SearchIcon fontSize="large" color="primary" />,
-  },
-  {
-    title: "UX Improvements",
-    description:
-      "Enhance user experience with data-driven, responsive designs for all devices.",
-    icon: <DesignServicesIcon fontSize="large" color="primary" />,
-  },
-  {
-    title: "Data Analytics",
-    description:
-      "Unlock actionable insights with performance tracking, user behavior analysis, and custom dashboards.",
-    icon: <AnalyticsIcon fontSize="large" color="primary" />,
-  },
-  {
-    title: "Portfolio Building",
-    description:
-      "Launch a professional, responsive portfolio in 7 days. SEO-optimized, WCAG-compliant, and built to convert.",
-    icon: <CollectionsIcon fontSize="large" color="primary" />,
-  },
-];
+// Import JSON
+import servicesData from "../data/services.json";
 
-const Services: React.FC = () => {
+// Type for JSON
+interface Service {
+  title: string;
+  description: string;
+  icon: "Web" | "Accessibility" | "Search" | "DesignServices" | "Analytics" | "Collections";
+}
+
+interface ServicesProps {
+  setSelectedService: (service: string) => void;
+}
+
+const iconMap = {
+  Web: <WebIcon fontSize="large" color="primary" />,
+  Accessibility: <AccessibilityIcon fontSize="large" color="primary" />,
+  Search: <SearchIcon fontSize="large" color="primary" />,
+  DesignServices: <DesignServicesIcon fontSize="large" color="primary" />,
+  Analytics: <AnalyticsIcon fontSize="large" color="primary" />,
+  Collections: <CollectionsIcon fontSize="large" color="primary" />,
+};
+
+const Services = ({ setSelectedService }: ServicesProps) => {
+  const services: Service[] = servicesData as Service[];
+
   return (
     <Box sx={{ py: 4, bgcolor: "background.default" }} id="services">
       <Container>
-        <Typography
-          variant="h2"
-          align="center"
-          gutterBottom
-          color="text.primary"
-        >
+        <Typography variant="h2" align="center" gutterBottom color="text.primary">
           My Services
         </Typography>
         <Typography
@@ -75,24 +56,19 @@ const Services: React.FC = () => {
           gutterBottom
           color="text.secondary"
         >
-          From responsive web development to portfolio launches — I deliver
-          results that grow your business.
+          From responsive web development to portfolio launches — I deliver results that grow your business.
         </Typography>
 
-        <Grid2 container spacing={4} mt={5}>
+        <Grid2 container spacing={3} mt={2}>
           {services.map((service, index) => (
             <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={index}>
               <ButtonBase
                 onClick={() => {
-                  setSelectedService(service.title)
-                  // Scroll to contact
-                  const element = document.getElementById("contact");
-                  element?.scrollIntoView({ behavior: "smooth" });
-                  // Optional: Pre-fill message (requires state from App)
-                  // e.g., setSelectedService(service.title); in parent state
+                  setSelectedService(service.title);
+                  document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
                 }}
                 sx={{
-                  display: "block", // Full card clickable
+                  display: "block",
                   textAlign: "center",
                   height: "100%",
                   borderRadius: 1,
@@ -103,9 +79,10 @@ const Services: React.FC = () => {
                     bgcolor: "grey.50",
                   },
                 }}
+                role="button"
+                aria-label={`Learn more about ${service.title}`}
               >
                 <Card
-                  role="article"
                   sx={{
                     bgcolor: "white",
                     height: "100%",
@@ -114,21 +91,11 @@ const Services: React.FC = () => {
                     alignItems: "center",
                     textAlign: "center",
                     p: 2,
-                    transition: "transform 0.2s",
-                    "&:hover": {
-                      transform: "translateY(-4px)",
-                      boxShadow: 6,
-                    },
                   }}
                 >
-                  <Box sx={{ mb: 2, mt: 1 }}>{service.icon}</Box>
+                  <Box sx={{ mb: 2, mt: 1 }}>{iconMap[service.icon]}</Box>
                   <CardContent sx={{ flexGrow: 1, p: 0 }}>
-                    <Typography
-                      variant="h6"
-                      gutterBottom
-                      color="text.primary"
-                      fontWeight={600}
-                    >
+                    <Typography variant="h6" gutterBottom color="text.primary" fontWeight={600}>
                       {service.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
