@@ -1,0 +1,46 @@
+[
+  {
+    "name": "Starter",
+    "price": 700,
+    "description": "Perfect for freelancers launching fast",
+    "features": [
+      "1-Page Portfolio",
+      "Mobile Responsive",
+      "SEO Basics",
+      "Formspree Contact Form",
+      "1 Round of Revisions"
+    ],
+    "notIncluded": ["Custom Domain", "Analytics Dashboard"],
+    "popular": false
+  },
+  {
+    "name": "Professional",
+    "price": 1400,
+    "description": "Ideal for growing brands",
+    "features": [
+      "3-Page Site",
+      "Custom Domain Setup",
+      "Advanced SEO",
+      "Google Analytics",
+      "WCAG AA Audit",
+      "2 Rounds of Revisions"
+    ],
+    "notIncluded": [],
+    "popular": true
+  },
+  {
+    "name": "Enterprise",
+    "price": 2400,
+    "description": "Full custom solution",
+    "features": [
+      "5+ Pages",
+      "Custom CMS",
+      "E-commerce Ready",
+      "Full Accessibility Audit",
+      "Ongoing Support",
+      "Unlimited Revisions"
+    ],
+    "notIncluded": [],
+    "popular": false
+  }
+]

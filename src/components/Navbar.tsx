@@ -22,8 +22,8 @@ import { Link } from "react-scroll";
 const navItems = [
   { label: "Home", to: "home" },
   { label: "Services", to: "services" },
-  { label: "Pricing", to: "pricing" },
   { label: "Portfolio", to: "portfolio" },
+  { label: "Pricing", to: "pricing" },
   { label: "About", to: "about" },
   { label: "Contact", to: "contact" },
 ];

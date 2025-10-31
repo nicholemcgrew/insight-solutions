@@ -6,11 +6,11 @@ import theme from './theme';
 import Navbar from './components/Navbar';
 import Hero from './sections/Hero';
 import Services from './sections/Services';
-import Pricing from './sections/Pricing';
 import Portfolio from './sections/Portfolio';
 import About from './sections/About';
 import Contact from './sections/Contact';
 import Footer from './components/Footer';
+import PricingPage from './pages/PricingPage';
 
 const App: React.FC = () => {
   // ← MOVE useState INSIDE the component
@@ -44,9 +44,9 @@ const App: React.FC = () => {
           <Hero />
           {/* ← PASS THE FUNCTION */}
           <Services setSelectedService={setSelectedService} />
-          <Pricing />
           <Portfolio />
           <About />
+          <PricingPage />
           <Contact selectedService={selectedService} />
           <Footer />
         </ThemeProvider>
