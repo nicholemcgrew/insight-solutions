@@ -9,7 +9,7 @@ const Hero: React.FC = () => {
         bgcolor: 'primary.main',
         color: 'white',
         minHeight: { xs: '100vh', md: '80vh' }, // Full screen on mobile
-        py: { xs: 8, md: 6 },                  // More padding on mobile
+        // py: { xs: , md: 6 },                  // More padding on mobile
         textAlign: 'center',
         display: 'flex',
         alignItems: 'center',
