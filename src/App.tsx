@@ -1,8 +1,7 @@
-// src/App.tsx
 import React, { useState } from "react";
 import { ThemeProvider, CssBaseline, Box } from "@mui/material";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-import { Routes, Route } from "react-router-dom"; // ← Only Routes & Route
+import { Routes, Route } from "react-router-dom";
 import theme from "./theme";
 import Navbar from "./components/Navbar";
 import Hero from "./sections/Hero";
@@ -69,7 +68,9 @@ const App = () => {
             element={
               <>
                 <Helmet>
-                  <title>Insight Web Solutions | Web Development, Accessibility, SEO</title>
+                  <title>
+                    Insight Web Solutions | Web Development, Accessibility, SEO
+                  </title>
                   <meta
                     name="description"
                     content="Professional web development, WCAG-compliant accessibility, SEO, UX, and data analytics."
@@ -111,9 +112,14 @@ const App = () => {
           <Route
             path="*"
             element={
-              <main id="main-content" style={{ padding: "2rem", textAlign: "center" }}>
+              <main
+                id="main-content"
+                style={{ padding: "2rem", textAlign: "center" }}
+              >
                 <h1>404 - Page Not Found</h1>
-                <p><a href="/">Return Home</a></p>
+                <p>
+                  <a href="/">Return Home</a>
+                </p>
               </main>
             }
           />

@@ -88,24 +88,16 @@ const PricingPage = () => {
 
                 <CardActions sx={{ p: 3, pt: 0 }}>
                   <Button
-                    variant="contained"
-                    color="secondary"
-                    fullWidth
-                    size="large"
-                    onClick={() => {
-                      const contact = document.getElementById("contact");
-                      if (contact) {
-                        sessionStorage.setItem("selectedService", service.title);
-                        contact.scrollIntoView({ behavior: "smooth" });
-                      } else {
-                        sessionStorage.setItem("selectedService", service.title);
-                        window.location.href = "/#contact";
-                      }
-                    }}
-                    sx={{ py: 1.5, fontWeight: 600, textTransform: "none" }}
-                  >
-                    {service.cta}
-                  </Button>
+  component="a"
+  href="/#contact"
+  variant="contained"
+  color="secondary"
+  fullWidth
+  size="large"
+  sx={{ py: 1.5, fontWeight: 600, textTransform: "none" }}
+>
+  Get Quote
+</Button>
                 </CardActions>
               </Card>
             </Grid2>

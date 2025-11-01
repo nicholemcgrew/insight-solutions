@@ -22,15 +22,19 @@ const Contact = ({ selectedService }: ContactProps) => {
     nameInputRef.current?.focus();
   }, []);
 
-  // Update message if service selected
+  // Pre-fill from URL on mount
   useEffect(() => {
-    if (selectedService) {
+    const url = new URL(window.location.href);
+    const service = url.searchParams.get("service");
+    if (service) {
       setFormData(prev => ({
         ...prev,
-        message: `Interested in ${selectedService}. Please provide more details.`
+        message: `Interested in ${decodeURIComponent(service)}. Please provide more details.`
       }));
+      // Clean URL
+      window.history.replaceState({}, "", "/#contact");
     }
-  }, [selectedService]);
+  }, []);
 
   const validateForm = () => {
     const newErrors = { name: '', email: '', message: '' };
