@@ -19,7 +19,6 @@ import {
   Fade,
 } from "@mui/material";
 import { NavLink, useLocation } from "react-router-dom";
-import { Link as ScrollLink } from "react-scroll";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -42,22 +41,36 @@ const Navbar = () => {
 
   const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
 
-  // Scroll-to-top button visibility
+  // Scroll-to-top button
   useEffect(() => {
-    const toggleVisibility = () => {
-      setShowScrollTop(window.pageYOffset > 300);
-    };
+    const toggleVisibility = () => setShowScrollTop(window.pageYOffset > 300);
     window.addEventListener("scroll", toggleVisibility);
     return () => window.removeEventListener("scroll", toggleVisibility);
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   const isPricingPage = location.pathname === "/pricing";
 
-  // Mobile drawer content
+  // Shared scroll handler
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleNavClick = (to: string) => {
+    if (to === "home") {
+      window.location.href = "/";
+    } else if (location.pathname !== "/") {
+      window.location.href = `/#${to}`;
+    } else {
+      scrollToSection(to);
+    }
+  };
+
+  // Mobile drawer
   const drawer = (
     <Box sx={{ width: 250, bgcolor: "background.default" }}>
       <Toolbar sx={{ justifyContent: "flex-end" }}>
@@ -69,7 +82,6 @@ const Navbar = () => {
       <List>
         {navItems.map((item) => {
           const isPricing = item.to === "/pricing";
-          const isHome = item.to === "home";
 
           return (
             <ListItem key={item.label} disablePadding>
@@ -94,15 +106,7 @@ const Navbar = () => {
                 <ListItemButton
                   onClick={() => {
                     handleDrawerToggle();
-                    if (isHome) {
-                      window.location.href = "/";
-                    } else if (location.pathname !== "/") {
-                      window.location.href = `/#${item.to}`;
-                    } else {
-                      setTimeout(() => {
-                        document.getElementById(item.to)?.scrollIntoView({ behavior: "smooth" });
-                      }, 100);
-                    }
+                    handleNavClick(item.to);
                   }}
                   sx={{ textAlign: "center" }}
                 >
@@ -150,7 +154,6 @@ const Navbar = () => {
             >
               {navItems.map((item) => {
                 const isPricing = item.to === "/pricing";
-                const isHome = item.to === "home";
 
                 return isPricing ? (
                   <Button
@@ -162,14 +165,8 @@ const Navbar = () => {
                     sx={{
                       fontWeight: 500,
                       textTransform: "none",
-                      "&.active": {
-                        fontWeight: 700,
-                        color: "secondary.main",
-                      },
-                      "&:focus-visible": {
-                        outline: "2px solid white",
-                        outlineOffset: "2px",
-                      },
+                      "&.active": { fontWeight: 700, color: "secondary.main" },
+                      "&:focus-visible": { outline: "2px solid white", outlineOffset: 2 },
                     }}
                   >
                     {item.label}
@@ -178,26 +175,12 @@ const Navbar = () => {
                   <Button
                     key={item.label}
                     color="inherit"
-                    component={ScrollLink}
-                    to={item.to}
-                    smooth
-                    duration={500}
-                    offset={-80}
-                    onClick={() => {
-                      if (isHome) {
-                        window.location.href = "/";
-                      } else if (location.pathname !== "/") {
-                        window.location.href = `/#${item.to}`;
-                      }
-                    }}
+                    onClick={() => handleNavClick(item.to)}
                     sx={{
                       fontWeight: 500,
                       textTransform: "none",
                       cursor: "pointer",
-                      "&:focus-visible": {
-                        outline: "2px solid white",
-                        outlineOffset: "2px",
-                      },
+                      "&:focus-visible": { outline: "2px solid white", outlineOffset: 2 },
                     }}
                   >
                     {item.label}
@@ -208,7 +191,6 @@ const Navbar = () => {
           )}
         </Toolbar>
 
-        {/* Mobile Drawer */}
         <Drawer
           variant="temporary"
           open={mobileOpen}
@@ -223,7 +205,6 @@ const Navbar = () => {
         </Drawer>
       </AppBar>
 
-      {/* Scroll to Top Button */}
       <Fade in={showScrollTop}>
         <Fab
           color="secondary"

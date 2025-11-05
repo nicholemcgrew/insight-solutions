@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ThemeProvider, CssBaseline, Box } from "@mui/material";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Routes, Route } from "react-router-dom";
-import theme from "./theme";
+import theme from "./theme/theme";
 import Navbar from "./components/Navbar";
 import Hero from "./sections/Hero";
 import Services from "./sections/Services";
@@ -78,10 +78,10 @@ const App = () => {
                 </Helmet>
                 <main id="main-content" tabIndex={-1}>
                   <Hero />
-                  <Services setSelectedService={setSelectedService} />
+                  <Services />
                   <Portfolio />
                   <About />
-                  <Contact selectedService={selectedService} />
+                  <Contact />
                   <Footer />
                 </main>
               </>

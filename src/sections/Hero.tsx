@@ -93,14 +93,11 @@ const Hero = () => {
 
           {/* CONTACT BUTTON → #contact (scroll) */}
           <Button
+          component="a"
             variant="contained"
             color="secondary"
             size="large"
-            href="#contact"
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-            }}
+            // href="/?cta=true#contact"
             aria-label="Get started with a free consultation"
             sx={{
               minWidth: 200,

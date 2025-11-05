@@ -12,6 +12,7 @@ const About = () => {
       sx={{
         py: { xs: 8, md: 10 },
         bgcolor: "background.default",
+        scrollMarginTop: { xs: 70, md: 90 },
       }}
       itemScope
       itemType="https://schema.org/Person"

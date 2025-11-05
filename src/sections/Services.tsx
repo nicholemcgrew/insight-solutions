@@ -13,7 +13,7 @@ import WebIcon from "@mui/icons-material/Web";
 import AccessibilityIcon from "@mui/icons-material/Accessibility";
 import SearchIcon from "@mui/icons-material/Search";
 import DesignServicesIcon from "@mui/icons-material/DesignServices";
-import AnalyticsIcon from "@mui/icons-material/BarChart";
+import BarChartIcon from "@mui/icons-material/BarChart";
 import CollectionsIcon from "@mui/icons-material/Collections";
 
 import servicesData from "../data/services.json";
@@ -21,11 +21,13 @@ import servicesData from "../data/services.json";
 interface Service {
   title: string;
   description: string;
-  icon: "Web" | "Accessibility" | "Search" | "DesignServices" | "Analytics" | "Collections";
-}
-
-interface ServicesProps {
-  setSelectedService: (service: string) => void;
+  icon:
+    | "Web"
+    | "Accessibility"
+    | "Search"
+    | "DesignServices"
+    | "BarChart"
+    | "Collections";
 }
 
 const iconMap = {
@@ -33,11 +35,11 @@ const iconMap = {
   Accessibility: <AccessibilityIcon fontSize="large" color="primary" />,
   Search: <SearchIcon fontSize="large" color="primary" />,
   DesignServices: <DesignServicesIcon fontSize="large" color="primary" />,
-  Analytics: <AnalyticsIcon fontSize="large" color="primary" />,
+  BarChart: <BarChartIcon fontSize="large" color="primary" />,
   Collections: <CollectionsIcon fontSize="large" color="primary" />,
 };
 
-const Services = ({ setSelectedService }: ServicesProps) => {
+const Services = () => {
   const services: Service[] = servicesData as Service[];
 
   return (
@@ -48,7 +50,7 @@ const Services = ({ setSelectedService }: ServicesProps) => {
       tabIndex={-1}
       sx={{
         py: { xs: 8, md: 10 },
-        bgcolor: "background.default",
+        bgcolor: "background.default", scrollMarginTop: { xs: 70, md: 90 },
       }}
       itemScope
       itemType="https://schema.org/ItemList"
@@ -75,7 +77,8 @@ const Services = ({ setSelectedService }: ServicesProps) => {
           color="text.secondary"
           itemProp="description"
         >
-          From responsive web development to portfolio launches — I deliver results that grow your business.
+          From responsive web development to portfolio launches — I deliver
+          results that grow your business.
         </Typography>
 
         <Box
@@ -94,10 +97,7 @@ const Services = ({ setSelectedService }: ServicesProps) => {
               >
                 <ButtonBase
                   onClick={() => {
-                    setSelectedService(service.title);
-                    document
-                      document.getElementById("contact")
-                      ?.scrollIntoView({ behavior: "smooth" });
+                    // window.location.href = `/?cta=true&service=${encodeURIComponent(service.title)}#contact`;
                   }}
                   sx={{
                     display: "block",
@@ -140,7 +140,9 @@ const Services = ({ setSelectedService }: ServicesProps) => {
                   >
                     <Box sx={{ mb: 2 }}>{iconMap[service.icon]}</Box>
 
-                    <CardContent sx={{ flexGrow: 1, p: 0, textAlign: "center" }}>
+                    <CardContent
+                      sx={{ flexGrow: 1, p: 0, textAlign: "center" }}
+                    >
                       <Typography
                         variant="h6"
                         gutterBottom

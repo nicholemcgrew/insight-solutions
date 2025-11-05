@@ -1,0 +1,20 @@
+[
+  {
+    "title": "EPA Energy Star Product Finder",
+    "description": "Full-stack rebuild for the U.S. EPA using React, TypeScript, and Vite. WCAG 2.2 AA compliant with Figma-driven UI, REST API integration, and optimized SEO/performance.",
+    "role": "Sole Developer – Full Rebuild",
+    "tech": ["React", "TypeScript", "Vite", "Figma", "REST API", "WCAG 2.2"],
+    "link": "https://www.energystar.gov/productfinder/",
+    "desktop": "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=800&h=600&fit=crop",
+    "mobile": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=300&h=600&fit=crop"
+  },
+  {
+    "title": "Personal Portfolio (Template)",
+    "description": "A responsive, mobile-first portfolio showcasing UX/UI design. Optimized for SEO, accessibility, and performance.",
+    "role": "Designer & Developer",
+    "tech": ["React", "CSS", "Responsive", "SEO", "WCAG"],
+    "link": "https://nicholemcgrew.netlify.app/",
+    "desktop": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop",
+    "mobile": "https://images.unsplash.com/photo-1519389950473-47ba0f5d4d9d?w=300&h=600&fit=crop"
+  }
+]

@@ -87,9 +87,9 @@ const PricingPage = () => {
                 </CardContent>
 
                 <CardActions sx={{ p: 3, pt: 0 }}>
-                  <Button
+         <Button
   component="a"
-  href="/#contact"
+  // href={`/?cta=true&service=${encodeURIComponent(service.title)}#contact`}
   variant="contained"
   color="secondary"
   fullWidth
