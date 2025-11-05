@@ -1,20 +1,40 @@
 [
   {
-    "title": "EPA Energy Star Product Finder",
-    "description": "Full-stack rebuild for the U.S. EPA using React, TypeScript, and Vite. WCAG 2.2 AA compliant with Figma-driven UI, REST API integration, and optimized SEO/performance.",
-    "role": "Sole Developer – Full Rebuild",
-    "tech": ["React", "TypeScript", "Vite", "Figma", "REST API", "WCAG 2.2"],
+    "title": "EPA ENERGY STAR Product Finder",
+    "description": "Led the full-stack modernization of the U.S. EPA’s flagship product search tool. Rebuilt from legacy code into a scalable, high-performance React + TypeScript app with Figma-aligned UI, REST API integration, WCAG 2.2 AA compliance, and optimized SEO, load speed, and responsiveness.",
+    "role": "Full-Stack Modernization Lead",
+    "tech": [
+      "React",
+      "TypeScript",
+      "Vite",
+      "Figma",
+      "REST API",
+      "WCAG 2.2",
+      "SEO",
+      "Performance",
+      "Responsive",
+      "State Management",
+      "Reusable Components",
+      "CI/CD"
+    ],
     "link": "https://www.energystar.gov/productfinder/",
-    "desktop": "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=800&h=600&fit=crop",
-    "mobile": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=300&h=600&fit=crop"
+    "desktop": "https://www.energystar.gov/sites/default/files/styles/hero_image/public/2023-06/Product%20Finder%20Hero%20Image.png?itok=5z5z5z5z",
+    "mobile": "https://www.energystar.gov/sites/default/files/styles/mobile_hero/public/2023-06/Product%20Finder%20Mobile.png?itok=6a6a6a6a"
   },
   {
-    "title": "Personal Portfolio (Template)",
-    "description": "A responsive, mobile-first portfolio showcasing UX/UI design. Optimized for SEO, accessibility, and performance.",
+    "title": "My Personal Portfolio",
+    "description": "My live portfolio built with React, TypeScript, and MUI. Fully responsive, SEO-optimized, WCAG-compliant, and designed to convert leads.",
     "role": "Designer & Developer",
-    "tech": ["React", "CSS", "Responsive", "SEO", "WCAG"],
+    "tech": [
+      "React",
+      "TypeScript",
+      "MUI",
+      "SEO",
+      "WCAG",
+      "Responsive"
+    ],
     "link": "https://nicholemcgrew.netlify.app/",
-    "desktop": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop",
-    "mobile": "https://images.unsplash.com/photo-1519389950473-47ba0f5d4d9d?w=300&h=600&fit=crop"
+    "desktop": "portfolioImg",
+    "mobile": "portfolioImg"
   }
 ]
