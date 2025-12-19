@@ -18,8 +18,8 @@
       "CI/CD"
     ],
     "link": "https://www.energystar.gov/productfinder/",
-    "desktop": "https://www.energystar.gov/sites/default/files/styles/hero_image/public/2023-06/Product%20Finder%20Hero%20Image.png?itok=5z5z5z5z",
-    "mobile": "https://www.energystar.gov/sites/default/files/styles/mobile_hero/public/2023-06/Product%20Finder%20Mobile.png?itok=6a6a6a6a"
+    "desktop": "/images/projects/energy-star-desktop.png",
+    "mobile": "/images/projects/energy-star-mobile.png"
   },
   {
     "title": "My Personal Portfolio",
@@ -34,7 +34,7 @@
       "Responsive"
     ],
     "link": "https://nicholemcgrew.netlify.app/",
-    "desktop": "portfolioImg",
-    "mobile": "portfolioImg"
+    "desktop": "/images/projects/portfolio.png",
+    "mobile": "/images/projects/portfolio.png"
   }
 ]

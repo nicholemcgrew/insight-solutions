@@ -4,11 +4,12 @@ import {
   Box,
   Container,
   Typography,
-  Grid2,
   Card,
   CardContent,
   ButtonBase,
+  Stack,
 } from "@mui/material";
+import Grid2 from "@mui/material/Grid2";
 import WebIcon from "@mui/icons-material/Web";
 import AccessibilityIcon from "@mui/icons-material/Accessibility";
 import SearchIcon from "@mui/icons-material/Search";
@@ -30,7 +31,7 @@ interface Service {
     | "Collections";
 }
 
-const iconMap = {
+const iconMap: Record<Service["icon"], React.ReactNode> = {
   Web: <WebIcon fontSize="large" color="primary" />,
   Accessibility: <AccessibilityIcon fontSize="large" color="primary" />,
   Search: <SearchIcon fontSize="large" color="primary" />,
@@ -42,6 +43,13 @@ const iconMap = {
 const Services = () => {
   const services: Service[] = servicesData as Service[];
 
+  const goToContactWithService = (serviceTitle: string) => {
+    // Keeps your current behavior (works from any route)
+    window.location.href = `/?cta=true&service=${encodeURIComponent(
+      serviceTitle
+    )}#contact`;
+  };
+
   return (
     <Box
       component="section"
@@ -49,8 +57,9 @@ const Services = () => {
       aria-labelledby="services-heading"
       tabIndex={-1}
       sx={{
-        py: { xs: 8, md: 10 },
-        bgcolor: "background.default", scrollMarginTop: { xs: 70, md: 90 },
+        py: { xs: 9, md: 12 },
+        bgcolor: "background.default",
+        scrollMarginTop: { xs: 84, md: 104 },
       }}
       itemScope
       itemType="https://schema.org/ItemList"
@@ -58,117 +67,157 @@ const Services = () => {
       <Container maxWidth="lg">
         <Typography
           id="services-heading"
+          component="h2"
           variant="h2"
           align="center"
-          gutterBottom
-          color="text.primary"
-          sx={{ fontWeight: 700, mb: 3 }}
+          sx={{
+            fontWeight: 900,
+            letterSpacing: 0.2,
+            fontSize: { xs: "2.1rem", sm: "2.6rem", md: "3.1rem" },
+            lineHeight: 1.12,
+            mb: 2.5,
+          }}
           itemProp="name"
         >
-          My Services
+          Services
         </Typography>
 
         <Typography
-          variant="body1"
+          component="p"
           align="center"
-          maxWidth="800px"
-          mx="auto"
-          paragraph
-          color="text.secondary"
+          sx={{
+            color: "text.secondary",
+            maxWidth: 900,
+            mx: "auto",
+            fontSize: { xs: "1.1rem", sm: "1.15rem" },
+            lineHeight: 1.7,
+            mb: { xs: 3, md: 4 },
+          }}
           itemProp="description"
         >
-          From responsive web development to portfolio launches — I deliver
-          results that grow your business.
+          Big, modern, mobile-first builds—plus accessibility, SEO, and UX upgrades that make your site easier to use
+          and easier to find.
         </Typography>
 
-        <Box
-          component="ul"
+        <Grid2
+          container
+          spacing={{ xs: 3, md: 4 }}
           role="list"
           aria-label="Available services"
-          sx={{ listStyle: "none", p: 0, m: 0 }}
+          sx={{ m: 0 }}
         >
-          <Grid2 container spacing={{ xs: 3, md: 4 }} component="li">
-            {services.map((service, index) => (
-              <Grid2
-                size={{ xs: 12, sm: 6, md: 4 }}
-                key={index}
-                component="li"
-                role="listitem"
+          {services.map((service, index) => (
+            <Grid2
+              key={`${service.title}-${index}`}
+              size={{ xs: 12, sm: 6, md: 4 }}
+              role="listitem"
+              itemProp="itemListElement"
+              itemScope
+              itemType="https://schema.org/Service"
+            >
+              <ButtonBase
+                onClick={() => goToContactWithService(service.title)}
+                sx={(t) => ({
+                  display: "block",
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: 3,
+                  textAlign: "left",
+                  transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                  "&:hover": {
+                    transform: "translateY(-6px)",
+                  },
+                  "&:focus-visible": {
+                    outline: `3px solid ${t.palette.primary.main}`,
+                    outlineOffset: 3,
+                    borderRadius: 3,
+                  },
+                })}
+                aria-label={`Select ${service.title} and go to the contact form`}
               >
-                <ButtonBase
-                  onClick={() => {
-                    // window.location.href = `/?cta=true&service=${encodeURIComponent(service.title)}#contact`;
-                  }}
-                  sx={{
-                    display: "block",
-                    textAlign: "center",
+                <Card
+                  elevation={0}
+                  sx={(t) => ({
                     height: "100%",
-                    width: "100%",
-                    borderRadius: 2,
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      transform: "translateY(-6px)",
-                      boxShadow: 8,
+                    bgcolor: "background.paper",
+                    border: `1px solid ${t.palette.divider}`,
+                    borderRadius: 3,
+                    overflow: "hidden",
+                    boxShadow: 2,
+                    transition: "inherit",
+                    "&:hover": { boxShadow: 10 },
+                    "&:focus-within": {
+                      outline: `3px solid ${t.palette.primary.main}`,
+                      outlineOffset: 2,
                     },
-                    "&:focus-visible": {
-                      outline: "3px solid",
-                      outlineColor: "secondary.main",
-                      outlineOffset: "2px",
-                    },
-                  }}
-                  aria-label={`Select ${service.title} service and go to contact form`}
-                  itemProp="itemListElement"
-                  itemScope
-                  itemType="https://schema.org/Service"
+                  })}
                 >
-                  <Card
-                    elevation={0}
-                    sx={{
-                      height: "100%",
-                      minHeight: { xs: 220, md: 240 },
-                      bgcolor: "background.paper",
-                      border: "1px solid",
-                      borderColor: "divider",
-                      borderRadius: 3,
-                      boxShadow: 1,
-                      p: 3,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      transition: "inherit",
-                    }}
-                  >
-                    <Box sx={{ mb: 2 }}>{iconMap[service.icon]}</Box>
+                  <CardContent sx={{ p: { xs: 3, md: 3.5 } }}>
+                    <Stack spacing={2} alignItems="center" textAlign="center">
+                      <Box
+                        aria-hidden="true"
+                        sx={(t) => ({
+                          width: 64,
+                          height: 64,
+                          borderRadius: 2.5,
+                          display: "grid",
+                          placeItems: "center",
+                          bgcolor: `${t.palette.primary.main}14`,
+                        })}
+                      >
+                        {iconMap[service.icon]}
+                      </Box>
 
-                    <CardContent
-                      sx={{ flexGrow: 1, p: 0, textAlign: "center" }}
-                    >
                       <Typography
-                        variant="h6"
-                        gutterBottom
-                        color="text.primary"
-                        fontWeight={700}
-                        sx={{ mb: 1 }}
+                        component="h3"
+                        variant="h5"
+                        sx={{
+                          fontWeight: 900,
+                          fontSize: { xs: "1.35rem", sm: "1.45rem" },
+                          lineHeight: 1.2,
+                          color: "text.primary",
+                        }}
                         itemProp="name"
                       >
                         {service.title}
                       </Typography>
 
                       <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ lineHeight: 1.6 }}
+                        variant="body1"
+                        sx={{
+                          color: "text.secondary",
+                          fontSize: { xs: "1.05rem", sm: "1.1rem" },
+                          lineHeight: 1.8,
+                        }}
                         itemProp="description"
                       >
                         {service.description}
                       </Typography>
-                    </CardContent>
-                  </Card>
-                </ButtonBase>
-              </Grid2>
-            ))}
-          </Grid2>
-        </Box>
+
+                      <Typography
+                        component="span"
+                        sx={(t) => ({
+                          mt: 0.5,
+                          fontWeight: 900,
+                          fontSize: { xs: "1.02rem", sm: "1.05rem" },
+                          color: "secondary.main",
+                          textDecoration: "underline",
+                          textUnderlineOffset: 4,
+                          "&:focus-visible": {
+                            outline: `3px solid ${t.palette.primary.main}`,
+                            outlineOffset: 3,
+                          },
+                        })}
+                      >
+                        Get a quote →
+                      </Typography>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </ButtonBase>
+            </Grid2>
+          ))}
+        </Grid2>
       </Container>
     </Box>
   );
