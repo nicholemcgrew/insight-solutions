@@ -88,7 +88,7 @@ const Hero = () => {
           alignItems: "center",
         }}
       >
-        <Container maxWidth={false} disableGutters sx={{ px: { xs: 2, sm: 3, md: 6 }, overflow: "clip", }}>
+        <Container  maxWidth={false} disableGutters sx={{ px: { xs: 2, sm: 3, md: 6 } }}>
           <Box sx={{ maxWidth: 1200, mx: "auto", width: "100%" }}>
             <Stack
               spacing={{ xs: 1.6, md: 2.2 }}

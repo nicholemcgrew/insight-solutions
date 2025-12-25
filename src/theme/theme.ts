@@ -35,11 +35,9 @@ const theme = createTheme({
       styleOverrides: {
         html: {
           overflowX: "hidden",
-          width: "100%",
         },
         body: {
           overflowX: "hidden",
-          width: "100%",
           margin: 0,
           textRendering: "optimizeLegibility",
           WebkitFontSmoothing: "antialiased",
@@ -51,17 +49,7 @@ const theme = createTheme({
           minHeight: "100dvh",
           display: "flex",
           flexDirection: "column",
-          width: "100%",
         },
-
-        // defensive: nothing should force horizontal scroll
-        "img, svg, video, canvas": {
-          maxWidth: "100%",
-        },
-        "*": {
-          boxSizing: "border-box",
-        },
-
         "*:focus-visible": {
           outline: "3px solid #14B8A6",
           outlineOffset: "3px",
@@ -74,7 +62,6 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           width: "100%",
-          maxWidth: "100%",
           paddingLeft: "clamp(16px, 4vw, 80px)",
           paddingRight: "clamp(16px, 4vw, 80px)",
         },
