@@ -1,4 +1,3 @@
-// src/pages/PricingPage.tsx
 import React from "react";
 import {
   Box,
@@ -18,8 +17,8 @@ import AccessibilityIcon from "@mui/icons-material/Accessibility";
 import SearchIcon from "@mui/icons-material/Search";
 import DesignServicesIcon from "@mui/icons-material/DesignServices";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import CollectionsIcon from "@mui/icons-material/Collections";
-import SupportIcon from "@mui/icons-material/Support";
+import CollectionsIcon from "@mui/icons-material/CollectionsBookmark";
+import SupportIcon from "@mui/icons-material/SupportAgent";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 import pricingData from "../data/pricing.json";
@@ -55,10 +54,10 @@ const PricingPage = () => {
       sx={{
         py: { xs: 8, md: 12 },
         bgcolor: "background.default",
+        overflowX: "hidden",
       }}
     >
       <Container maxWidth="lg">
-        {/* SEO/508: real page heading */}
         <Typography
           id="pricing-heading"
           component="h1"
@@ -89,10 +88,10 @@ const PricingPage = () => {
             mb: { xs: 4, md: 6 },
           }}
         >
-          Clear, fair pricing for every service. No surprises — just results.
+          Clear, fair pricing for small businesses and beginners. No surprises — just results.
         </Typography>
 
-        <Grid2 container spacing={{ xs: 3, md: 4 }} justifyContent="center">
+        <Grid2 container spacing={{ xs: 3, md: 4 }} justifyContent="center" sx={{ width: "100%", m: 0 }}>
           {services.map((service, index) => {
             const IconComponent = iconMap[service.icon as IconKey] ?? WebIcon;
 
@@ -116,13 +115,12 @@ const PricingPage = () => {
                       transform: "translateY(-6px)",
                     },
                     "&:focus-within": {
-                      outline: `3px solid ${t.palette.primary.main}`,
+                      outline: `3px solid ${t.palette.secondary.main}`,
                       outlineOffset: 3,
                     },
                   })}
                 >
                   <CardContent sx={{ flexGrow: 1, p: { xs: 3, md: 3.5 } }}>
-                    {/* Icon */}
                     <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
                       <Box
                         sx={(t) => ({
@@ -139,7 +137,6 @@ const PricingPage = () => {
                       </Box>
                     </Box>
 
-                    {/* Title */}
                     <Typography
                       component="h2"
                       variant="h5"
@@ -150,12 +147,12 @@ const PricingPage = () => {
                         fontSize: { xs: "1.35rem", sm: "1.45rem" },
                         lineHeight: 1.2,
                         mb: 1,
+                        overflowWrap: "anywhere",
                       }}
                     >
                       {service.title}
                     </Typography>
 
-                    {/* Price */}
                     <Typography
                       variant="h3"
                       align="center"
@@ -172,27 +169,21 @@ const PricingPage = () => {
 
                     <Divider sx={{ my: 2 }} />
 
-                    {/* Description */}
                     <Typography
                       variant="body1"
                       align="center"
                       sx={{
                         color: "text.secondary",
-                        fontSize: { xs: "1.05rem", sm: "1.1rem" },
+                        fontSize: { xs: "1.02rem", sm: "1.08rem" },
                         lineHeight: 1.7,
                         mb: 2.5,
+                        overflowWrap: "anywhere",
                       }}
                     >
                       {service.description}
                     </Typography>
 
-                    {/* CTA text (from JSON) as a benefit line */}
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      alignItems="flex-start"
-                      sx={{ maxWidth: 420, mx: "auto" }}
-                    >
+                    <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ maxWidth: 420, mx: "auto" }}>
                       <CheckCircleIcon color="secondary" sx={{ mt: "2px" }} aria-hidden="true" />
                       <Typography
                         variant="body2"
@@ -201,6 +192,7 @@ const PricingPage = () => {
                           fontWeight: 700,
                           fontSize: { xs: "0.98rem", sm: "1.02rem" },
                           lineHeight: 1.5,
+                          overflowWrap: "anywhere",
                         }}
                       >
                         {service.cta}
@@ -209,7 +201,6 @@ const PricingPage = () => {
                   </CardContent>
 
                   <CardActions sx={{ p: { xs: 3, md: 3.5 }, pt: 0 }}>
-                    {/* SEO/508: Use a real link to the contact section for conversions */}
                     <Button
                       component="a"
                       href={`/?service=${encodeURIComponent(service.title)}#contact`}
@@ -219,11 +210,11 @@ const PricingPage = () => {
                       size="large"
                       aria-label={`Get a quote for ${service.title}`}
                       sx={{
-                        py: 1.75,
-                        fontWeight: 800,
+                        py: 1.6,
+                        fontWeight: 900,
                         fontSize: { xs: "1.05rem", sm: "1.1rem" },
                         textTransform: "none",
-                        borderRadius: 2,
+                        borderRadius: 999,
                         "&:focus-visible": {
                           outline: "3px solid",
                           outlineColor: "primary.main",
@@ -240,7 +231,6 @@ const PricingPage = () => {
           })}
         </Grid2>
 
-        {/* 508/SEO-friendly supporting copy */}
         <Typography
           variant="body2"
           component="p"
@@ -252,9 +242,10 @@ const PricingPage = () => {
             lineHeight: 1.6,
             maxWidth: "60rem",
             mx: "auto",
+            overflowWrap: "anywhere",
           }}
         >
-          Need something custom? I can tailor a package for accessibility, SEO, performance, and content updates. Use the
+          Need something custom? I can tailor a package for accessibility, SEO, performance, and ongoing updates. Use any
           “Get Quote” button to prefill your service selection.
         </Typography>
       </Container>

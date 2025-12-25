@@ -1,4 +1,3 @@
-// src/components/Navbar.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import {
   AppBar,
@@ -14,14 +13,13 @@ import {
   useMediaQuery,
   useTheme,
   Divider,
-  Fab,
   Fade,
   Container,
+  Button,
 } from "@mui/material";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 import navItemsData from "../data/navItems.json";
 
@@ -30,22 +28,50 @@ interface NavItem {
   to: string;
 }
 
-const DESKTOP_HEIGHT = 112;
-const MOBILE_HEIGHT = 88;
+export const NAVBAR_HEIGHT = {
+  mobile: 64,
+  desktop: 80,
+};
+
+function getHeaderOffsetPx(isMobile: boolean) {
+  return isMobile ? NAVBAR_HEIGHT.mobile : NAVBAR_HEIGHT.desktop;
+}
+
+// This makes nav clicks work whether you're scrolling the window OR a custom scroller (#main-content)
+function scrollToSection(id: string, headerOffset: number) {
+  const target = document.getElementById(id);
+  if (!target) return;
+
+  const scroller = document.getElementById("main-content");
+
+  // If you have a scrolling main container, scroll that. Otherwise, scroll window.
+  if (scroller && scroller.scrollHeight > scroller.clientHeight) {
+    const top = Math.max(0, target.offsetTop - headerOffset);
+    scroller.scrollTo({ top, behavior: "smooth" });
+    return;
+  }
+
+  const rect = target.getBoundingClientRect();
+  const top = Math.max(0, window.scrollY + rect.top - headerOffset);
+  window.scrollTo({ top, behavior: "smooth" });
+}
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  // iPad Pro is ~1024px, so using md (900px) keeps desktop nav on iPad and causes overflow.
+  // Using lg makes iPad and smaller use the drawer.
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
+
   const location = useLocation();
   const navigate = useNavigate();
 
   const navItems: NavItem[] = useMemo(() => navItemsData as NavItem[], []);
 
-  /* ---------------- Active logic ---------------- */
   useEffect(() => {
     if (location.pathname === "/") {
       setActiveSection((prev) => prev || "home");
@@ -53,6 +79,20 @@ export default function Navbar() {
       setActiveSection("");
     }
   }, [location.pathname]);
+
+  useEffect(() => {
+    const scroller = document.getElementById("main-content");
+    const isUsingMainScroller = !!scroller && scroller.scrollHeight > scroller.clientHeight;
+
+    const getScrollTop = () => (isUsingMainScroller ? scroller!.scrollTop : window.scrollY);
+    const onScroll = () => setIsScrolled(getScrollTop() > 8);
+
+    onScroll();
+    const target = isUsingMainScroller ? scroller! : window;
+
+    target.addEventListener("scroll", onScroll as any, { passive: true });
+    return () => target.removeEventListener("scroll", onScroll as any);
+  }, []);
 
   const isActiveItem = (to: string) => {
     if (location.pathname === "/") {
@@ -63,57 +103,69 @@ export default function Navbar() {
   };
 
   const handleNavClick = (to: string) => {
+    // whenever someone clicks nav, close the drawer first
+    setMobileOpen(false);
+
+    const headerOffset = getHeaderOffsetPx(isMobile);
+
     if (to.startsWith("/")) {
       setActiveSection("");
       navigate(to);
       return;
     }
 
+    const doScroll = () => {
+      setActiveSection(to);
+
+      if (to === "home") {
+        const scroller = document.getElementById("main-content");
+        if (scroller && scroller.scrollHeight > scroller.clientHeight) {
+          scroller.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        return;
+      }
+
+      scrollToSection(to, headerOffset);
+    };
+
     if (location.pathname !== "/") {
       navigate("/");
-      setTimeout(() => {
-        setActiveSection(to);
-        to === "home"
-          ? window.scrollTo({ top: 0, behavior: "smooth" })
-          : document.getElementById(to)?.scrollIntoView({ behavior: "smooth" });
-      }, 0);
+      setTimeout(doScroll, 0);
       return;
     }
 
-    setActiveSection(to);
-    to === "home"
-      ? window.scrollTo({ top: 0, behavior: "smooth" })
-      : document.getElementById(to)?.scrollIntoView({ behavior: "smooth" });
+    doScroll();
   };
 
-  /* ---------------- Styles ---------------- */
+  // Hover-only background. Underline tight under the word.
   const navLinkSx = (active: boolean) => ({
     position: "relative",
     display: "inline-flex",
     alignItems: "center",
-    height: "100%",
-    paddingInline: "18px",
+    px: 1.1,
+    py: 0.7,
     textDecoration: "none",
     color: "common.white",
-    fontWeight: 800,
-    fontSize: "1.25rem",
-    letterSpacing: 0.2,
-    borderRadius: 0,
-    backgroundColor: active ? "rgba(255,255,255,0.08)" : "transparent",
+    fontWeight: 850,
+    fontSize: "1.15rem",
+    letterSpacing: "0.01em",
+    borderRadius: 12,
     transition: "background-color 140ms ease",
+
     "&:hover": {
-      backgroundColor: "rgba(255,255,255,0.12)",
+      backgroundColor: "rgba(255,255,255,0.10)",
     },
 
-    /* ✅ underline is now BELOW the text */
     "&::after": {
       content: '""',
       position: "absolute",
-      top: "100%",        // anchor to text bottom
-      marginTop: "6px",   // space below word
-      left: 18,
-      right: 18,
-      height: 2,
+      left: 10,
+      right: 10,
+      bottom: 6,
+      height: 3,
+      borderRadius: 999,
       backgroundColor: "rgba(20,184,166,0.95)",
       transform: active ? "scaleX(1)" : "scaleX(0)",
       transformOrigin: "center",
@@ -121,20 +173,22 @@ export default function Navbar() {
     },
   });
 
-  /* ---------------- Drawer ---------------- */
   const drawer = (
-    <Box sx={{ width: 380, height: "100%", bgcolor: "background.default" }}>
+    <Box sx={{ width: 360, height: "100%", bgcolor: "background.default" }}>
       <Box
         sx={{
           px: 3,
-          py: 2.5,
-          background: "linear-gradient(135deg, #050A14, #0B1220)",
+          py: 2.25,
           color: "common.white",
+          backgroundImage: "linear-gradient(135deg, #050A14, #0B1220 60%, #0B1220)",
+          borderBottom: "1px solid rgba(255,255,255,0.12)",
         }}
       >
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography sx={{ fontWeight: 950, fontSize: "1.5rem" }}>Menu</Typography>
-          <IconButton onClick={() => setMobileOpen(false)} sx={{ color: "white" }}>
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Typography sx={{ fontWeight: 950, fontSize: "1.35rem" }}>Menu</Typography>
+
+          {/* this one already closes */}
+          <IconButton onClick={() => setMobileOpen(false)} sx={{ color: "common.white" }} aria-label="Close menu">
             <CloseIcon />
           </IconButton>
         </Box>
@@ -148,18 +202,17 @@ export default function Navbar() {
           return (
             <ListItem key={item.label} disablePadding>
               <ListItemButton
-                onClick={() => {
-                  setMobileOpen(false);
-                  handleNavClick(item.to);
-                }}
+                onClick={() => handleNavClick(item.to)}
                 sx={{
-                  py: 2,
-                  px: 2.5,
-                  borderRadius: 0,
+                  py: 1.6,
+                  px: 2,
+                  borderRadius: 2,
                   bgcolor: active ? "rgba(20,184,166,0.14)" : "transparent",
+                  "&:hover": { bgcolor: active ? "rgba(20,184,166,0.20)" : "rgba(2,6,23,0.06)" },
                   "& .MuiListItemText-primary": {
                     fontWeight: 900,
-                    fontSize: "1.25rem",
+                    fontSize: "1.12rem",
+                    color: "text.primary",
                   },
                 }}
               >
@@ -169,52 +222,97 @@ export default function Navbar() {
           );
         })}
       </List>
+
+      <Box sx={{ px: 2.5, pb: 2.5 }}>
+        <Button
+          variant="contained"
+          color="secondary"
+          fullWidth
+          size="large"
+          onClick={() => {
+            setMobileOpen(false);
+            window.location.href = "/?cta=true#contact";
+          }}
+          sx={{ fontWeight: 900, py: 1.3 }}
+        >
+          Get a Free Consult
+        </Button>
+      </Box>
     </Box>
   );
 
-  /* ---------------- Render ---------------- */
   return (
     <>
       <AppBar
-        position="sticky"
+        position="fixed"
         elevation={0}
         sx={{
-          minHeight: { xs: MOBILE_HEIGHT, md: DESKTOP_HEIGHT },
+          height: { xs: NAVBAR_HEIGHT.mobile, md: NAVBAR_HEIGHT.desktop },
           zIndex: theme.zIndex.modal + 20,
-          borderBottom: "none", // IMPORTANT: no competing line
+          bgcolor: "transparent",
+          transition: "background-color 180ms ease, box-shadow 180ms ease, border-color 180ms ease",
+          backgroundImage: isScrolled
+            ? "linear-gradient(135deg, rgba(5,10,20,0.78), rgba(11,18,32,0.78))"
+            : "linear-gradient(135deg, rgba(5,10,20,0.35), rgba(11,18,32,0.35))",
+          backdropFilter: "saturate(160%) blur(14px)",
+          WebkitBackdropFilter: "saturate(160%) blur(14px)",
+          borderBottom: isScrolled ? "1px solid rgba(255,255,255,0.16)" : "1px solid rgba(255,255,255,0.10)",
+          boxShadow: isScrolled ? "0 12px 34px rgba(0,0,0,0.22)" : "none",
         }}
       >
-        <Toolbar disableGutters sx={{ minHeight: "inherit" }}>
+        <Toolbar disableGutters sx={{ height: "100%", minHeight: "unset !important" }}>
           <Container
-            maxWidth="xl"
-            sx={{ display: "flex", alignItems: "center", px: { xs: 2.5, md: 6 } }}
+            maxWidth={false}
+            sx={{
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              px: { xs: 2, sm: 3, md: 5 },
+            }}
           >
-            <Typography
-              component={NavLink}
-              to="/"
-              onClick={() => setActiveSection("home")}
-              sx={{
-                flexGrow: 1,
-                textDecoration: "none",
-                color: "common.white",
-                fontWeight: 1000,
-                fontSize: { xs: "1.6rem", md: "2.1rem" },
-                letterSpacing: 0.2,
-              }}
-            >
-              Insight Web Solutions
-            </Typography>
+            {/* left: logo always takes you home */}
+            <Box sx={{ display: "flex", alignItems: "center", minWidth: "fit-content" }}>
+              <Typography
+                component={NavLink}
+                to="/"
+                onClick={(e) => {
+                  // if already home, don't "navigate", just scroll to top
+                  e.preventDefault();
+                  handleNavClick("home");
+                }}
+                sx={{
+                  textDecoration: "none",
+                  color: "common.white",
+                  fontWeight: 950,
+                  letterSpacing: "-0.01em",
+                  fontSize: { xs: "1.25rem", sm: "1.45rem", md: "1.65rem" },
+                  lineHeight: 1.1,
+                  whiteSpace: "nowrap",
+                }}
+                aria-label="Go to home"
+              >
+                Insight Web Solutions
+              </Typography>
+            </Box>
 
+            {/* desktop nav */}
             {!isMobile && (
-              <Box component="nav" sx={{ display: "flex", height: "100%" }}>
+              <Box
+                component="nav"
+                aria-label="Primary"
+                sx={{
+                  flex: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 0.8,
+                  px: { md: 2, lg: 3 },
+                  minWidth: 0,
+                }}
+              >
                 {navItems.map((item) =>
                   item.to.startsWith("/") ? (
-                    <Box
-                      key={item.label}
-                      component={NavLink}
-                      to={item.to}
-                      sx={navLinkSx(isActiveItem(item.to))}
-                    >
+                    <Box key={item.label} component={NavLink} to={item.to} sx={navLinkSx(isActiveItem(item.to))}>
                       {item.label}
                     </Box>
                   ) : (
@@ -235,36 +333,57 @@ export default function Navbar() {
               </Box>
             )}
 
-            {isMobile && (
-              <IconButton onClick={() => setMobileOpen(true)} sx={{ color: "white" }}>
-                <MenuIcon sx={{ fontSize: 38 }} />
-              </IconButton>
-            )}
+            {/* right: CTA or hamburger */}
+            <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
+              {!isMobile && (
+                <Button
+                  component="a"
+                  href="/?cta=true#contact"
+                  variant="contained"
+                  color="secondary"
+                  size="medium"
+                  sx={{
+                    fontWeight: 900,
+                    px: 2.25,
+                    borderRadius: 999,
+                    whiteSpace: "nowrap",
+                    fontSize: "1.02rem",
+                  }}
+                >
+                  Free Consult
+                </Button>
+              )}
+
+              {isMobile && (
+                <IconButton
+                  onClick={() => setMobileOpen((prev) => !prev)}
+                  sx={{ color: "common.white" }}
+                  aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                >
+                  {mobileOpen ? <CloseIcon sx={{ fontSize: 32 }} /> : <MenuIcon sx={{ fontSize: 32 }} />}
+                </IconButton>
+              )}
+            </Box>
           </Container>
         </Toolbar>
       </AppBar>
 
-      <Drawer
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        sx={{ "& .MuiDrawer-paper": { borderRadius: 0 } }}
-      >
+      <Drawer anchor="right" open={mobileOpen} onClose={() => setMobileOpen(false)}>
         {drawer}
       </Drawer>
 
-      <Fade in={showScrollTop}>
-        <Fab
-          color="secondary"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      <Fade in={mobileOpen}>
+        <Box
+          aria-hidden="true"
           sx={{
+            display: { xs: "block", md: "none" },
             position: "fixed",
-            bottom: 24,
-            right: 24,
-            borderRadius: 0,
+            inset: 0,
+            bgcolor: "rgba(0,0,0,0.35)",
+            zIndex: theme.zIndex.drawer - 1,
           }}
-        >
-          <KeyboardArrowUpIcon />
-        </Fab>
+          onClick={() => setMobileOpen(false)}
+        />
       </Fade>
     </>
   );

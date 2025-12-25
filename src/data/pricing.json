@@ -1,51 +1,51 @@
 [
   {
-    "title": "Web Development",
-    "description": "Custom, responsive websites built with modern technologies for seamless desktop, tablet, and mobile experiences.",
-    "price": "$500–$2,500",
-    "cta": "Get Quote",
+    "title": "Accessible Web Development",
+    "description": "A modern website built for mobile, performance, and accessibility best practices. Great for small businesses and first-time websites.",
+    "price": "Starting at $750",
+    "cta": "Includes mobile-first layout, basic SEO setup, and accessibility best practices.",
     "icon": "Web"
   },
   {
-    "title": "Accessibility Audit & Optimization",
-    "description": "Ensure your website is inclusive with WCAG-compliant audits, remediation, and ongoing optimization for all users.",
-    "price": "$1,000–$2,500",
-    "cta": "Get Quote",
+    "title": "Accessibility Audit & Fixes",
+    "description": "A focused accessibility review with prioritized fixes to improve usability for everyone (and reduce risk).",
+    "price": "Starting at $600",
+    "cta": "You’ll get a clear issues list + recommended fixes (and I can implement them).",
     "icon": "Accessibility"
   },
   {
-    "title": "SEO Services",
-    "description": "Full SEO package: audit, keyword research, on-page optimization, content strategy, and technical fixes to boost rankings.",
-    "price": "$1,000–$2,800",
-    "cta": "Get Quote",
+    "title": "SEO Audit & Optimization",
+    "description": "Technical audit + keyword direction + on-page improvements that help you get found by the right people.",
+    "price": "Starting at $500",
+    "cta": "Best for businesses that want more traffic without ads.",
     "icon": "Search"
   },
   {
     "title": "UX Improvements",
-    "description": "Enhance user experience with data-driven, responsive designs for all devices.",
-    "price": "$800–$1,800",
-    "cta": "Get Quote",
+    "description": "Improve clarity and conversions: layout, messaging, CTAs, and user flow updates based on best practices.",
+    "price": "Starting at $450",
+    "cta": "Ideal when you’re getting traffic but not getting leads.",
     "icon": "DesignServices"
   },
   {
-    "title": "Excel & Custom Analytics",
-    "description": "Unlock actionable insights with Excel analysis, custom dashboards, and performance tracking.",
-    "price": "$600–$1,800",
-    "cta": "Get Quote",
+    "title": "Excel Analytics & Automation",
+    "description": "Dashboards, cleanup, forecasting, and automation to save time and make better decisions from your data.",
+    "price": "Starting at $400",
+    "cta": "Perfect for sales, finance, marketing, and operations tracking.",
     "icon": "BarChart"
   },
   {
-    "title": "Portfolio Building",
-    "description": "Professional, responsive portfolio built with React & TypeScript. SEO-optimized, WCAG-compliant, and designed to convert.",
-    "price": "$800–$1,500",
-    "cta": "Get Quote",
+    "title": "Portfolio / Personal Site",
+    "description": "A clean, professional portfolio site designed to convert recruiters and clients.",
+    "price": "Starting at $600",
+    "cta": "Fast, modern, and easy to update.",
     "icon": "Collections"
   },
   {
     "title": "Maintenance & Support",
-    "description": "Ongoing updates, security patches, performance monitoring, and priority support to keep your site running smoothly.",
-    "price": "$150–$400/month",
-    "cta": "Get Quote",
+    "description": "Ongoing updates, small edits, performance checks, and support so your site stays healthy.",
+    "price": "$99–$299/month",
+    "cta": "Great if you want a site you don’t have to babysit.",
     "icon": "Support"
   }
 ]
