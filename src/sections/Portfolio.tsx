@@ -2,7 +2,6 @@
 import React from "react";
 import {
   Box,
-  Container,
   Typography,
   Card,
   CardContent,
@@ -16,6 +15,8 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 import portfolioData from "../data/portfolio.json";
 
+const HEADER_OFFSET = 96;
+
 interface Project {
   title: string;
   description: string;
@@ -26,13 +27,6 @@ interface Project {
   mobile: string;
 }
 
-const clampLines = (lines: number) => ({
-  display: "-webkit-box",
-  WebkitLineClamp: lines,
-  WebkitBoxOrient: "vertical" as const,
-  overflow: "hidden",
-});
-
 const Portfolio = () => {
   const projects = portfolioData as Project[];
 
@@ -42,53 +36,66 @@ const Portfolio = () => {
       id="portfolio"
       aria-labelledby="portfolio-heading"
       tabIndex={-1}
-      sx={{ py: { xs: 8, md: 10 }, bgcolor: "background.default" }}
+      sx={{
+        minHeight: `calc(100dvh - ${HEADER_OFFSET}px)`,
+        display: "flex",
+        alignItems: "center",
+        bgcolor: "background.default",
+        px: { xs: 2, sm: 3, md: 4, lg: 6 },
+      }}
     >
-      <Container maxWidth="lg">
+      <Box sx={{ width: "100%", maxWidth: 1600, mx: "auto" }}>
         <Typography
           id="portfolio-heading"
-          variant="h2"
+          component="h2"
           align="center"
-          gutterBottom
-          sx={{ fontWeight: 900, mb: 3, fontSize: { xs: "2.1rem", sm: "2.6rem", md: "3rem" } }}
+          sx={{
+            fontWeight: 800,
+            fontSize: { xs: "2rem", sm: "2.4rem", md: "2.8rem" },
+            mb: 4,
+          }}
         >
-          My Portfolio
+          Portfolio
         </Typography>
 
-        <Grid2 container spacing={{ xs: 3, md: 4 }} mt={2}>
-          {projects.map((project, i) => {
-            const isEnergyStar =
-              project.title.toLowerCase().includes("energy star") ||
-              project.link.includes("energystar.gov");
+        <Grid2 container spacing={{ xs: 3, md: 3 }}>
+          {projects.map((project) => {
+            const title = project.title.toLowerCase();
+
+            // Keep your portfolio image EXACTLY how it was (contain)
+            const isPersonalPortfolio = title.includes("my personal portfolio");
+
+            // These should fill 100% of the image area (cover)
+            const isFullBleed =
+              !isPersonalPortfolio &&
+              (title.includes("energy star") ||
+                title.includes("rose salon") ||
+                project.link.includes("energystar.gov") ||
+                project.link.includes("rose-salon.netlify.app"));
+
+            // Card sizing tuned for 3-across on desktop
+            const CARD_HEIGHT = 500;
+            const IMAGE_HEIGHT = 250;
 
             return (
-              <Grid2 size={{ xs: 12, md: 6 }} key={i}>
+              <Grid2 key={project.title} size={{ xs: 12, md: 4 }}>
                 <Card
                   sx={{
-                    // Keep each card from turning into a skyscraper on laptops
-                    height: { xs: "auto", md: "min(72vh, 620px)" },
+                    height: CARD_HEIGHT,
                     display: "flex",
                     flexDirection: "column",
-                    borderRadius: 3,
-                    boxShadow: 3,
+                    borderRadius: 4,
                     overflow: "hidden",
+                    boxShadow: 6,
                     transition: "0.25s",
-                    "&:hover": { boxShadow: 10, transform: "translateY(-6px)" },
+                    "&:hover": {
+                      transform: "translateY(-6px)",
+                      boxShadow: 12,
+                    },
                   }}
                 >
-                  {/* IMAGE AREA (shorter so card fits on one screen) */}
-                  <Box
-                    sx={{
-                      position: "relative",
-                      // Smaller + responsive: saves vertical space
-                      height: isEnergyStar
-                        ? { xs: 210, sm: 240, md: 220 }
-                        : { xs: 190, sm: 220, md: 210 },
-                      bgcolor: "#f5f5f5",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {/* DESKTOP IMAGE */}
+                  {/* IMAGE */}
+                  <Box sx={{ position: "relative", height: IMAGE_HEIGHT }}>
                     <CardMedia
                       component="img"
                       image={project.desktop}
@@ -97,15 +104,18 @@ const Portfolio = () => {
                       sx={{
                         width: "100%",
                         height: "100%",
-                        objectFit: isEnergyStar ? "cover" : "contain",
-                        objectPosition: isEnergyStar ? "center top" : "center",
-                        // Portfolio image stays the same “perfect” behavior (contain + maxWidth)
-                        maxWidth: isEnergyStar ? "none" : 600,
-                        mx: isEnergyStar ? "unset" : "auto",
+                        bgcolor: "#f5f5f5",
+
+                        // ✅ Portfolio stays perfect (contain)
+                        // ✅ Others fill 100% (cover)
+                        objectFit: isFullBleed ? "cover" : "contain",
+
+                        // ✅ Show the TOP of the page (beginning) instead of the middle/end
+                        // When using cover, this controls what part gets cropped in.
+                        objectPosition: isFullBleed ? "center top" : "center",
                       }}
                     />
 
-                    {/* MOBILE IMAGE (a bit smaller so it doesn't force height) */}
                     <CardMedia
                       component="img"
                       image={project.mobile}
@@ -113,38 +123,40 @@ const Portfolio = () => {
                       loading="lazy"
                       sx={{
                         position: "absolute",
-                        bottom: { xs: 12, sm: 14 },
-                        right: { xs: 12, sm: 14 },
-                        width: { xs: "28%", sm: "22%" },
-                        maxWidth: 150,
+                        bottom: 14,
+                        right: 14,
+                        width: "26%",
+                        maxWidth: 120,
                         borderRadius: 2,
-                        boxShadow: 6,
                         border: "3px solid white",
-                        objectFit: "contain",
+                        boxShadow: 6,
                         bgcolor: "white",
+                        objectFit: "contain",
                       }}
                     />
                   </Box>
 
-                  {/* CONTENT (clamped + scrollable chip row) */}
+                  {/* CONTENT */}
                   <CardContent
                     sx={{
-                      flex: "1 1 auto",
-                      p: { xs: 2.5, sm: 3 },
+                      flex: 1,
+                      px: 2.5,
+                      py: 2,
                       display: "flex",
                       flexDirection: "column",
-                      gap: 1.25,
-                      minHeight: 0, // important for overflow children
+                      gap: 0.9,
+                      minHeight: 0,
                     }}
                   >
                     <Typography
                       variant="h6"
-                      color="primary.main"
                       sx={{
-                        fontWeight: 900,
-                        fontSize: { xs: "1.2rem", sm: "1.3rem" },
+                        fontWeight: 700,
                         lineHeight: 1.2,
-                        ...clampLines(2),
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
                       }}
                     >
                       {project.title}
@@ -154,9 +166,11 @@ const Portfolio = () => {
                       variant="body2"
                       color="text.secondary"
                       sx={{
-                        fontSize: { xs: "1rem", sm: "1.05rem" },
                         lineHeight: 1.6,
-                        ...clampLines(4), // keeps height predictable
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
                       }}
                     >
                       {project.description}
@@ -164,82 +178,63 @@ const Portfolio = () => {
 
                     <Typography
                       variant="body2"
-                      color="text.secondary"
                       sx={{
                         fontStyle: "italic",
-                        fontSize: { xs: "0.98rem", sm: "1rem" },
-                        ...clampLines(1),
+                        opacity: 0.8,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 1,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
                       }}
                     >
-                      Role: {project.role}
+                      {project.role}
                     </Typography>
 
-                    {/* Chips: keep the card short by making this row scroll horizontally on desktop */}
-                    <Box
-                      sx={{
-                        mt: 0.5,
-                        overflowX: "auto",
-                        overflowY: "hidden",
-                        WebkitOverflowScrolling: "touch",
-                        pb: 0.5,
-                        // nicer scrollbar behavior
-                        "&::-webkit-scrollbar": { height: 8 },
-                        "&::-webkit-scrollbar-thumb": { borderRadius: 8 },
-                      }}
-                      aria-label={`${project.title} technologies`}
-                    >
-                      <Stack direction="row" spacing={1} sx={{ width: "max-content" }}>
-                        {project.tech.map((tech) => (
+                    {/* TECH — single row, scrollable */}
+                    <Box sx={{ overflowX: "auto", pb: 0.5 }}>
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{ width: "max-content" }}
+                        aria-label={`${project.title} technologies`}
+                      >
+                        {project.tech.slice(0, 8).map((tech) => (
                           <Chip
                             key={tech}
                             label={tech}
                             size="small"
                             color="secondary"
                             variant="outlined"
-                            sx={{
-                              fontSize: "0.85rem",
-                              fontWeight: 700,
-                              height: 30,
-                            }}
+                            sx={{ fontWeight: 600 }}
                           />
                         ))}
                       </Stack>
                     </Box>
 
-                    {/* CTA pinned to bottom via spacer */}
                     <Box sx={{ flexGrow: 1 }} />
-                  </CardContent>
 
-                  <Box sx={{ p: { xs: 2.5, sm: 3 }, pt: 0 }}>
                     <Button
                       variant="contained"
                       color="secondary"
                       href={project.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      fullWidth
                       endIcon={<OpenInNewIcon />}
                       sx={{
-                        py: 1.25,
-                        fontWeight: 900,
+                        fontWeight: 700,
                         textTransform: "none",
                         borderRadius: 2,
-                        "&:focus-visible": {
-                          outline: "3px solid",
-                          outlineColor: "primary.main",
-                          outlineOffset: 3,
-                        },
                       }}
                     >
-                      View Live Project
+                      View Project
                     </Button>
-                  </Box>
+                  </CardContent>
                 </Card>
               </Grid2>
             );
           })}
         </Grid2>
-      </Container>
+      </Box>
     </Box>
   );
 };

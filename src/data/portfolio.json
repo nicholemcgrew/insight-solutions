@@ -22,6 +22,23 @@
     "mobile": "/images/projects/energy-star-mobile.png"
   },
   {
+    "title": "Rose Salon",
+    "description": "Modern, conversion-focused salon landing page built for a polished, premium brand experience. Fully responsive with fast load times, clear service hierarchy, and accessible UX patterns designed to drive bookings.",
+    "role": "Designer & Developer",
+    "tech": [
+      "React",
+      "TypeScript",
+      "MUI",
+      "Responsive",
+      "Accessibility",
+      "Performance",
+      "SEO"
+    ],
+    "link": "https://rose-salon.netlify.app/",
+    "desktop": "/images/projects/rose-salon-desktop.png",
+    "mobile": "/images/projects/rose-salon-mobile.png"
+  },
+  {
     "title": "My Personal Portfolio",
     "description": "My live portfolio built with React, TypeScript, and MUI. Fully responsive, SEO-optimized, WCAG-compliant, and designed to convert leads.",
     "role": "Designer & Developer",

@@ -4,7 +4,6 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   Box,
   IconButton,
   Drawer,
@@ -28,12 +27,16 @@ import navItemsData from "../data/navItems.json";
 
 interface NavItem {
   label: string;
-  to: string; // "/pricing" OR section id like "services"
+  to: string;
 }
 
-const Navbar = () => {
+const DESKTOP_HEIGHT = 112;
+const MOBILE_HEIGHT = 88;
+
+export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -42,152 +45,126 @@ const Navbar = () => {
 
   const navItems: NavItem[] = useMemo(() => navItemsData as NavItem[], []);
 
-  const isPricingPage = location.pathname === "/pricing";
-
-  const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
-
-  // 508: allow keyboard users to close drawer with Escape
+  /* ---------------- Active logic ---------------- */
   useEffect(() => {
-    if (!mobileOpen) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMobileOpen(false);
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [mobileOpen]);
+    if (location.pathname === "/") {
+      setActiveSection((prev) => prev || "home");
+    } else {
+      setActiveSection("");
+    }
+  }, [location.pathname]);
 
-  // Scroll-to-top button visibility
-  useEffect(() => {
-    const toggleVisibility = () => setShowScrollTop(window.scrollY > 300);
-    window.addEventListener("scroll", toggleVisibility, { passive: true });
-    return () => window.removeEventListener("scroll", toggleVisibility);
-  }, []);
-
-  const scrollToTop = () =>
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
+  const isActiveItem = (to: string) => {
+    if (location.pathname === "/") {
+      if (to.startsWith("/")) return false;
+      return activeSection ? to === activeSection : to === "home";
+    }
+    return to.startsWith("/") && location.pathname === to;
   };
 
-  /**
-   * SEO/UX: avoid window.location.href reloads.
-   * Use react-router navigation, then scroll if needed.
-   */
   const handleNavClick = (to: string) => {
-    // Route
     if (to.startsWith("/")) {
+      setActiveSection("");
       navigate(to);
-      return;
-    }
-
-    // Sections (ids)
-    if (to === "home") {
-      if (location.pathname !== "/") {
-        navigate("/");
-        // Wait a tick for route to render, then scroll.
-        setTimeout(() => scrollToTop(), 0);
-      } else {
-        scrollToTop();
-      }
       return;
     }
 
     if (location.pathname !== "/") {
       navigate("/");
-      setTimeout(() => scrollToSection(to), 0);
-    } else {
-      scrollToSection(to);
+      setTimeout(() => {
+        setActiveSection(to);
+        to === "home"
+          ? window.scrollTo({ top: 0, behavior: "smooth" })
+          : document.getElementById(to)?.scrollIntoView({ behavior: "smooth" });
+      }, 0);
+      return;
     }
+
+    setActiveSection(to);
+    to === "home"
+      ? window.scrollTo({ top: 0, behavior: "smooth" })
+      : document.getElementById(to)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const drawer = (
-    <Box
-      sx={{
-        width: 320,
-        bgcolor: "background.default",
-        height: "100%",
-      }}
-      role="presentation"
-      aria-label="Mobile navigation menu"
-    >
-      <Toolbar sx={{ justifyContent: "space-between" }}>
-        <Typography
-          component="span"
-          sx={{
-            fontWeight: 800,
-            fontSize: { xs: "1.125rem", sm: "1.25rem" },
-            letterSpacing: 0.2,
-          }}
-        >
-          Menu
-        </Typography>
+  /* ---------------- Styles ---------------- */
+  const navLinkSx = (active: boolean) => ({
+    position: "relative",
+    display: "inline-flex",
+    alignItems: "center",
+    height: "100%",
+    paddingInline: "18px",
+    textDecoration: "none",
+    color: "common.white",
+    fontWeight: 800,
+    fontSize: "1.25rem",
+    letterSpacing: 0.2,
+    borderRadius: 0,
+    backgroundColor: active ? "rgba(255,255,255,0.08)" : "transparent",
+    transition: "background-color 140ms ease",
+    "&:hover": {
+      backgroundColor: "rgba(255,255,255,0.12)",
+    },
 
-        <IconButton onClick={handleDrawerToggle} aria-label="Close menu">
-          <CloseIcon />
-        </IconButton>
-      </Toolbar>
+    /* ✅ underline is now BELOW the text */
+    "&::after": {
+      content: '""',
+      position: "absolute",
+      top: "100%",        // anchor to text bottom
+      marginTop: "6px",   // space below word
+      left: 18,
+      right: 18,
+      height: 2,
+      backgroundColor: "rgba(20,184,166,0.95)",
+      transform: active ? "scaleX(1)" : "scaleX(0)",
+      transformOrigin: "center",
+      transition: "transform 160ms ease",
+    },
+  });
+
+  /* ---------------- Drawer ---------------- */
+  const drawer = (
+    <Box sx={{ width: 380, height: "100%", bgcolor: "background.default" }}>
+      <Box
+        sx={{
+          px: 3,
+          py: 2.5,
+          background: "linear-gradient(135deg, #050A14, #0B1220)",
+          color: "common.white",
+        }}
+      >
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography sx={{ fontWeight: 950, fontSize: "1.5rem" }}>Menu</Typography>
+          <IconButton onClick={() => setMobileOpen(false)} sx={{ color: "white" }}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+      </Box>
 
       <Divider />
 
-      <List sx={{ py: 1 }}>
+      <List sx={{ p: 1.5 }}>
         {navItems.map((item) => {
-          const isPricing = item.to === "/pricing";
-
+          const active = isActiveItem(item.to);
           return (
             <ListItem key={item.label} disablePadding>
-              {isPricing ? (
-                <ListItemButton
-                  component={NavLink}
-                  to={item.to}
-                  end
-                  onClick={() => setMobileOpen(false)}
-                  sx={(t) => ({
-                    textAlign: "left",
-                    py: 1.75,
-                    px: 3,
-                    fontSize: "1.05rem",
-                    "& .MuiListItemText-primary": {
-                      fontWeight: 700,
-                      fontSize: "1.05rem",
-                    },
-                    ...(isPricingPage && {
-                      bgcolor: "secondary.main",
-                      color: t.palette.getContrastText(t.palette.secondary.main),
-                      "&:hover": { bgcolor: "secondary.dark" },
-                    }),
-                    "&:focus-visible": {
-                      outline: `3px solid ${t.palette.primary.main}`,
-                      outlineOffset: 2,
-                    },
-                  })}
-                >
-                  <ListItemText primary={item.label} />
-                </ListItemButton>
-              ) : (
-                <ListItemButton
-                  onClick={() => {
-                    setMobileOpen(false);
-                    handleNavClick(item.to);
-                  }}
-                  sx={(t) => ({
-                    textAlign: "left",
-                    py: 1.75,
-                    px: 3,
-                    "& .MuiListItemText-primary": {
-                      fontWeight: 700,
-                      fontSize: "1.05rem",
-                    },
-                    "&:focus-visible": {
-                      outline: `3px solid ${t.palette.primary.main}`,
-                      outlineOffset: 2,
-                    },
-                  })}
-                >
-                  <ListItemText primary={item.label} />
-                </ListItemButton>
-              )}
+              <ListItemButton
+                onClick={() => {
+                  setMobileOpen(false);
+                  handleNavClick(item.to);
+                }}
+                sx={{
+                  py: 2,
+                  px: 2.5,
+                  borderRadius: 0,
+                  bgcolor: active ? "rgba(20,184,166,0.14)" : "transparent",
+                  "& .MuiListItemText-primary": {
+                    fontWeight: 900,
+                    fontSize: "1.25rem",
+                  },
+                }}
+              >
+                <ListItemText primary={item.label} />
+              </ListItemButton>
             </ListItem>
           );
         })}
@@ -195,195 +172,100 @@ const Navbar = () => {
     </Box>
   );
 
+  /* ---------------- Render ---------------- */
   return (
     <>
-      {/* 508: skip link target should exist in your main layout: <main id="main-content"> */}
       <AppBar
-        component="header"
         position="sticky"
-        color="primary"
+        elevation={0}
         sx={{
-          zIndex: theme.zIndex.drawer + 1,
-          boxShadow: 3,
-          borderBottom: (t) => `1px solid ${t.palette.divider}`,
+          minHeight: { xs: MOBILE_HEIGHT, md: DESKTOP_HEIGHT },
+          zIndex: theme.zIndex.modal + 20,
+          borderBottom: "none", // IMPORTANT: no competing line
         }}
       >
-        <Toolbar
-          disableGutters
-          sx={{
-            py: { xs: 1.25, sm: 1.5 },
-          }}
-        >
+        <Toolbar disableGutters sx={{ minHeight: "inherit" }}>
           <Container
-            maxWidth="lg"
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              px: { xs: 2, sm: 3 },
-            }}
+            maxWidth="xl"
+            sx={{ display: "flex", alignItems: "center", px: { xs: 2.5, md: 6 } }}
           >
-            {/* Brand / Site name */}
             <Typography
               component={NavLink}
               to="/"
-              variant="h6"
-              aria-label="Insight Web Solutions home"
+              onClick={() => setActiveSection("home")}
               sx={{
                 flexGrow: 1,
                 textDecoration: "none",
                 color: "common.white",
-                fontWeight: 900,
-                letterSpacing: 0.3,
-                fontSize: { xs: "1.2rem", sm: "1.35rem", md: "1.55rem" },
-                lineHeight: 1.1,
-                "&:focus-visible": {
-                  outline: "3px solid white",
-                  outlineOffset: 3,
-                  borderRadius: 1,
-                },
+                fontWeight: 1000,
+                fontSize: { xs: "1.6rem", md: "2.1rem" },
+                letterSpacing: 0.2,
               }}
             >
               Insight Web Solutions
             </Typography>
 
-            {/* Desktop nav */}
             {!isMobile && (
-              <Box
-                component="nav"
-                aria-label="Main navigation"
-                sx={{ display: "flex", gap: 1 }}
-              >
-                {navItems.map((item) => {
-                  const isPricing = item.to === "/pricing";
-
-                  if (isPricing) {
-                    return (
-                      <Button
-                        key={item.label}
-                        component={NavLink}
-                        to={item.to}
-                        end
-                        color="inherit"
-                        sx={(t) => ({
-                          fontWeight: 800,
-                          textTransform: "none",
-                          fontSize: { md: "1.05rem", lg: "1.125rem" },
-                          px: 2,
-                          py: 1.25,
-                          borderRadius: 2,
-                          "&.active": {
-                            bgcolor: t.palette.secondary.main,
-                            color: t.palette.getContrastText(
-                              t.palette.secondary.main
-                            ),
-                          },
-                          "&:hover": {
-                            bgcolor: "rgba(255,255,255,0.14)",
-                          },
-                          "&:focus-visible": {
-                            outline: "3px solid white",
-                            outlineOffset: 2,
-                          },
-                        })}
-                      >
-                        {item.label}
-                      </Button>
-                    );
-                  }
-
-                  return (
-                    <Button
+              <Box component="nav" sx={{ display: "flex", height: "100%" }}>
+                {navItems.map((item) =>
+                  item.to.startsWith("/") ? (
+                    <Box
                       key={item.label}
-                      color="inherit"
-                      onClick={() => handleNavClick(item.to)}
-                      sx={{
-                        fontWeight: 700,
-                        textTransform: "none",
-                        fontSize: { md: "1.05rem", lg: "1.125rem" },
-                        px: 2,
-                        py: 1.25,
-                        borderRadius: 2,
-                        "&:hover": { bgcolor: "rgba(255,255,255,0.14)" },
-                        "&:focus-visible": {
-                          outline: "3px solid white",
-                          outlineOffset: 2,
-                        },
-                      }}
+                      component={NavLink}
+                      to={item.to}
+                      sx={navLinkSx(isActiveItem(item.to))}
                     >
                       {item.label}
-                    </Button>
-                  );
-                })}
+                    </Box>
+                  ) : (
+                    <Box
+                      key={item.label}
+                      component="a"
+                      href={`#${item.to}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavClick(item.to);
+                      }}
+                      sx={navLinkSx(isActiveItem(item.to))}
+                    >
+                      {item.label}
+                    </Box>
+                  )
+                )}
               </Box>
             )}
 
-            {/* Mobile menu button */}
             {isMobile && (
-              <IconButton
-                color="inherit"
-                aria-label="Open menu"
-                aria-controls={mobileOpen ? "mobile-nav-drawer" : undefined}
-                aria-expanded={mobileOpen ? "true" : undefined}
-                onClick={handleDrawerToggle}
-                sx={{
-                  p: 1.25,
-                  "&:focus-visible": {
-                    outline: "3px solid white",
-                    outlineOffset: 2,
-                  },
-                }}
-              >
-                <MenuIcon sx={{ fontSize: 34 }} />
+              <IconButton onClick={() => setMobileOpen(true)} sx={{ color: "white" }}>
+                <MenuIcon sx={{ fontSize: 38 }} />
               </IconButton>
             )}
           </Container>
         </Toolbar>
-
-        {/* Mobile drawer */}
-        <Drawer
-          id="mobile-nav-drawer"
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-          sx={{
-            display: { xs: "block", md: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: 320,
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
       </AppBar>
 
-      {/* Scroll-to-top */}
+      <Drawer
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        sx={{ "& .MuiDrawer-paper": { borderRadius: 0 } }}
+      >
+        {drawer}
+      </Drawer>
+
       <Fade in={showScrollTop}>
         <Fab
           color="secondary"
-          size="large"
-          aria-label="Scroll to top"
-          onClick={scrollToTop}
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           sx={{
             position: "fixed",
-            bottom: { xs: 20, sm: 28 },
-            right: { xs: 20, sm: 28 },
-            zIndex: theme.zIndex.tooltip,
-            boxShadow: 8,
-            "&:hover": { transform: "translateY(-2px)" },
-            "&:focus-visible": {
-              outline: (t) => `3px solid ${t.palette.common.white}`,
-              outlineOffset: 3,
-            },
+            bottom: 24,
+            right: 24,
+            borderRadius: 0,
           }}
         >
-          <KeyboardArrowUpIcon sx={{ fontSize: 34 }} />
+          <KeyboardArrowUpIcon />
         </Fab>
       </Fade>
     </>
   );
-};
-
-export default Navbar;
+}
