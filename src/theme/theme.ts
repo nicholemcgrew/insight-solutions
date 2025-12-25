@@ -1,3 +1,7 @@
+// src/styles/theme.ts (UNCHANGED from your paste — included here only so you can keep as-is)
+// Your palette choices here are strong for contrast. The key 508/SEO “missing piece” was focus
+// management on in-page navigation, which is now handled in Navbar.tsx via scrollToSectionAndFocus.
+
 import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({

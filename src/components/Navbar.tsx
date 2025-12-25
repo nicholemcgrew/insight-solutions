@@ -1,3 +1,4 @@
+// src/components/Navbar.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import {
   AppBar,
@@ -19,7 +20,6 @@ import {
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-
 import navItemsData from "../data/navItems.json";
 
 interface NavItem {
@@ -32,37 +32,46 @@ export const NAVBAR_HEIGHT = {
   desktop: 80,
 };
 
-// Keep this aligned with your isMobile breakpoint (down("lg"))
-function getHeaderOffsetPx(isMobile: boolean) {
-  return isMobile ? NAVBAR_HEIGHT.mobile : NAVBAR_HEIGHT.desktop;
-}
-
 function prefersReducedMotion() {
   return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 }
 
-// This makes nav clicks work whether you're scrolling the window OR a custom scroller (#main-content)
-function scrollToSection(id: string, headerOffset: number) {
+function getHeaderOffsetPx(isMobile: boolean) {
+  return isMobile ? NAVBAR_HEIGHT.mobile : NAVBAR_HEIGHT.desktop;
+}
+
+// 508: ensure the target becomes focusable, then focus it
+function focusTarget(el: HTMLElement | null) {
+  if (!el) return;
+  // Make focusable if needed (common for sections/divs)
+  if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
+  el.focus({ preventScroll: true });
+}
+
+// Robust scroll for either #main-content scroller or window, and then focus the target.
+// This is the main “fully 508” missing piece: focus moves with in-page navigation.
+function scrollToSectionAndFocus(id: string, headerOffset: number) {
   const target = document.getElementById(id);
   if (!target) return;
 
   const scroller = document.getElementById("main-content");
   const behavior: ScrollBehavior = prefersReducedMotion() ? "auto" : "smooth";
 
-  // If you have a scrolling main container, scroll that. Otherwise, scroll window.
   if (scroller && scroller.scrollHeight > scroller.clientHeight) {
-    // robust math: compute target's position relative to the scroller viewport
     const scrollerTop = scroller.getBoundingClientRect().top;
     const targetTop = target.getBoundingClientRect().top;
     const top = Math.max(0, scroller.scrollTop + (targetTop - scrollerTop) - headerOffset);
 
     scroller.scrollTo({ top, behavior });
+    // Focus after scroll starts; preventScroll avoids “jumping”
+    window.setTimeout(() => focusTarget(target), prefersReducedMotion() ? 0 : 250);
     return;
   }
 
   const rect = target.getBoundingClientRect();
   const top = Math.max(0, window.scrollY + rect.top - headerOffset);
   window.scrollTo({ top, behavior });
+  window.setTimeout(() => focusTarget(target), prefersReducedMotion() ? 0 : 250);
 }
 
 export default function Navbar() {
@@ -72,18 +81,13 @@ export default function Navbar() {
 
   const theme = useTheme();
 
-  // iPad Pro is ~1024px, so using md (900px) keeps desktop nav on iPad and causes overflow.
-  // Using lg makes iPad and smaller use the drawer.
+  // Use lg so iPad and smaller use drawer
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
 
   const location = useLocation();
   const navigate = useNavigate();
 
   const navItems: NavItem[] = useMemo(() => navItemsData as NavItem[], []);
-
-  // IDs for 508 semantics
-  const drawerTitleId = "mobile-menu-title";
-  const drawerId = "mobile-menu";
 
   useEffect(() => {
     if (location.pathname === "/") {
@@ -122,11 +126,9 @@ export default function Navbar() {
   };
 
   const handleNavClick = (to: string) => {
-    // whenever someone clicks nav, close the drawer first
     setMobileOpen(false);
 
     const headerOffset = getHeaderOffsetPx(isMobile);
-    const behavior: ScrollBehavior = prefersReducedMotion() ? "auto" : "smooth";
 
     if (to.startsWith("/")) {
       setActiveSection("");
@@ -138,16 +140,22 @@ export default function Navbar() {
       setActiveSection(to);
 
       if (to === "home") {
+        const hero = document.getElementById("home");
         const scroller = document.getElementById("main-content");
+        const behavior: ScrollBehavior = prefersReducedMotion() ? "auto" : "smooth";
+
         if (scroller && scroller.scrollHeight > scroller.clientHeight) {
           scroller.scrollTo({ top: 0, behavior });
         } else {
           window.scrollTo({ top: 0, behavior });
         }
+
+        // 508: focus the hero section after scrolling
+        window.setTimeout(() => focusTarget(hero), prefersReducedMotion() ? 0 : 250);
         return;
       }
 
-      scrollToSection(to, headerOffset);
+      scrollToSectionAndFocus(to, headerOffset);
     };
 
     if (location.pathname !== "/") {
@@ -159,8 +167,6 @@ export default function Navbar() {
     doScroll();
   };
 
-  // Hover-only background. Underline tight under the word.
-  // Add focus-visible so keyboard users have a clear indicator (508)
   const navLinkSx = (active: boolean) => ({
     position: "relative",
     display: "inline-flex",
@@ -173,15 +179,10 @@ export default function Navbar() {
     fontSize: "1.15rem",
     letterSpacing: "0.01em",
     borderRadius: 12,
-    transition: "background-color 140ms ease, outline-color 140ms ease",
+    transition: "background-color 140ms ease",
 
     "&:hover": {
       backgroundColor: "rgba(255,255,255,0.10)",
-    },
-
-    "&:focus-visible": {
-      outline: "3px solid rgba(255,255,255,0.85)",
-      outlineOffset: 3,
     },
 
     "&::after": {
@@ -198,6 +199,9 @@ export default function Navbar() {
       transition: "transform 160ms ease",
     },
   });
+
+  const drawerTitleId = "mobile-menu-title";
+  const drawerId = "mobile-menu";
 
   const drawer = (
     <Box
@@ -223,14 +227,7 @@ export default function Navbar() {
             Menu
           </Typography>
 
-          <IconButton
-            onClick={() => setMobileOpen(false)}
-            sx={{
-              color: "common.white",
-              "&:focus-visible": { outline: "3px solid rgba(255,255,255,0.85)", outlineOffset: 3 },
-            }}
-            aria-label="Close menu"
-          >
+          <IconButton onClick={() => setMobileOpen(false)} sx={{ color: "common.white" }} aria-label="Close menu">
             <CloseIcon />
           </IconButton>
         </Box>
@@ -252,10 +249,6 @@ export default function Navbar() {
                   borderRadius: 2,
                   bgcolor: active ? "rgba(20,184,166,0.14)" : "transparent",
                   "&:hover": { bgcolor: active ? "rgba(20,184,166,0.20)" : "rgba(2,6,23,0.06)" },
-                  "&:focus-visible": {
-                    outline: "3px solid rgba(2,6,23,0.55)",
-                    outlineOffset: 2,
-                  },
                   "& .MuiListItemText-primary": {
                     fontWeight: 900,
                     fontSize: "1.12rem",
@@ -278,7 +271,6 @@ export default function Navbar() {
           size="large"
           onClick={() => {
             setMobileOpen(false);
-            // SPA-friendly navigation + keeps hash/query (better UX/SEO than full reload)
             navigate("/?cta=true#contact");
           }}
           sx={{ fontWeight: 900, py: 1.3 }}
@@ -295,7 +287,7 @@ export default function Navbar() {
         position="fixed"
         elevation={0}
         sx={{
-          // IMPORTANT: keep the height breakpoint aligned with isMobile (lg)
+          // Align height breakpoint with isMobile (lg)
           height: { xs: NAVBAR_HEIGHT.mobile, lg: NAVBAR_HEIGHT.desktop },
           zIndex: theme.zIndex.modal + 20,
           bgcolor: "transparent",
@@ -325,7 +317,7 @@ export default function Navbar() {
                 component={NavLink}
                 to="/"
                 onClick={(e) => {
-                  // if already home, don't "navigate", just scroll to top
+                  // If already home, don't route; just scroll/focus hero
                   e.preventDefault();
                   handleNavClick("home");
                 }}
@@ -337,11 +329,6 @@ export default function Navbar() {
                   fontSize: { xs: "1.25rem", sm: "1.45rem", md: "1.65rem" },
                   lineHeight: 1.1,
                   whiteSpace: "nowrap",
-                  "&:focus-visible": {
-                    outline: "3px solid rgba(255,255,255,0.85)",
-                    outlineOffset: 4,
-                    borderRadius: 10,
-                  },
                 }}
                 aria-label="Go to home"
               >
@@ -409,10 +396,6 @@ export default function Navbar() {
                     borderRadius: 999,
                     whiteSpace: "nowrap",
                     fontSize: "1.02rem",
-                    "&:focus-visible": {
-                      outline: "3px solid rgba(255,255,255,0.85)",
-                      outlineOffset: 4,
-                    },
                   }}
                 >
                   Free Consult
@@ -422,10 +405,7 @@ export default function Navbar() {
               {isMobile && (
                 <IconButton
                   onClick={() => setMobileOpen((prev) => !prev)}
-                  sx={{
-                    color: "common.white",
-                    "&:focus-visible": { outline: "3px solid rgba(255,255,255,0.85)", outlineOffset: 3 },
-                  }}
+                  sx={{ color: "common.white" }}
                   aria-label={mobileOpen ? "Close menu" : "Open menu"}
                   aria-controls={drawerId}
                   aria-expanded={mobileOpen ? "true" : undefined}
