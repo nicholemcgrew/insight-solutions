@@ -1,4 +1,5 @@
-import React from "react";
+// src/sections/Services.tsx
+import React, { useMemo } from "react";
 import {
   Box,
   Container,
@@ -7,8 +8,10 @@ import {
   CardContent,
   ButtonBase,
   Stack,
-  Grid2,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
+import Grid2 from "@mui/material/Grid2";
 import {
   Web as WebIcon,
   Search as SearchIcon,
@@ -26,245 +29,232 @@ interface Service {
 }
 
 const iconMap: Record<Service["icon"], React.ReactNode> = {
-  Web: <WebIcon fontSize="large" color="primary" />,
-  Search: <SearchIcon fontSize="large" color="primary" />,
-  BarChart: <BarChartIcon fontSize="large" color="primary" />,
+  Web: <WebIcon fontSize="large" color="primary" aria-hidden focusable="false" />,
+  Search: <SearchIcon fontSize="large" color="primary" aria-hidden focusable="false" />,
+  BarChart: <BarChartIcon fontSize="large" color="primary" aria-hidden focusable="false" />,
 };
+
+function prefersReducedMotion() {
+  return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+}
 
 const Services = () => {
   const services: Service[] = servicesData as Service[];
-  const navbarHeight = NAVBAR_HEIGHT.desktop;
 
-  const goToContact = (title: string) => {
-    window.location.href = `/?cta=true&service=${encodeURIComponent(title)}#contact`;
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const navbarHeight = isDesktop ? NAVBAR_HEIGHT.desktop : NAVBAR_HEIGHT.mobile;
+
+  // Disable hover transitions for users who prefer reduced motion.
+  const reducedMotion = useMemo(() => prefersReducedMotion(), []);
+
+  const buildContactHref = (serviceTitle?: string) => {
+    const params = new URLSearchParams({ cta: "true" });
+    if (serviceTitle) params.set("service", serviceTitle);
+    return `/?${params.toString()}#contact`;
   };
 
   return (
     <Box
       id="services"
       component="section"
+      aria-labelledby="services-title"
       sx={{
-        minHeight: `calc(100dvh - ${navbarHeight}px)`,
+        scrollMarginTop: `${navbarHeight + 16}px`,
         pt: `${navbarHeight}px`,
-        bgcolor: "background.default",
+        minHeight: `calc(100dvh - ${navbarHeight}px)`,
+        py: { xs: 5, md: 3.5 },
         display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        py: { xs: 4, md: 6 },
+        alignItems: { xs: "flex-start", md: "center" },
+        bgcolor: "background.default",
         overflowX: "hidden",
       }}
     >
-      <Container maxWidth="lg" sx={{ width: "100%", overflowX: "hidden" }}>
-        <Stack spacing={{ xs: 4, md: 6 }} alignItems="center" textAlign="center" sx={{ width: "100%" }}>
-          {/* I want this to be impossible to miss, but still feel premium (not cheesy). */}
+      <Container maxWidth="lg">
+        <Stack
+          spacing={{ xs: 4, md: 2.25 }}
+          alignItems="center"
+          textAlign="center"
+          sx={{
+            width: "100%",
+            height: "100%",
+            justifyContent: { md: "space-between" },
+          }}
+        >
           <Box
-            role="note"
+            component="aside"
             aria-label="New customer special"
             sx={(t) => ({
               width: "100%",
-              maxWidth: 960,
-              alignSelf: "flex-start",
+              maxWidth: 980,
               textAlign: "left",
               borderRadius: 3,
-              px: { xs: 2.25, sm: 3 },
-              py: { xs: 2.0, sm: 2.25 },
+              px: { xs: 2.5, md: 3 },
+              py: { xs: 2.25, md: 2 },
               border: `1px solid ${t.palette.divider}`,
-              boxShadow: "0 14px 34px rgba(2, 6, 23, 0.10)",
-              position: "relative",
-              overflow: "hidden",
-              backgroundImage: `linear-gradient(135deg, ${t.palette.secondary.main}18, rgba(255,255,255,0.92) 60%)`,
-              backdropFilter: "saturate(140%) blur(8px)",
-              WebkitBackdropFilter: "saturate(140%) blur(8px)",
-
-              "&::before": {
-                content: '""',
-                position: "absolute",
-                inset: 0,
-                background: `radial-gradient(700px 240px at 10% 0%, ${t.palette.secondary.main}26, transparent 60%)`,
-                pointerEvents: "none",
-              },
-
-              "&::after": {
-                content: '""',
-                position: "absolute",
-                top: -60,
-                right: -120,
-                width: 320,
-                height: 200,
-                transform: "rotate(18deg)",
-                background: `linear-gradient(90deg, transparent, ${t.palette.secondary.main}22, transparent)`,
-                pointerEvents: "none",
-              },
+              boxShadow: "0 12px 28px rgba(2, 6, 23, 0.08)",
             })}
           >
-            <Stack
-              direction={{ xs: "column", sm: "row" }}
-              spacing={{ xs: 1.25, sm: 1.75 }}
-              alignItems={{ xs: "flex-start", sm: "center" }}
-              sx={{ position: "relative" }}
-            >
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center">
               <Box
-                aria-hidden="true"
+                aria-hidden
                 sx={(t) => ({
                   display: "grid",
                   placeItems: "center",
-                  width: 54,
-                  height: 54,
+                  width: 52,
+                  height: 52,
                   borderRadius: 999,
                   bgcolor: t.palette.secondary.main,
                   color: t.palette.secondary.contrastText,
-                  boxShadow: "0 10px 24px rgba(20,184,166,0.28)",
-                  flex: "0 0 auto",
                 })}
               >
-                <LocalOfferIcon sx={{ fontSize: 28 }} />
+                <LocalOfferIcon aria-hidden />
               </Box>
 
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography
-                  sx={{
-                    fontWeight: 950,
-                    fontSize: { xs: "1.15rem", sm: "1.25rem" },
-                    lineHeight: 1.2,
-                    color: "text.primary",
-                  }}
-                >
+              <Box sx={{ flex: 1 }}>
+                <Typography component="p" fontWeight={950} sx={{ m: 0 }}>
                   New Customer Special
                 </Typography>
-
-                <Typography
-                  sx={{
-                    mt: 0.35,
-                    fontWeight: 700,
-                    fontSize: { xs: "1.02rem", sm: "1.08rem" },
-                    lineHeight: 1.55,
-                    color: "text.secondary",
-                  }}
-                >
-                  Get <Box component="span" sx={{ color: "text.primary", fontWeight: 900 }}>20% off your first project</Box>{" "}
-                  + a <Box component="span" sx={{ color: "text.primary", fontWeight: 900 }}>free 30-minute consultation</Box>.
-                  Mention <Box component="span" sx={{ fontWeight: 900, color: "secondary.main" }}>"New Customer"</Box> in your inquiry.
+                <Typography component="p" color="text.secondary" sx={{ m: 0 }}>
+                  Get <strong>20% off your first project</strong> plus a{" "}
+                  <strong>free 30-minute consultation</strong>.
                 </Typography>
               </Box>
 
-              <Box sx={{ flex: "0 0 auto" }}>
-                <Typography
-                  component="a"
-                  href="/?cta=true#contact"
-                  sx={(t) => ({
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 1,
-                    fontWeight: 900,
-                    textDecoration: "none",
-                    color: t.palette.secondary.contrastText,
-                    bgcolor: t.palette.secondary.main,
-                    px: 2.25,
-                    py: 1.25,
-                    borderRadius: 999,
-                    whiteSpace: "nowrap",
-                    boxShadow: "0 12px 26px rgba(20,184,166,0.26)",
-                    transition: "transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease",
-                    "&:hover": {
-                      transform: "translateY(-1px)",
-                      boxShadow: "0 16px 32px rgba(20,184,166,0.30)",
-                      bgcolor: t.palette.secondary.dark,
-                    },
-                    "&:focus-visible": {
-                      outline: `3px solid ${t.palette.primary.main}`,
-                      outlineOffset: 3,
-                    },
-                  })}
-                >
-                  Claim offer →
-                </Typography>
-              </Box>
+              <Typography
+                component="a"
+                href={buildContactHref()}
+                sx={(t) => ({
+                  fontWeight: 900,
+                  textDecoration: "none",
+                  color: t.palette.secondary.contrastText,
+                  bgcolor: t.palette.secondary.main,
+                  px: 3,
+                  py: 1.25,
+                  borderRadius: 999,
+                  "&:focus-visible": {
+                    outline: `3px solid ${t.palette.primary.main}`,
+                    outlineOffset: 3,
+                  },
+                })}
+              >
+                Claim offer →
+              </Typography>
             </Stack>
           </Box>
 
-          <Box sx={{ width: "100%" }}>
-            <Typography
-              variant="h2"
-              sx={{
-                fontWeight: 900,
-                fontSize: { xs: "2.35rem", md: "3.35rem" },
-                lineHeight: 1.1,
-              }}
-            >
+          <Box>
+            {/* Use h2 to avoid multiple h1s if the hero already owns the page h1 */}
+            <Typography id="services-title" component="h2" variant="h2" sx={{ fontWeight: 950 }}>
               Services
             </Typography>
 
             <Typography
+              component="p"
               sx={{
-                mt: 2,
-                maxWidth: 820,
+                mt: 1.25,
+                maxWidth: 900,
                 mx: "auto",
                 color: "text.secondary",
-                fontSize: { xs: "1.08rem", md: "1.2rem" },
-                lineHeight: 1.7,
+                fontSize: { xs: "1.05rem", md: "1.1rem" },
               }}
             >
-              Accessible websites + powerful Excel analytics. Build online and make smarter decisions.
+              Design and data working together to drive clarity, confidence, and growth.
             </Typography>
           </Box>
 
-          <Grid2 container spacing={{ xs: 3, md: 5 }} justifyContent="center" sx={{ width: "100%", m: 0 }}>
-            {services.map((service) => (
-              <Grid2 key={service.title} size={{ xs: 12, sm: 8, md: 4 }} sx={{ minWidth: 0 }}>
-                <ButtonBase
-                  onClick={() => goToContact(service.title)}
-                  sx={{
-                    width: "100%",
-                    height: "100%",
-                    borderRadius: 3,
-                    transition: "transform 180ms ease, box-shadow 180ms ease",
-                    "&:hover": { transform: "translateY(-6px)" },
-                    "&:focus-visible": {
-                      outline: "3px solid",
-                      outlineColor: "secondary.main",
-                      outlineOffset: 4,
-                    },
-                  }}
+          <Box
+            component="ul"
+            aria-label="Service options"
+            sx={{ listStyle: "none", p: 0, m: 0, width: "100%" }}
+          >
+            <Grid2
+              container
+              spacing={{ xs: 3, md: 3.25 }}
+              justifyContent="center"
+              alignItems="stretch"
+            >
+              {services.map((service) => (
+                <Grid2
+                  component="li"
+                  key={service.title}
+                  size={{ xs: 12, sm: 8, md: 4 }}
+                  sx={{ display: "flex" }}
                 >
-                  <Card
-                    sx={{
+                  <ButtonBase
+                    component="a"
+                    href={buildContactHref(service.title)}
+                    aria-label={`Get a quote for ${service.title}`}
+                    sx={(t) => ({
                       width: "100%",
-                      height: "100%",
-                      p: { xs: 3, md: 4 },
-                      textAlign: "center",
-                      bgcolor: "background.paper",
-                      border: "1px solid",
-                      borderColor: "divider",
+                      display: "flex",
+                      alignItems: "stretch",
                       borderRadius: 3,
-                      boxShadow: 4,
-                      overflow: "hidden",
-                      "&:hover": { boxShadow: 12 },
-                    }}
+                      transition: reducedMotion ? "none" : "transform 180ms ease",
+                      "&:hover": {
+                        transform: reducedMotion ? "none" : "translateY(-4px)",
+                      },
+                      "&:focus-visible": {
+                        outline: `3px solid ${t.palette.secondary.main}`,
+                        outlineOffset: 4,
+                      },
+                    })}
                   >
-                    <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "center", height: "100%" }}>
-                      <Box sx={{ mb: 3 }}>{iconMap[service.icon]}</Box>
+                    <Card
+                      component="article"
+                      sx={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        borderRadius: 3,
+                        boxShadow: 4,
+                      }}
+                    >
+                      <CardContent
+                        sx={{
+                          flex: 1,
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          textAlign: "center",
+                          p: 3,
+                        }}
+                      >
+                        <Box mb={2}>{iconMap[service.icon]}</Box>
 
-                      <Typography variant="h5" sx={{ fontWeight: 900, mb: 2 }}>
-                        {service.title}
-                      </Typography>
+                        <Typography component="h3" fontWeight={950} mb={1.5}>
+                          {service.title}
+                        </Typography>
 
-                      <Typography color="text.secondary" sx={{ flex: 1, mb: 3 }}>
-                        {service.description}
-                      </Typography>
+                        <Typography component="p" color="text.secondary" mb={2}>
+                          {service.description}
+                        </Typography>
 
-                      <Typography variant="h6" color="primary" sx={{ fontWeight: 800, mb: 2 }}>
-                        {service.price}
-                      </Typography>
+                        <Box sx={{ mt: "auto" }}>
+                          <Typography component="p" fontWeight={900} color="primary" mb={1}>
+                            {service.price}
+                          </Typography>
 
-                      <Typography sx={{ color: "secondary.main", fontWeight: 900, textDecoration: "underline" }}>
-                        Get quote →
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </ButtonBase>
-              </Grid2>
-            ))}
-          </Grid2>
+                          <Typography
+                            component="p"
+                            sx={{
+                              fontWeight: 900,
+                              color: "secondary.main",
+                              textDecoration: "underline",
+                              textUnderlineOffset: "4px",
+                              m: 0,
+                            }}
+                          >
+                            Get quote →
+                          </Typography>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </ButtonBase>
+                </Grid2>
+              ))}
+            </Grid2>
+          </Box>
         </Stack>
       </Container>
     </Box>
