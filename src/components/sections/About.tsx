@@ -1,14 +1,37 @@
+// src/components/sections/About.tsx
+
 import { Box, Container, Typography, Paper, Stack } from "@mui/material";
-import CodeIcon from "@mui/icons-material/Code";
-import SecurityIcon from "@mui/icons-material/Security";
-import InsightsIcon from "@mui/icons-material/Insights";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import HikingIcon from "@mui/icons-material/Hiking";
-import TableChartIcon from "@mui/icons-material/TableChart";
 
 const HEADER_OFFSET_PX = 96;
 
+// Generate random positions for icons
+const generatePositions = () => {
+  return Array.from({ length: 12 }, () => ({
+    left: Math.random() * 80 + 10 + "%",
+    top: Math.random() * 80 + 10 + "%",
+    rotation: Math.random() * 360,
+    scale: Math.random() * 0.3 + 0.8,
+    delay: Math.random() * 5 + "s",
+  }));
+};
+
 const About = () => {
+  const positions = generatePositions();
+
+  const iconStyle = (pos: any) => ({
+    position: "absolute" as const,
+    left: pos.left,
+    top: pos.top,
+    transform: `translate(-50%, -50%) rotate(${pos.rotation}deg) scale(${pos.scale})`,
+    width: { xs: 60, sm: 80, md: 100 },
+    transition: "transform 0.6s ease",
+    filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.2))",
+    animation: `float 20s ease-in-out infinite ${pos.delay}`,
+    "&:hover": {
+      transform: `translate(-50%, -50%) rotate(${pos.rotation + 180}deg) scale(${pos.scale * 1.4})`,
+    },
+  });
+
   return (
     <Box
       component="section"
@@ -21,131 +44,75 @@ const About = () => {
         minHeight: `calc(100dvh - ${HEADER_OFFSET_PX}px)`,
         display: "flex",
         alignItems: "center",
-        py: { xs: 4, sm: 5, md: 6 },
+        py: { xs: 8, sm: 10, md: 12 },
         position: "relative",
         overflow: "hidden",
       }}
       itemScope
       itemType="https://schema.org/Person"
     >
-      {/* Full width container (no "md" clamp) */}
-      <Container
-        maxWidth="xl"
-        disableGutters
+      {/* Floating Tech Icons */}
+      <Box
+        aria-hidden="true"
         sx={{
-          px: { xs: 2, sm: 3, md: 6, lg: 10 },
-          width: "100%",
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          zIndex: 10,
         }}
       >
-        <Box
-          sx={{
-            position: "relative",
-            width: "100%",
-            maxWidth: 1100,
-            mx: "auto",
-          }}
-        >
-          {/* Decorative floating icons (hidden on xs so they won't collide) */}
-          <Box
-            aria-hidden="true"
-            sx={{
-              display: { xs: "none", md: "block" },
-              position: "absolute",
-              inset: 0,
-              pointerEvents: "none",
-              zIndex: 0,
-              opacity: 0.14,
-            }}
-          >
-            {/* Left cluster */}
-            <Box
-              sx={{
-                position: "absolute",
-                left: { md: -24, lg: -40 },
-                top: 40,
-                transform: "rotate(-18deg)",
-                filter: "drop-shadow(0 6px 18px rgba(0,0,0,0.12))",
-              }}
-            >
-              <CodeIcon sx={{ fontSize: 84, color: "primary.main" }} />
-            </Box>
+        {/* React */}
+        <Box component="img" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="React" sx={iconStyle(positions[0])} />
 
-            <Box
-              sx={{
-                position: "absolute",
-                left: { md: 10, lg: 0 },
-                top: 170,
-                transform: "rotate(12deg)",
-                filter: "drop-shadow(0 6px 18px rgba(0,0,0,0.12))",
-              }}
-            >
-              <TableChartIcon sx={{ fontSize: 74, color: "secondary.main" }} />
-            </Box>
+        {/* TypeScript */}
+        <Box component="img" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg" alt="TypeScript" sx={{ ...iconStyle(positions[1]), width: { xs: 60, sm: 80, md: 100 } }} />
 
-            <Box
-              sx={{
-                position: "absolute",
-                left: { md: 70, lg: 60 },
-                bottom: 40,
-                transform: "rotate(-10deg)",
-                filter: "drop-shadow(0 6px 18px rgba(0,0,0,0.12))",
-              }}
-            >
-              <HikingIcon sx={{ fontSize: 82, color: "primary.main" }} />
-            </Box>
+        {/* Node.js */}
+        <Box component="img" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" alt="Node.js" sx={{ ...iconStyle(positions[2]), width: { xs: 70, sm: 90, md: 110 } }} />
 
-            {/* Right cluster */}
-            <Box
-              sx={{
-                position: "absolute",
-                right: { md: -24, lg: -40 },
-                top: 60,
-                transform: "rotate(16deg)",
-                filter: "drop-shadow(0 6px 18px rgba(0,0,0,0.12))",
-              }}
-            >
-              <CameraAltIcon sx={{ fontSize: 80, color: "secondary.main" }} />
-            </Box>
+        {/* Java */}
+        <Box component="img" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg" alt="Java" sx={{ ...iconStyle(positions[3]), width: { xs: 65, sm: 85, md: 105 } }} />
 
-            <Box
-              sx={{
-                position: "absolute",
-                right: { md: 20, lg: 10 },
-                top: 200,
-                transform: "rotate(-14deg)",
-                filter: "drop-shadow(0 6px 18px rgba(0,0,0,0.12))",
-              }}
-            >
-              <InsightsIcon sx={{ fontSize: 78, color: "primary.main" }} />
-            </Box>
+        {/* MySQL */}
+        <Box component="img" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg" alt="MySQL" sx={{ ...iconStyle(positions[4]), width: { xs: 60, sm: 80, md: 100 } }} />
 
-            <Box
-              sx={{
-                position: "absolute",
-                right: { md: 70, lg: 60 },
-                bottom: 50,
-                transform: "rotate(10deg)",
-                filter: "drop-shadow(0 6px 18px rgba(0,0,0,0.12))",
-              }}
-            >
-              <SecurityIcon sx={{ fontSize: 84, color: "primary.main" }} />
-            </Box>
-          </Box>
+        {/* AWS */}
+        <Box component="img" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" alt="AWS" sx={{ ...iconStyle(positions[5]), width: { xs: 80, sm: 100, md: 120 } }} />
 
-          {/* Content card */}
+        {/* Git */}
+        <Box component="img" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" alt="Git" sx={{ ...iconStyle(positions[6]), width: { xs: 60, sm: 80, md: 100 } }} />
+
+        {/* Material UI */}
+        <Box component="img" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/materialui/materialui-original.svg" alt="Material UI" sx={{ ...iconStyle(positions[7]), width: { xs: 60, sm: 80, md: 100 } }} />
+
+        {/* JavaScript */}
+        <Box component="img" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" alt="JavaScript" sx={{ ...iconStyle(positions[8]), width: { xs: 60, sm: 80, md: 100 } }} />
+
+        {/* HTML5 */}
+        <Box component="img" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" alt="HTML5" sx={{ ...iconStyle(positions[9]), width: { xs: 60, sm: 80, md: 100 } }} />
+
+        {/* CSS3 */}
+        <Box component="img" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" alt="CSS3" sx={{ ...iconStyle(positions[10]), width: { xs: 60, sm: 80, md: 100 } }} />
+
+        {/* MongoDB */}
+        <Box component="img" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mongodb/mongodb-original.svg" alt="MongoDB" sx={{ ...iconStyle(positions[11]), width: { xs: 70, sm: 90, md: 110 } }} />
+      </Box>
+
+      {/* Main Content Card */}
+      <Container maxWidth="lg" sx={{ position: "relative", zIndex: 30 }}>
+        <Box sx={{ maxWidth: 900, mx: "auto" }}>
           <Paper
             elevation={0}
-            sx={(t) => ({
-              position: "relative",
-              zIndex: 1,
+            sx={{
               borderRadius: 4,
               bgcolor: "background.paper",
-              border: `1px solid ${t.palette.divider}`,
-              p: { xs: 3, sm: 4, md: 5 },
-              overflow: "hidden",
-            })}
+              border: (theme) => `1px solid ${theme.palette.divider}`,
+              p: { xs: 4, sm: 6, md: 8 },
+              backdropFilter: "blur(12px)",
+              bgcolor: "rgba(255,255,255,0.92)",
+            }}
           >
-            <Stack spacing={{ xs: 1.5, md: 2 }}>
+            <Stack spacing={{ xs: 3, md: 4 }}>
               <Typography
                 id="about-heading"
                 component="h2"
@@ -153,12 +120,12 @@ const About = () => {
                   textAlign: "center",
                   fontWeight: 800,
                   letterSpacing: 0.2,
-                  fontSize: { xs: "2rem", sm: "2.4rem", md: "2.8rem" },
-                  lineHeight: 1.1,
+                  fontSize: { xs: "2.4rem", sm: "2.8rem", md: "3.2rem" },
+                  lineHeight: 1.15,
                 }}
                 itemProp="name"
               >
-                About Me
+                Hi, I’m Nichole — Founder of Insight Web Solutions
               </Typography>
 
               <Typography
@@ -166,30 +133,14 @@ const About = () => {
                 sx={{
                   textAlign: "center",
                   color: "text.secondary",
-                  fontSize: { xs: "1.05rem", sm: "1.12rem", md: "1.18rem" },
-                  lineHeight: 1.75,
-                  maxWidth: 860,
+                  fontSize: { xs: "1.12rem", sm: "1.2rem", md: "1.3rem" },
+                  lineHeight: 1.8,
+                  maxWidth: 800,
                   mx: "auto",
                 }}
                 itemProp="description"
               >
-                I’m{" "}
-                <Box component="span" itemProp="givenName" sx={{ color: "text.primary", fontWeight: 700 }}>
-                  Nichole
-                </Box>
-                , founder of{" "}
-                <Box
-                  component="span"
-                  itemProp="worksFor"
-                  itemScope
-                  itemType="https://schema.org/Organization"
-                >
-                  <Box component="span" itemProp="name" sx={{ color: "text.primary", fontWeight: 700 }}>
-                    Insight Web Solutions
-                  </Box>
-                </Box>
-                . I build modern, high-performing websites and I’m obsessive about accessibility (WCAG/508),
-                SEO, UX, and clean, scalable code.
+                I partner with growing businesses, agencies, and enterprises to build high-performance, accessible digital experiences that drive measurable results — higher conversions, better search rankings, inclusive usability, and long-term scalability.
               </Typography>
 
               <Typography
@@ -197,27 +148,38 @@ const About = () => {
                 sx={{
                   textAlign: "center",
                   color: "text.secondary",
-                  fontSize: { xs: "1.02rem", sm: "1.08rem", md: "1.14rem" },
-                  lineHeight: 1.7,
-                  maxWidth: 860,
+                  fontSize: { xs: "1.08rem", sm: "1.15rem", md: "1.22rem" },
+                  lineHeight: 1.8,
+                  maxWidth: 800,
                   mx: "auto",
                 }}
               >
-                I also love data and systems thinking — and I’m expanding into{" "}
-                <Box component="span" itemProp="knowsAbout" sx={{ color: "text.primary", fontWeight: 700 }}>
-                  AWS + cybersecurity
-                </Box>{" "}
-                so I can help businesses build faster *and* safer.
+                Specializing in WCAG-compliant web development, technical SEO optimization, conversion-focused UX, data analytics & automation, and secure cloud solutions — I deliver clean, modern code and strategic insights that help ambitious organizations stand out in competitive markets.
               </Typography>
 
               <Typography
                 component="p"
                 sx={{
                   textAlign: "center",
-                  mt: 1,
+                  color: "text.secondary",
+                  fontSize: { xs: "1.08rem", sm: "1.15rem", md: "1.22rem" },
+                  lineHeight: 1.8,
+                  maxWidth: 800,
+                  mx: "auto",
+                  fontWeight: 600,
+                }}
+              >
+                Whether you're scaling a SaaS platform, enhancing enterprise accessibility compliance, or optimizing data-driven decision making — let’s create something exceptional together.
+              </Typography>
+
+              <Typography
+                component="p"
+                sx={{
+                  textAlign: "center",
+                  mt: 3,
                   color: "text.secondary",
                   fontStyle: "italic",
-                  fontSize: { xs: "0.98rem", sm: "1.02rem" },
+                  fontSize: { xs: "1rem", sm: "1.05rem" },
                 }}
                 itemProp="jobTitle"
               >
@@ -227,6 +189,14 @@ const About = () => {
           </Paper>
         </Box>
       </Container>
+
+      {/* Floating Animation Keyframes */}
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0) translateX(0); }
+          50% { transform: translateY(-30px) translateX(15px); }
+        }
+      `}</style>
     </Box>
   );
 };
