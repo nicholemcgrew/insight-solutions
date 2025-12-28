@@ -5,16 +5,23 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#1976d2" />
+<!-- Inside <head> -->
+<meta property="og:title" content="Insight Web Solutions | Web Development, Accessibility, SEO & UX" />
+<meta property="og:description" content="Professional web development, WCAG 2.2 AA accessibility audits, SEO optimization, UX design, and data analytics." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://insightwebsolutions.com" />
+<meta property="og:image" content="https://insightwebsolutions.com/og-image.jpg" /> <!-- Add a 1200x630 image -->
 
     <!-- Favicon & App Icons -->
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/apple-touch-icon.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/site.webmanifest" />
-    <link rel="mask-icon" href="%PUBLIC_URL%/safari-pinned-tab.svg" color="#1976d2" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#1976d2" />
 
     <!-- Preconnect -->
     <link rel="preconnect" href="https://formspree.io" />
     <link rel="dns-prefetch" href="https://formspree.io" />
+<!-- <link rel="preload" href="/fonts/your-main-font.woff2" as="font" type="font/woff2" crossorigin /> -->
 
     <title>Insight Web Solutions | Web Development, Accessibility, SEO & UX</title>
     <meta
@@ -25,19 +32,21 @@
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://insightwebsolutions.com" />
 
-    <!-- Open Graph / Twitter meta omitted for brevity (keep your originals) -->
-    <noscript aria-hidden="true">
-      You need to enable JavaScript to run this app.
-    </noscript>
+    <!-- Add your Open Graph / Twitter tags here if you have any -->
   </head>
 
   <body>
-    <!-- React root must live inside body -->
+    <noscript aria-hidden="true">
+      You need to enable JavaScript to run this app.
+    </noscript>
+
     <div id="root"></div>
 
-    <!-- Smooth scroll for non-JS fallback -->
     <script>
       document.documentElement.style.scrollBehavior = 'smooth';
     </script>
+
+    <!-- Correct entry point for your project -->
+    <script type="module" src="/src/index.tsx"></script>
   </body>
 </html>

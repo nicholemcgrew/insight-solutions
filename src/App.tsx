@@ -18,6 +18,7 @@ import PricingPage from "./pages/PricingPage";
 import Hero from "./components/sections/Hero";
 import Services from "./components/sections/services/Services";
 import Portfolio from "./components/sections/Portfolio";
+import WebsiteBuilderPage from "./pages/WebsiteBuilderPage"; // ← Already imported
 
 const App = () => {
   return (
@@ -107,6 +108,27 @@ const App = () => {
 
                 <Box component="main" id="main-content" tabIndex={-1}>
                   <PricingPage />
+                  <Footer />
+                </Box>
+              </>
+            }
+          />
+
+          {/* WEBSITE BUILDER */}
+          <Route
+            path="/builder"
+            element={
+              <>
+                <Helmet>
+                  <title>Website Builder | Insight Web Solutions</title>
+                  <meta
+                    name="description"
+                    content="Generate a custom website by filling out a simple form."
+                  />
+                </Helmet>
+
+                <Box component="main" id="main-content" tabIndex={-1}>
+                  <WebsiteBuilderPage />
                   <Footer />
                 </Box>
               </>
