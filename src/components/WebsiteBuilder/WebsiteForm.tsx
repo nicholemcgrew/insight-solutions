@@ -1,6 +1,6 @@
 // src/components/WebsiteBuilder/WebsiteForm.tsx
 
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, Controller } from "react-hook-form";
 import {
   TextField,
   Button,
@@ -17,6 +17,7 @@ import type { WebsiteConfig } from "../../types/WebsiteConfig";
 interface WebsiteFormProps {
   initialValues?: Partial<WebsiteConfig>;
   onChange: (data: WebsiteConfig) => void;
+  onSubmit: (data: WebsiteConfig) => void;
 }
 
 const defaultValues: WebsiteConfig = {
@@ -33,8 +34,8 @@ const defaultValues: WebsiteConfig = {
   services: [{ title: "", description: "" }],
 };
 
-export default function WebsiteForm({ initialValues, onChange }: WebsiteFormProps) {
-  const { control, watch, register, setValue, formState: { errors } } = useForm<WebsiteConfig>({
+export default function WebsiteForm({ initialValues, onChange, onSubmit }: WebsiteFormProps) {
+  const { control, watch, register, setValue, handleSubmit, formState: { errors } } = useForm<WebsiteConfig>({
     defaultValues: { ...defaultValues, ...initialValues },
   });
 
@@ -43,7 +44,7 @@ export default function WebsiteForm({ initialValues, onChange }: WebsiteFormProp
     name: "services",
   });
 
-  // Live preview update
+  // Live update preview on every change
   useEffect(() => {
     const subscription = watch((value) => {
       onChange(value as WebsiteConfig);
@@ -55,7 +56,9 @@ export default function WebsiteForm({ initialValues, onChange }: WebsiteFormProp
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => setValue("heroImage", reader.result as string);
+      reader.onloadend = () => {
+        setValue("heroImage", reader.result as string);
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -63,12 +66,13 @@ export default function WebsiteForm({ initialValues, onChange }: WebsiteFormProp
   const colorKeys: (keyof WebsiteConfig["colorScheme"])[] = ["primary", "secondary", "background", "text"];
 
   return (
-    <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
-      <Typography variant="h5" gutterBottom>
-        Build Your Website
+    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ maxWidth: 800, mx: "auto", p: 3 }}>
+      <Typography variant="h5" gutterBottom fontWeight="bold">
+        Build Your Professional Website
       </Typography>
 
       <Grid container spacing={3}>
+        {/* Basic Info */}
         <Grid item xs={12}>
           <TextField
             label="Business Name *"
@@ -84,18 +88,12 @@ export default function WebsiteForm({ initialValues, onChange }: WebsiteFormProp
         </Grid>
 
         <Grid item xs={12}>
-          <TextField
-            label="About"
-            fullWidth
-            multiline
-            minRows={4}
-            {...register("about")}
-          />
+          <TextField label="About Your Business" fullWidth multiline minRows={4} {...register("about")} />
         </Grid>
 
         <Grid item xs={12} md={6}>
           <TextField
-            label="Email *"
+            label="Contact Email *"
             fullWidth
             {...register("contactEmail", { required: "Required" })}
             error={!!errors.contactEmail}
@@ -111,57 +109,52 @@ export default function WebsiteForm({ initialValues, onChange }: WebsiteFormProp
         </Grid>
 
         <Grid item xs={12}>
-          <Button variant="outlined" component="label">
+          <Button variant="contained" component="label">
             Upload Hero Image
             <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
           </Button>
         </Grid>
 
-        {/* Social */}
+        {/* Social Links */}
         <Grid item xs={12} md={4}>
-          <TextField
-            label="Facebook"
-            fullWidth
-            InputProps={{ startAdornment: <InputAdornment position="start"><Facebook /></InputAdornment> }}
-            {...register("facebook")}
-          />
+          <TextField label="Facebook" fullWidth InputProps={{ startAdornment: <InputAdornment position="start"><Facebook /></InputAdornment> }} {...register("facebook")} />
         </Grid>
         <Grid item xs={12} md={4}>
-          <TextField
-            label="Instagram"
-            fullWidth
-            InputProps={{ startAdornment: <InputAdornment position="start"><Instagram /></InputAdornment> }}
-            {...register("instagram")}
-          />
+          <TextField label="Instagram" fullWidth InputProps={{ startAdornment: <InputAdornment position="start"><Instagram /></InputAdornment> }} {...register("instagram")} />
         </Grid>
         <Grid item xs={12} md={4}>
-          <TextField
-            label="LinkedIn"
-            fullWidth
-            InputProps={{ startAdornment: <InputAdornment position="start"><LinkedIn /></InputAdornment> }}
-            {...register("linkedin")}
-          />
+          <TextField label="LinkedIn" fullWidth InputProps={{ startAdornment: <InputAdornment position="start"><LinkedIn /></InputAdornment> }} {...register("linkedin")} />
         </Grid>
 
-        {/* Colors */}
+        {/* Colors - NOW UPDATES IN REAL TIME */}
         <Grid item xs={12}>
-          <Typography variant="h6" gutterBottom>Colors</Typography>
+          <Typography variant="h6" gutterBottom>Color Scheme</Typography>
           <Grid container spacing={3}>
             {colorKeys.map((key) => (
               <Grid item xs={6} sm={3} key={key}>
-                <Typography variant="body2">
+                <Typography variant="body2" gutterBottom>
                   {key.charAt(0).toUpperCase() + key.slice(1)}
                 </Typography>
-                <TextField
-                  type="color"
-                  fullWidth
-                  {...register(`colorScheme.${key}`)}
-                  sx={{ mb: 1 }}
+                {/* Color Picker */}
+                <Controller
+                  name={`colorScheme.${key}`}
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      type="color"
+                      {...field}
+                      style={{ width: "100%", height: 60, border: "none", borderRadius: 8, cursor: "pointer" }}
+                      onChange={(e) => field.onChange(e.target.value)}
+                    />
+                  )}
                 />
+                {/* Hex Input */}
                 <TextField
                   size="small"
                   fullWidth
+                  sx={{ mt: 1 }}
                   {...register(`colorScheme.${key}`)}
+                  placeholder="#000000"
                 />
               </Grid>
             ))}
@@ -174,10 +167,10 @@ export default function WebsiteForm({ initialValues, onChange }: WebsiteFormProp
           {fields.map((field, index) => (
             <Box key={field.id} sx={{ border: "1px solid #ddd", borderRadius: 2, p: 3, mb: 3, position: "relative" }}>
               <TextField
-                label="Title *"
+                label="Service Title *"
                 fullWidth
                 sx={{ mb: 2 }}
-                {...register(`services.${index}.title`, { required: true })}
+                {...register(`services.${index}.title`, { required: "Required" })}
               />
               <TextField
                 label="Description"
@@ -199,6 +192,15 @@ export default function WebsiteForm({ initialValues, onChange }: WebsiteFormProp
           <Button startIcon={<Add />} onClick={() => append({ title: "", description: "" })} variant="outlined">
             Add Service
           </Button>
+        </Grid>
+
+        {/* Submit CTA */}
+        <Grid item xs={12}>
+          <Box sx={{ mt: 4, textAlign: "center" }}>
+            <Button type="submit" variant="contained" size="large" color="primary" sx={{ px: 6, py: 2 }}>
+              Generate & Publish Website
+            </Button>
+          </Box>
         </Grid>
       </Grid>
     </Box>

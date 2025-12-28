@@ -1,5 +1,4 @@
 // src/types/WebsiteConfig.ts
-
 export interface ColorScheme {
   primary: string;
   secondary: string;
@@ -19,7 +18,7 @@ export interface WebsiteConfig {
   contactEmail: string;
   phone?: string;
   address?: string;
-  heroImage?: string; // data URL or external URL
+  heroImage?: string;
   colorScheme: ColorScheme;
   services: Service[];
   facebook?: string;
