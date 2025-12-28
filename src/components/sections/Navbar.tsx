@@ -1,5 +1,4 @@
-// src/components/Navbar.tsx
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -20,7 +19,8 @@ import {
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-import navItemsData from "../data/navItems.json";
+import navItemsData from "../../data/navItemsData.json";
+
 
 interface NavItem {
   label: string;

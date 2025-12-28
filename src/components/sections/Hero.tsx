@@ -1,8 +1,7 @@
-// src/sections/Hero.tsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Box, Container, Typography, Button, Stack } from "@mui/material";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { NAVBAR_HEIGHT } from "../components/Navbar";
+import { NAVBAR_HEIGHT } from "./Navbar";
 
 type WordStyle = {
   text: string;
@@ -20,7 +19,9 @@ type WordStyle = {
 };
 
 function prefersReducedMotion() {
-  return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+  return (
+    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false
+  );
 }
 
 const Hero = () => {
@@ -32,7 +33,7 @@ const Hero = () => {
       { text: "data driven", color: "#A78BFA", doodle: "highlight" },
       { text: "high trust", color: "#FB7185", doodle: "wavy" },
     ],
-    []
+    [],
   );
 
   const [wordIndex, setWordIndex] = useState(0);
@@ -68,7 +69,8 @@ const Hero = () => {
   const current = wordStyles[wordIndex];
 
   // 508: stable, descriptive equivalent for screen readers (avoid announcing animated swaps)
-  const srHeadlineSuffix = "stunning, accessible, fast, data driven, high trust websites";
+  const srHeadlineSuffix =
+    "stunning, accessible, fast, data driven, high trust websites";
 
   // SPA-friendly CTA navigation (keeps href for SEO + copy link; no hard reload)
   const handleCtaToContact = (e?: React.MouseEvent) => {
@@ -92,7 +94,10 @@ const Hero = () => {
         overflow: "hidden",
 
         // Helps hash-jumps land below the fixed navbar (good for keyboard users too)
-        scrollMarginTop: { xs: `${NAVBAR_HEIGHT.mobile}px`, lg: `${NAVBAR_HEIGHT.desktop}px` },
+        scrollMarginTop: {
+          xs: `${NAVBAR_HEIGHT.mobile}px`,
+          lg: `${NAVBAR_HEIGHT.desktop}px`,
+        },
 
         "&::before": {
           content: '""',
@@ -123,13 +128,20 @@ const Hero = () => {
             xs: `calc(100dvh - ${NAVBAR_HEIGHT.mobile}px)`,
             lg: `calc(100dvh - ${NAVBAR_HEIGHT.desktop}px)`,
           },
-          mt: { xs: `${NAVBAR_HEIGHT.mobile}px`, lg: `${NAVBAR_HEIGHT.desktop}px` },
+          mt: {
+            xs: `${NAVBAR_HEIGHT.mobile}px`,
+            lg: `${NAVBAR_HEIGHT.desktop}px`,
+          },
           display: "flex",
           alignItems: "center",
           py: { xs: 4, sm: 5, md: 6 },
         }}
       >
-        <Container maxWidth={false} disableGutters sx={{ px: { xs: 2, sm: 3, md: 6 } }}>
+        <Container
+          maxWidth={false}
+          disableGutters
+          sx={{ px: { xs: 2, sm: 3, md: 6 } }}
+        >
           <Box sx={{ maxWidth: 1200, mx: "auto", width: "100%" }}>
             <Stack spacing={{ xs: 2.0, md: 2.4 }} alignItems="center">
               <Typography
@@ -196,7 +208,9 @@ const Hero = () => {
                           px: { xs: 0.4, sm: 0.55 },
                           color: current.color,
                           fontWeight: 900,
-                          animation: prefersReducedMotion() ? "none" : "wordIn 300ms ease-out",
+                          animation: prefersReducedMotion()
+                            ? "none"
+                            : "wordIn 300ms ease-out",
 
                           // Critical for tiny screens + long phrases
                           whiteSpace: "normal",
@@ -213,21 +227,25 @@ const Hero = () => {
                               inset: { xs: -14, sm: -18 },
                               width: "140%",
                               height: "140%",
-                              animation: prefersReducedMotion() ? "none" : "doodlePop 400ms ease-out",
+                              animation: prefersReducedMotion()
+                                ? "none"
+                                : "doodlePop 400ms ease-out",
                               pointerEvents: "none",
                             }}
                             viewBox="0 0 140 100"
                             aria-hidden="true"
                           >
-                            {[0, 45, 90, 135, 180, 225, 270, 315].map((rot, i) => (
-                              <path
-                                key={i}
-                                d="M10 0 L13 7 L20 7 L15 11 L17 18 L10 14 L3 18 L5 11 L0 7 L7 7 Z"
-                                fill={current.color}
-                                transform={`translate(70,50) rotate(${rot}) translate(0,-35)`}
-                                opacity={0.8}
-                              />
-                            ))}
+                            {[0, 45, 90, 135, 180, 225, 270, 315].map(
+                              (rot, i) => (
+                                <path
+                                  key={i}
+                                  d="M10 0 L13 7 L20 7 L15 11 L17 18 L10 14 L3 18 L5 11 L0 7 L7 7 Z"
+                                  fill={current.color}
+                                  transform={`translate(70,50) rotate(${rot}) translate(0,-35)`}
+                                  opacity={0.8}
+                                />
+                              ),
+                            )}
                           </Box>
                         )}
 
@@ -466,18 +484,32 @@ const Hero = () => {
                 id={subheadId}
                 component="p"
                 sx={{
-                  fontSize: { xs: "1.05rem", sm: "1.15rem", md: "1.3rem", lg: "1.35rem" },
+                  fontSize: {
+                    xs: "1.05rem",
+                    sm: "1.15rem",
+                    md: "1.3rem",
+                    lg: "1.35rem",
+                  },
                   lineHeight: 1.65,
                   maxWidth: 920,
                   opacity: 0.95,
                   textAlign: "center",
                 }}
               >
-                We specialize in 508-compliant web development, high-SEO strategies, custom dashboards, and
-                comprehensive analytics to drive your business forward.
+                We specialize in 508-compliant web development, high-SEO
+                strategies, custom dashboards, and comprehensive analytics to
+                drive your business forward.
               </Typography>
 
-              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", justifyContent: "center", mt: { xs: 2.5, md: 3 } }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 2,
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                  mt: { xs: 2.5, md: 3 },
+                }}
+              >
                 <Button
                   variant="contained"
                   color="secondary"
@@ -506,7 +538,10 @@ const Hero = () => {
                     borderWidth: 2,
                     borderColor: "white",
                     color: "white",
-                    "&:hover": { borderWidth: 2, bgcolor: "rgba(255,255,255,0.1)" },
+                    "&:hover": {
+                      borderWidth: 2,
+                      bgcolor: "rgba(255,255,255,0.1)",
+                    },
                   }}
                 >
                   Get Free Consultation

@@ -1,5 +1,5 @@
 // src/reportWebVitals.ts
-import { onCLS, onFID, onFCP, onLCP, onTTFB } from 'web-vitals';
+import { onCLS, onFID, onFCP, onLCP, onTTFB } from "web-vitals";
 
 const reportWebVitals = (onPerfEntry?: (metric: any) => void) => {
   if (onPerfEntry && onPerfEntry instanceof Function) {

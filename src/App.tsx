@@ -1,17 +1,23 @@
-import React from "react";
-import { ThemeProvider, CssBaseline, Box, Container, Typography, Button } from "@mui/material";
+import {
+  ThemeProvider,
+  CssBaseline,
+  Box,
+  Container,
+  Typography,
+  Button,
+} from "@mui/material";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Routes, Route, Link as RouterLink } from "react-router-dom";
 
 import theme from "./theme/theme";
-import Navbar from "./components/Navbar";
-import Hero from "./sections/Hero";
-import Services from "./sections/Services";
-import Portfolio from "./sections/Portfolio";
-import About from "./sections/About";
-import Contact from "./sections/Contact";
-import Footer from "./components/Footer";
+import Navbar from "./components/sections/Navbar";
+import About from "./components/sections/About";
+import Contact from "./components/sections/Contact";
+import Footer from "./components/sections/Footer";
 import PricingPage from "./pages/PricingPage";
+import Hero from "./components/sections/Hero";
+import Services from "./components/sections/services/Services";
+import Portfolio from "./components/sections/Portfolio";
 
 const App = () => {
   return (
@@ -65,7 +71,9 @@ const App = () => {
             element={
               <>
                 <Helmet>
-                  <title>Insight Web Solutions | Web Development, Accessibility, SEO</title>
+                  <title>
+                    Insight Web Solutions | Web Development, Accessibility, SEO
+                  </title>
                   <meta
                     name="description"
                     content="Professional web development, WCAG-compliant accessibility, SEO, UX, and data analytics."
@@ -135,8 +143,13 @@ const App = () => {
                     >
                       404 — Page Not Found
                     </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-                      That page doesn’t exist. Use the button below to go back home.
+                    <Typography
+                      variant="body1"
+                      color="text.secondary"
+                      sx={{ mb: 4 }}
+                    >
+                      That page doesn’t exist. Use the button below to go back
+                      home.
                     </Typography>
                     <Button
                       component={RouterLink}

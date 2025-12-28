@@ -1,5 +1,4 @@
-// src/components/Footer.tsx
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import {
   Box,
   Container,
@@ -10,16 +9,16 @@ import {
 } from "@mui/material";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
-import navItems from "../data/navItems.json";
+import navItemsData from "../../data/navItemsData.json";
 
-interface NavItem {
-  label: string;
+
+interface NavItem {label: string;
   to: string; // "/pricing" OR section id like "services"
 }
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const navLinks: NavItem[] = useMemo(() => navItems as NavItem[], []);
+  const navLinks: NavItem[] = useMemo(() => navItemsData as NavItem[], []);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -54,8 +53,7 @@ const Footer = () => {
 
   const FooterLink = ({ item }: { item: NavItem }) => {
     const isRoute = item.to.startsWith("/");
-
-    // Route links (like /pricing)
+// Route links (like /pricing)
     if (isRoute) {
       return (
         <MuiLink

@@ -1,5 +1,3 @@
-// src/sections/About.tsx
-import React from "react";
 import { Box, Container, Typography, Paper, Stack } from "@mui/material";
 import CodeIcon from "@mui/icons-material/Code";
 import SecurityIcon from "@mui/icons-material/Security";

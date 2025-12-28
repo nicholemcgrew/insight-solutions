@@ -1,0 +1,10 @@
+*** Update File: src/components/WebsiteBuilder/WebsiteForm.tsx
+@@
+-import type { WebsiteConfig } from "../types/WebsiteConfig"
++import type { WebsiteConfig } from "../../types/WebsiteConfig"
+*** Update File: src/components/WebsiteBuilder/WebsitePreview.tsx
+@@
+-import { Box, Typography, Card, CardContent } from "@mui/material"
+-// import type { WebsiteConfig } from "../types/WebsiteConfig"
++import { Box, Typography, Card, CardContent } from "@mui/material"
++import type { WebsiteConfig } from "../../types/WebsiteConfig"

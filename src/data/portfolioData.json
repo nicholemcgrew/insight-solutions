@@ -42,14 +42,7 @@
     "title": "My Personal Portfolio",
     "description": "My live portfolio built with React, TypeScript, and MUI. Fully responsive, SEO-optimized, WCAG-compliant, and designed to convert leads.",
     "role": "Designer & Developer",
-    "tech": [
-      "React",
-      "TypeScript",
-      "MUI",
-      "SEO",
-      "WCAG",
-      "Responsive"
-    ],
+    "tech": ["React", "TypeScript", "MUI", "SEO", "WCAG", "Responsive"],
     "link": "https://nicholemcgrew.netlify.app/",
     "desktop": "/images/projects/portfolio.png",
     "mobile": "/images/projects/portfolio.png"

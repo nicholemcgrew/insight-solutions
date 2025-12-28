@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Box,
   Container,
@@ -21,7 +20,7 @@ import CollectionsIcon from "@mui/icons-material/CollectionsBookmark";
 import SupportIcon from "@mui/icons-material/SupportAgent";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
-import pricingData from "../data/pricing.json";
+import pricingData from "../data/pricingData.json";
 
 interface Service {
   title: string;
@@ -88,15 +87,24 @@ const PricingPage = () => {
             mb: { xs: 4, md: 6 },
           }}
         >
-          Clear, fair pricing for small businesses and beginners. No surprises — just results.
+          Clear, fair pricing for small businesses and beginners. No surprises —
+          just results.
         </Typography>
 
-        <Grid2 container spacing={{ xs: 3, md: 4 }} justifyContent="center" sx={{ width: "100%", m: 0 }}>
+        <Grid2
+          container
+          spacing={{ xs: 3, md: 4 }}
+          justifyContent="center"
+          sx={{ width: "100%", m: 0 }}
+        >
           {services.map((service, index) => {
             const IconComponent = iconMap[service.icon as IconKey] ?? WebIcon;
 
             return (
-              <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={`${service.title}-${index}`}>
+              <Grid2
+                size={{ xs: 12, sm: 6, md: 4 }}
+                key={`${service.title}-${index}`}
+              >
                 <Card
                   component="section"
                   aria-label={`${service.title} pricing card`}
@@ -121,7 +129,9 @@ const PricingPage = () => {
                   })}
                 >
                   <CardContent sx={{ flexGrow: 1, p: { xs: 3, md: 3.5 } }}>
-                    <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+                    <Box
+                      sx={{ display: "flex", justifyContent: "center", mb: 2 }}
+                    >
                       <Box
                         sx={(t) => ({
                           width: 64,
@@ -133,7 +143,9 @@ const PricingPage = () => {
                         })}
                         aria-hidden="true"
                       >
-                        <IconComponent sx={{ fontSize: 36, color: "primary.main" }} />
+                        <IconComponent
+                          sx={{ fontSize: 36, color: "primary.main" }}
+                        />
                       </Box>
                     </Box>
 
@@ -183,8 +195,17 @@ const PricingPage = () => {
                       {service.description}
                     </Typography>
 
-                    <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ maxWidth: 420, mx: "auto" }}>
-                      <CheckCircleIcon color="secondary" sx={{ mt: "2px" }} aria-hidden="true" />
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      alignItems="flex-start"
+                      sx={{ maxWidth: 420, mx: "auto" }}
+                    >
+                      <CheckCircleIcon
+                        color="secondary"
+                        sx={{ mt: "2px" }}
+                        aria-hidden="true"
+                      />
                       <Typography
                         variant="body2"
                         sx={{
@@ -245,8 +266,9 @@ const PricingPage = () => {
             overflowWrap: "anywhere",
           }}
         >
-          Need something custom? I can tailor a package for accessibility, SEO, performance, and ongoing updates. Use any
-          “Get Quote” button to prefill your service selection.
+          Need something custom? I can tailor a package for accessibility, SEO,
+          performance, and ongoing updates. Use any “Get Quote” button to
+          prefill your service selection.
         </Typography>
       </Container>
     </Box>

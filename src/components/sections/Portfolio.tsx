@@ -1,5 +1,3 @@
-// src/sections/Portfolio.tsx
-import React from "react";
 import {
   Box,
   Typography,
@@ -13,7 +11,7 @@ import {
 import Grid2 from "@mui/material/Grid2";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
-import portfolioData from "../data/portfolio.json";
+import portfolioData from "../../data/portfolioData.json";
 
 const HEADER_OFFSET = 96;
 
