@@ -1,20 +1,20 @@
 [
   {
-    "title": "Accessible Web Development",
-    "description": "Clean, responsive websites — mobile-first and built with accessibility best practices from day one.",
-    "price": "Starting at $750",
-    "icon": "Web"
+    "title": "Web & Accessibility",
+    "description": "Modern, responsive websites built mobile-first with accessibility and performance best practices.",
+    "icon": "Web",
+    "value": "web-accessibility"
   },
   {
-    "title": "SEO Audit & Optimization",
-    "description": "Beginner-friendly SEO audit + quick wins to help you show up in search and build a foundation for growth.",
-    "price": "Starting at $500",
-    "icon": "Search"
+    "title": "Search & Growth",
+    "description": "SEO audits, optimization, and UX improvements that help the right people find and use your site.",
+    "icon": "Search",
+    "value": "search-growth"
   },
   {
-    "title": "Excel Analytics & Automation",
-    "description": "Dashboards, cleanup, and automation that turn messy spreadsheets into clear decisions and saved time.",
-    "price": "Starting at $400",
-    "icon": "BarChart"
+    "title": "Data & Analytics",
+    "description": "SQL, ETL, reporting, and spreadsheet automation that turn raw data into usable insight.",
+    "icon": "Storage",
+    "value": "data-analytics"
   }
 ]

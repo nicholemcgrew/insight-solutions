@@ -105,11 +105,10 @@ const About = () => {
             elevation={0}
             sx={{
               borderRadius: 4,
-              bgcolor: "background.paper",
+             
               border: (theme) => `1px solid ${theme.palette.divider}`,
               p: { xs: 4, sm: 6, md: 8 },
               backdropFilter: "blur(12px)",
-              bgcolor: "rgba(255,255,255,0.92)",
             }}
           >
             <Stack spacing={{ xs: 3, md: 4 }}>

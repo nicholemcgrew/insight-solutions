@@ -1,51 +1,51 @@
 [
   {
-    "title": "Accessible Web Development",
-    "description": "A modern website built for mobile, performance, and accessibility best practices. Great for small businesses and first-time websites.",
+    "title": "Web Development",
+    "description": "A complete website build for small businesses and personal brands.",
     "price": "Starting at $750",
-    "cta": "Includes mobile-first layout, basic SEO setup, and accessibility best practices.",
-    "icon": "Web"
+    "icon": "Web",
+    "value": "web-development"
   },
   {
     "title": "Accessibility Audit & Fixes",
-    "description": "A focused accessibility review with prioritized fixes to improve usability for everyone (and reduce risk).",
+    "description": "Audit + prioritized fixes to improve accessibility and reduce risk.",
     "price": "Starting at $600",
-    "cta": "You’ll get a clear issues list + recommended fixes (and I can implement them).",
-    "icon": "Accessibility"
+    "icon": "Accessibility",
+    "value": "accessibility-audit"
   },
   {
     "title": "SEO Audit & Optimization",
-    "description": "Technical audit + keyword direction + on-page improvements that help you get found by the right people.",
+    "description": "Audit + keyword direction + on-page improvements for search growth.",
     "price": "Starting at $500",
-    "cta": "Best for businesses that want more traffic without ads.",
-    "icon": "Search"
+    "icon": "Search",
+    "value": "seo-audit"
   },
   {
     "title": "UX Improvements",
-    "description": "Improve clarity and conversions: layout, messaging, CTAs, and user flow updates based on best practices.",
+    "description": "Improve clarity and conversions with layout, copy, and flow updates.",
     "price": "Starting at $450",
-    "cta": "Ideal when you’re getting traffic but not getting leads.",
-    "icon": "DesignServices"
+    "icon": "DesignServices",
+    "value": "ux-improvements"
+  },
+  {
+    "title": "SQL & ETL Consulting",
+    "description": "SQL optimization, migrations, ETL, reporting, and database integrations.",
+    "price": "Starting at $550",
+    "icon": "Storage",
+    "value": "sql-etl"
   },
   {
     "title": "Excel Analytics & Automation",
-    "description": "Dashboards, cleanup, forecasting, and automation to save time and make better decisions from your data.",
+    "description": "Dashboards and automation to turn spreadsheets into decision tools.",
     "price": "Starting at $400",
-    "cta": "Perfect for sales, finance, marketing, and operations tracking.",
-    "icon": "BarChart"
-  },
-  {
-    "title": "Portfolio / Personal Site",
-    "description": "A clean, professional portfolio site designed to convert recruiters and clients.",
-    "price": "Starting at $600",
-    "cta": "Fast, modern, and easy to update.",
-    "icon": "Collections"
+    "icon": "BarChart",
+    "value": "excel-analytics"
   },
   {
     "title": "Maintenance & Support",
-    "description": "Ongoing updates, small edits, performance checks, and support so your site stays healthy.",
+    "description": "Ongoing updates, fixes, and performance checks to keep your site healthy.",
     "price": "$99–$299/month",
-    "cta": "Great if you want a site you don’t have to babysit.",
-    "icon": "Support"
+    "icon": "Support",
+    "value": "maintenance-support"
   }
 ]

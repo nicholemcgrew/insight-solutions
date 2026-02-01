@@ -18,14 +18,16 @@ import PricingPage from "./pages/PricingPage";
 import Hero from "./components/sections/Hero";
 import Services from "./components/sections/services/Services";
 import Portfolio from "./components/sections/Portfolio";
-import WebsiteBuilderPage from "./pages/WebsiteBuilderPage"; // ← Already imported
+// import WebsiteBuilderPage from "./pages/WebsiteBuilderPage";
+import "@google/model-viewer";
+import ScrollToHash from "@components/ScrollToHash";
 
 const App = () => {
   return (
     <HelmetProvider>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-
+        <ScrollToHash />
         {/* Global SEO / meta */}
         <Helmet>
           <html lang="en" />
@@ -127,10 +129,10 @@ const App = () => {
                   />
                 </Helmet>
 
-                <Box component="main" id="main-content" tabIndex={-1}>
-                  <WebsiteBuilderPage />
+                {/* <Box component="main" id="main-content" tabIndex={-1}>
+                  <WebsiteBuilderPage /> */}
                   <Footer />
-                </Box>
+                {/* </Box> */}
               </>
             }
           />

@@ -1,8 +1,15 @@
-// src/components/sections/services/Services.tsx
 import React from "react";
 import { Box, Container, Stack } from "@mui/material";
-import { Web as WebIcon, Search as SearchIcon, BarChart as BarChartIcon } from "@mui/icons-material";
-
+import {
+  Web as WebIcon,
+  Accessibility as AccessibilityIcon,     
+  Search as SearchIcon,
+  DesignServices as DesignServicesIcon,    
+  BarChart as BarChartIcon,
+  Collections as CollectionsIcon,          
+  Support as SupportIcon,                  
+  Storage as StorageIcon,
+} from "@mui/icons-material";
 import servicesData from "../../../data/servicesData.json";
 import { Service } from "../../../types/services";
 import { useNavbarOffset } from "../../../hooks/useNavbarOffset";
@@ -14,8 +21,13 @@ import ServiceCardGrid from "./ServiceCardGrid";
 
 const iconMap: Record<Service["icon"], React.ReactNode> = {
   Web: <WebIcon fontSize="large" color="primary" aria-hidden focusable="false" />,
+  Accessibility: <AccessibilityIcon fontSize="large" color="primary" aria-hidden focusable="false" />,
   Search: <SearchIcon fontSize="large" color="primary" aria-hidden focusable="false" />,
+  DesignServices: <DesignServicesIcon fontSize="large" color="primary" aria-hidden focusable="false" />,
   BarChart: <BarChartIcon fontSize="large" color="primary" aria-hidden focusable="false" />,
+  Collections: <CollectionsIcon fontSize="large" color="primary" aria-hidden focusable="false" />,
+  Support: <SupportIcon fontSize="large" color="primary" aria-hidden focusable="false" />,
+  Storage: <StorageIcon fontSize="large" color="primary" aria-hidden focusable="false" />,
 };
 
 const Services = () => {

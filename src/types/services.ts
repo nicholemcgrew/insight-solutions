@@ -1,8 +1,8 @@
-export type Service = {
+export interface Service {
   title: string;
   description: string;
   price: string;
-  icon: "Web" | "Search" | "BarChart";
-};
-
-export {};
+  cta?: string;          
+  icon: "Web" | "Accessibility" | "Search" | "DesignServices" | "BarChart" | "Collections" | "Support" | "Storage";  // ← add "Storage" here
+  value?: string;
+}

@@ -3,37 +3,59 @@ import {
   Alert,
   Box,
   Button,
+  Chip,
   Container,
+  FormControl,
+  Grid2,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
   Paper,
-  Stack,
+  Select,
+  SelectChangeEvent,
   TextField,
   Typography,
 } from "@mui/material";
-import Grid2 from "@mui/material/Grid2";
 import axios from "axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import servicesData from "../../data/servicesData.json";
+import { Service } from "../../types/services";
+import { useNavbarOffset } from "../../hooks/useNavbarOffset";
+
+// ──────────────────────────────────────────────
 
 type FormData = {
   name: string;
   email: string;
+  services: string[];
   message: string;
 };
 
 type FormErrors = {
   name: string;
   email: string;
+  services?: string;
   message: string;
 };
 
 const FORMSPREE_URL = "https://formspree.io/f/xpwowzwo";
 
-// Keep in sync with your AppBar height
-const HEADER_OFFSET_PX = 96;
+// Derive service options (fallback if no "value" field)
+const serviceOptions = (servicesData as Service[]).map((s) => ({
+  title: s.title,
+  value:
+    s.value ??
+    s.title
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, ""),
+}));
 
 const Contact = () => {
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
+    services: [],
     message: "",
   });
 
@@ -48,71 +70,31 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const contactTopRef = useRef<HTMLDivElement>(null);
 
   const location = useLocation();
-  const navigate = useNavigate();
+  const { navbarHeight, scrollMarginTop } = useNavbarOffset();
 
-  const { serviceFromQuery, ctaFromQuery } = useMemo(() => {
+  const { serviceFromQuery } = useMemo(() => {
     const params = new URLSearchParams(location.search);
     return {
       serviceFromQuery: params.get("service"),
-      ctaFromQuery: params.get("cta"),
     };
   }, [location.search]);
 
-  useEffect(() => {
-    const shouldGoToContact =
-      location.hash === "#contact" || ctaFromQuery === "true" || !!serviceFromQuery;
+  const handleServiceChange = (
+    event: SelectChangeEvent<typeof formData.services>,
+  ) => {
+    const {
+      target: { value },
+    } = event;
 
-    if (!shouldGoToContact) return;
-
-    const contactEl = document.getElementById("contact");
-    if (contactEl) {
-      const y =
-        contactEl.getBoundingClientRect().top + window.pageYOffset - HEADER_OFFSET_PX;
-      window.scrollTo({ top: y, behavior: "smooth" });
-    }
-
-    const focusTimer = window.setTimeout(() => {
-      nameInputRef.current?.focus({ preventScroll: true });
-    }, 250);
-
-    if (serviceFromQuery) {
-      setFormData((prev) => {
-        if (prev.message.trim().length > 0) return prev;
-        return {
-          ...prev,
-          message: `Interested in ${decodeURIComponent(
-            serviceFromQuery
-          )}. Please provide more details.`,
-        };
-      });
-    }
-
-    if (ctaFromQuery === "true") {
-      const params = new URLSearchParams(location.search);
-      params.delete("cta");
-      const nextSearch = params.toString();
-
-      navigate(
-        {
-          pathname: location.pathname,
-          search: nextSearch ? `?${nextSearch}` : "",
-          hash: location.hash,
-        },
-        { replace: true }
-      );
-    }
-
-    return () => window.clearTimeout(focusTimer);
-  }, [
-    location.hash,
-    location.pathname,
-    location.search,
-    navigate,
-    serviceFromQuery,
-    ctaFromQuery,
-  ]);
+    setFormData((prev) => ({
+      ...prev,
+      services: typeof value === "string" ? value.split(",") : value,
+    }));
+    setErrors((prev) => ({ ...prev, services: "" }));
+  };
 
   const validateForm = () => {
     const nextErrors: FormErrors = { name: "", email: "", message: "" };
@@ -127,12 +109,12 @@ const Contact = () => {
       nextErrors.email = "Email is required.";
       ok = false;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      nextErrors.email = "Please enter a valid email address.";
+      nextErrors.email = "Invalid email.";
       ok = false;
     }
 
-    if (!formData.message.trim()) {
-      nextErrors.message = "Message is required.";
+    if (!formData.message.trim() && formData.services.length === 0) {
+      nextErrors.message = "Please add a message or select services.";
       ok = false;
     }
 
@@ -145,196 +127,240 @@ const Contact = () => {
     setSubmitError("");
     setSubmitted(false);
 
-    if (!validateForm()) {
-      if (!formData.name.trim()) nameInputRef.current?.focus();
-      return;
+    if (!validateForm()) return;
+
+    // Build message with selected services
+    let finalMessage = formData.message.trim();
+
+    if (formData.services.length > 0) {
+      const selectedTitles = formData.services
+        .map((val) => {
+          const found = (servicesData as Service[]).find((s) => {
+            const computed =
+              s.value ??
+              s.title
+                .toLowerCase()
+                .replace(/\s+/g, "-")
+                .replace(/[^a-z0-9-]/g, "");
+            return computed === val;
+          });
+          return found?.title ?? val;
+        })
+        .filter(Boolean);
+
+      if (selectedTitles.length > 0) {
+        const servicesLine = `Interested in: ${selectedTitles.join(", ")}.\n\n`;
+        finalMessage =
+          servicesLine +
+          (finalMessage ? finalMessage : "Please provide more details.");
+      }
     }
+
+    const payload = {
+      name: formData.name,
+      email: formData.email,
+      message: finalMessage,
+    };
 
     try {
       setIsSubmitting(true);
-
-      await axios.post(FORMSPREE_URL, formData, {
+      await axios.post(FORMSPREE_URL, payload, {
         headers: { Accept: "application/json" },
       });
 
       setSubmitted(true);
-      setFormData({ name: "", email: "", message: "" });
+      setFormData({ name: "", email: "", services: [], message: "" });
       setErrors({ name: "", email: "", message: "" });
 
-      window.setTimeout(() => setSubmitted(false), 5000);
+      setTimeout(() => setSubmitted(false), 6000);
     } catch {
-      setSubmitError("Something went wrong sending your message. Please try again.");
+      setSubmitError("Failed to send message. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
+  // Prefill + snap to the top of the form (not the footer)
+  useEffect(() => {
+    if (!serviceFromQuery) return;
+
+    const decoded = decodeURIComponent(serviceFromQuery);
+    const matching = serviceOptions.find(
+      (opt) => opt.title === decoded || opt.value === decoded,
+    );
+
+    if (matching) {
+      setFormData((prev) => ({
+        ...prev,
+        services: Array.from(new Set([...prev.services, matching.value])),
+      }));
+    }
+
+    // Ensure we land with the top of Contact visible under the fixed navbar
+    requestAnimationFrame(() => {
+      const el = contactTopRef.current;
+      if (!el) return;
+
+      const offset = navbarHeight + 12;
+      const y = el.getBoundingClientRect().top + window.scrollY - offset;
+
+      window.scrollTo({ top: Math.max(y, 0), behavior: "smooth" });
+
+      // Helpful for keyboard users
+      nameInputRef.current?.focus({ preventScroll: true });
+    });
+  }, [serviceFromQuery, navbarHeight]);
+
   return (
     <Box
       component="section"
       id="contact"
-      aria-labelledby="contact-heading"
-      tabIndex={-1}
+      aria-labelledby="contact-title"
       sx={{
-        bgcolor: "background.default",
-        // “one-screen” target
-        minHeight: `calc(100dvh - ${HEADER_OFFSET_PX}px)`,
-        display: "flex",
-        alignItems: "center",
-        scrollMarginTop: `${HEADER_OFFSET_PX}px`,
-        // tighter vertical padding to avoid scrolling
-        py: { xs: 4, sm: 5, md: 6 },
+        position: "relative",
+        scrollMarginTop: `${scrollMarginTop}px`,
+        py: { xs: 8, md: 10 },
       }}
     >
-      {/* Full-width container (removes huge side gaps) */}
-      <Container
-        maxWidth="xl"
-        disableGutters
-        sx={{
-          px: { xs: 2, sm: 3, md: 6, lg: 10 }, // controlled padding, not huge margins
-          width: "100%",
-        }}
-      >
-        <Grid2
-          container
-          spacing={{ xs: 3, md: 4 }}
-          alignItems="center"
-          sx={{ width: "100%" }}
-        >
-          {/* LEFT: heading + short pitch */}
-          <Grid2 size={{ xs: 12, md: 5 }}>
-            <Stack spacing={1.5} sx={{ textAlign: { xs: "center", md: "left" } }}>
-              <Typography
-                id="contact-heading"
-                component="h2"
-                sx={{
-                  fontWeight: 800,
-                  letterSpacing: 0.2,
-                  fontSize: { xs: "2rem", sm: "2.4rem", md: "2.8rem" },
-                  lineHeight: 1.1,
-                }}
-              >
-                Contact Me
-              </Typography>
+      {/* Anchor that we scroll to (top of contact section) */}
+      <Box
+        id="contact-top"
+        ref={contactTopRef}
+        tabIndex={-1}
+        aria-hidden="true"
+        sx={{ position: "absolute", top: 0, left: 0 }}
+      />
 
-              <Typography
-                component="p"
-                sx={{
-                  color: "text.secondary",
-                  fontSize: { xs: "1.05rem", sm: "1.1rem" },
-                  lineHeight: 1.65,
-                  maxWidth: { xs: "unset", md: 520 },
-                  mx: { xs: "auto", md: 0 },
-                }}
-              >
-                Tell me what you’re building. I’ll reply within 24 hours with next steps
-                and a clear quote.
-              </Typography>
-            </Stack>
+      <Container maxWidth="xl">
+        <Grid2 container spacing={{ xs: 3, md: 4 }} alignItems="center">
+          {/* Left column – heading + pitch */}
+          <Grid2 size={{ xs: 12, md: 5 }}>
+            <Typography
+              id="contact-title"
+              component="h2"
+              variant="h3"
+              sx={{ fontWeight: 900, mb: 1.5 }}
+            >
+              Get a Quote
+            </Typography>
+            <Typography color="text.secondary" sx={{ lineHeight: 1.7 }}>
+              Tell me what you’re building and what you need help with. I’ll
+              reply within 24 hours with next steps.
+            </Typography>
           </Grid2>
 
-          {/* RIGHT: compact form */}
+          {/* Right column – form */}
           <Grid2 size={{ xs: 12, md: 7 }}>
-            <Paper
-              elevation={0}
-              sx={(t) => ({
-                borderRadius: 3,
-                bgcolor: "background.paper",
-                border: `1px solid ${t.palette.divider}`,
-                p: { xs: 2.5, sm: 3, md: 3.5 }, // reduced to fit one screen
-                maxWidth: 860,
-                mx: { xs: "auto", md: 0 },
-              })}
-            >
-              {/* Live region */}
-              <Box aria-live="polite" aria-atomic="true" sx={{ mb: 1.5 }}>
+            <Paper sx={{ p: { xs: 3, md: 3.5 }, borderRadius: 3 }}>
+              <Box aria-live="polite" sx={{ mb: 2 }}>
                 {submitted && (
-                  <Alert severity="success" variant="filled">
-                    Message sent — I’ll reply within 24 hours.
+                  <Alert severity="success">
+                    Message sent — I&apos;ll reply within 24h.
                   </Alert>
                 )}
-                {!!submitError && (
-                  <Alert severity="error" variant="filled">
-                    {submitError}
-                  </Alert>
-                )}
+                {submitError && <Alert severity="error">{submitError}</Alert>}
               </Box>
 
               <Box component="form" onSubmit={handleSubmit} noValidate>
-                <Grid2 container spacing={{ xs: 2, md: 2.5 }}>
-                  {/* Name + Email side-by-side on desktop */}
+                <Grid2 container spacing={2.5}>
+                  {/* Name + Email */}
                   <Grid2 size={{ xs: 12, md: 6 }}>
                     <TextField
                       inputRef={nameInputRef}
-                      fullWidth
-                      required
-                      label="Name"
                       name="name"
+                      label="Name"
                       value={formData.name}
                       onChange={handleChange}
                       error={!!errors.name}
-                      helperText={errors.name || " "}
-                      autoComplete="name"
-                      sx={{
-                        "& .MuiInputLabel-root": { fontWeight: 600 },
-                        "& .MuiInputBase-input": {
-                          fontSize: { xs: "1rem", sm: "1.05rem" },
-                          py: 1.2,
-                        },
-                      }}
+                      helperText={errors.name}
+                      fullWidth
+                      required
                     />
                   </Grid2>
 
                   <Grid2 size={{ xs: 12, md: 6 }}>
                     <TextField
-                      fullWidth
-                      required
-                      label="Email"
                       name="email"
-                      type="email"
+                      label="Email"
                       value={formData.email}
                       onChange={handleChange}
                       error={!!errors.email}
-                      helperText={errors.email || " "}
-                      autoComplete="email"
-                      sx={{
-                        "& .MuiInputLabel-root": { fontWeight: 600 },
-                        "& .MuiInputBase-input": {
-                          fontSize: { xs: "1rem", sm: "1.05rem" },
-                          py: 1.2,
-                        },
-                      }}
+                      helperText={errors.email}
+                      fullWidth
+                      required
                     />
                   </Grid2>
 
+                  {/* Services multi-select */}
+                  <Grid2 size={12}>
+                    <FormControl fullWidth error={!!errors.services}>
+                      <InputLabel id="services-label">
+                        Interested in (select all that apply)
+                      </InputLabel>
+                      <Select
+                        labelId="services-label"
+                        id="services"
+                        multiple
+                        value={formData.services}
+                        onChange={handleServiceChange}
+                        input={
+                          <OutlinedInput label="Interested in (select all that apply)" />
+                        }
+                        renderValue={(selected) => (
+                          <Box
+                            sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
+                          >
+                            {selected.map((value) => {
+                              const title =
+                                serviceOptions.find((o) => o.value === value)
+                                  ?.title ?? value;
+                              return <Chip key={value} label={title} />;
+                            })}
+                          </Box>
+                        )}
+                      >
+                        {serviceOptions.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.title}
+                          </MenuItem>
+                        ))}
+                      </Select>
+
+                      {errors.services && (
+                        <Typography
+                          variant="caption"
+                          color="error"
+                          sx={{ mt: 0.5, ml: 1.75 }}
+                        >
+                          {errors.services}
+                        </Typography>
+                      )}
+                    </FormControl>
+                  </Grid2>
+
+                  {/* Message */}
                   <Grid2 size={12}>
                     <TextField
-                      fullWidth
-                      required
-                      label="Message"
                       name="message"
+                      label="Message / Project details"
                       multiline
-                      // smaller height so section fits one screen
                       minRows={4}
                       value={formData.message}
                       onChange={handleChange}
                       error={!!errors.message}
-                      helperText={errors.message || " "}
-                      sx={{
-                        "& .MuiInputLabel-root": { fontWeight: 600 },
-                        "& .MuiInputBase-input": {
-                          fontSize: { xs: "1rem", sm: "1.05rem" },
-                          lineHeight: 1.55,
-                        },
-                      }}
+                      helperText={
+                        errors.message ||
+                        "Include timeline, budget range, links, etc."
+                      }
+                      fullWidth
                     />
                   </Grid2>
 
@@ -346,18 +372,7 @@ const Contact = () => {
                       size="large"
                       fullWidth
                       disabled={isSubmitting}
-                      sx={{
-                        py: 1.4,
-                        fontWeight: 800,
-                        fontSize: { xs: "1.02rem", sm: "1.06rem" },
-                        textTransform: "none",
-                        borderRadius: 2,
-                        "&:focus-visible": {
-                          outline: "3px solid",
-                          outlineColor: "primary.main",
-                          outlineOffset: 3,
-                        },
-                      }}
+                      sx={{ fontWeight: 900, py: 1.5, borderRadius: 999 }}
                     >
                       {isSubmitting ? "Sending…" : "Send Message"}
                     </Button>
@@ -365,17 +380,9 @@ const Contact = () => {
                 </Grid2>
               </Box>
 
-              {/* Keep this short so we don’t force scroll */}
-              <Typography
-                component="p"
-                sx={{
-                  mt: 1.5,
-                  color: "text.secondary",
-                  textAlign: "center",
-                  fontSize: "0.95rem",
-                }}
-              >
-                Include links, examples, and your timeline for the fastest quote.
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                Include links, examples, timeline, and budget range for fastest
+                quote.
               </Typography>
             </Paper>
           </Grid2>

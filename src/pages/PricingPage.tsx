@@ -26,7 +26,7 @@ interface Service {
   title: string;
   description: string;
   price: string;
-  cta: string;
+  cta?: string;
   icon: string;
 }
 
@@ -43,7 +43,7 @@ const iconMap = {
 type IconKey = keyof typeof iconMap;
 
 const PricingPage = () => {
-  const services: Service[] = pricingData as Service[];
+  const services = pricingData as unknown as Service[];
 
   return (
     <Box
@@ -195,30 +195,32 @@ const PricingPage = () => {
                       {service.description}
                     </Typography>
 
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      alignItems="flex-start"
-                      sx={{ maxWidth: 420, mx: "auto" }}
-                    >
-                      <CheckCircleIcon
-                        color="secondary"
-                        sx={{ mt: "2px" }}
-                        aria-hidden="true"
-                      />
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: "text.primary",
-                          fontWeight: 700,
-                          fontSize: { xs: "0.98rem", sm: "1.02rem" },
-                          lineHeight: 1.5,
-                          overflowWrap: "anywhere",
-                        }}
+                    {service.cta ? (
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        alignItems="flex-start"
+                        sx={{ maxWidth: 420, mx: "auto" }}
                       >
-                        {service.cta}
-                      </Typography>
-                    </Stack>
+                        <CheckCircleIcon
+                          color="secondary"
+                          sx={{ mt: "2px" }}
+                          aria-hidden="true"
+                        />
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: "text.primary",
+                            fontWeight: 700,
+                            fontSize: { xs: "0.98rem", sm: "1.02rem" },
+                            lineHeight: 1.5,
+                            overflowWrap: "anywhere",
+                          }}
+                        >
+                          {service.cta}
+                        </Typography>
+                      </Stack>
+                    ) : null}
                   </CardContent>
 
                   <CardActions sx={{ p: { xs: 3, md: 3.5 }, pt: 0 }}>
