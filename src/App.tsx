@@ -19,6 +19,10 @@ import Hero from "./components/sections/Hero";
 import Services from "./components/sections/services/Services";
 import Portfolio from "./components/sections/Portfolio";
 
+// NEW IMPORTS for legal pages
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+
 // Temporarily removed from public routes
 // import WebsiteBuilderPage from "./pages/WebsiteBuilderPage";
 
@@ -122,22 +126,53 @@ const App = () => {
             }
           />
 
-          {/* Website Builder intentionally disabled */}
-          {/*
+          {/* Privacy Policy */}
           <Route
-            path="/builder"
+            path="/privacy"
             element={
               <>
                 <Helmet>
-                  <title>Website Builder | Insight Web Solutions</title>
+                  <title>Privacy Policy | Insight Web Solutions</title>
+                  <meta
+                    name="description"
+                    content="Our privacy policy and how we handle your data."
+                  />
                 </Helmet>
 
                 <Box component="main" id="main-content" tabIndex={-1}>
-                  <WebsiteBuilderPage />
+                  <PrivacyPolicy />
                   <Footer />
                 </Box>
               </>
             }
+          />
+
+          {/* Terms of Service */}
+          <Route
+            path="/terms"
+            element={
+              <>
+                <Helmet>
+                  <title>Terms of Service | Insight Web Solutions</title>
+                  <meta
+                    name="description"
+                    content="Terms governing use of our services and website."
+                  />
+                </Helmet>
+
+                <Box component="main" id="main-content" tabIndex={-1}>
+                  <TermsOfService />
+                  <Footer />
+                </Box>
+              </>
+            }
+          />
+
+          {/* Website Builder intentionally disabled */}
+          {/*
+          <Route
+            path="/builder"
+            element={...}
           />
           */}
 

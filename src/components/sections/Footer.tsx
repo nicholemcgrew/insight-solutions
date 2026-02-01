@@ -11,9 +11,9 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import navItemsData from "../../data/navItemsData.json";
 
-
-interface NavItem {label: string;
-  to: string; // "/pricing" OR section id like "services"
+interface NavItem {
+  label: string;
+  to: string;
 }
 
 const Footer = () => {
@@ -27,11 +27,6 @@ const Footer = () => {
     if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  /**
-   * 508 + UX:
-   * - Use real links/buttons with keyboard support.
-   * - Avoid react-scroll dependency + avoid broken behavior on non-home routes.
-   */
   const handleSectionLink = (id: string) => {
     if (id === "home") {
       if (location.pathname !== "/") {
@@ -53,7 +48,7 @@ const Footer = () => {
 
   const FooterLink = ({ item }: { item: NavItem }) => {
     const isRoute = item.to.startsWith("/");
-// Route links (like /pricing)
+
     if (isRoute) {
       return (
         <MuiLink
@@ -61,53 +56,34 @@ const Footer = () => {
           to={item.to}
           end
           color="inherit"
-          underline="hover"
-          sx={(t) => ({
-            fontWeight: 800,
-            fontSize: { xs: "1.05rem", sm: "1.125rem" },
-            lineHeight: 1.2,
-            borderRadius: 1,
-            px: 1,
-            py: 0.5,
-            "&:hover": { color: "secondary.main" },
-            "&.active": {
-              color: t.palette.getContrastText(t.palette.secondary.main),
-              backgroundColor: "secondary.main",
-            },
-            "&:focus-visible": {
-              outline: "3px solid white",
-              outlineOffset: 3,
-            },
-          })}
+          underline="none"
+          sx={{
+            fontWeight: 600,
+            fontSize: { xs: "1rem", sm: "1.05rem" },
+            transition: "color 0.25s ease",
+            "&:hover": { color: "secondary.light" },
+            "&.active": { color: "secondary.light", fontWeight: 800 },
+          }}
         >
           {item.label}
         </MuiLink>
       );
     }
 
-    // Section links (ids on the home page)
     return (
       <MuiLink
-        href={item.to === "home" ? "/" : `/#${item.to}`}
         color="inherit"
-        underline="hover"
+        underline="none"
         onClick={(e) => {
           e.preventDefault();
           handleSectionLink(item.to);
         }}
         sx={{
-          fontWeight: 800,
-          fontSize: { xs: "1.05rem", sm: "1.125rem" },
-          lineHeight: 1.2,
+          fontWeight: 600,
+          fontSize: { xs: "1rem", sm: "1.05rem" },
           cursor: "pointer",
-          borderRadius: 1,
-          px: 1,
-          py: 0.5,
-          "&:hover": { color: "secondary.main" },
-          "&:focus-visible": {
-            outline: "3px solid white",
-            outlineOffset: 3,
-          },
+          transition: "color 0.25s ease",
+          "&:hover": { color: "secondary.light" },
         }}
       >
         {item.label}
@@ -118,137 +94,79 @@ const Footer = () => {
   return (
     <Box
       component="footer"
-      role="contentinfo"
-      aria-label="Site footer"
       sx={{
-        bgcolor: "primary.main",
-        color: "common.white",
-        mt: { xs: 10, md: 12 },
-        pt: { xs: 6, md: 8 },
-        pb: { xs: 5, md: 6 },
+        bgcolor: "grey.900",
+        color: "grey.300",
+        mt: "auto",
+        pt: { xs: 8, md: 10 },
+        pb: { xs: 6, md: 8 },
+        borderTop: "1px solid",
+        borderColor: "grey.800",
       }}
     >
       <Container maxWidth="lg">
-        {/* Top: brand + nav */}
         <Stack
           direction={{ xs: "column", md: "row" }}
-          spacing={{ xs: 4, md: 6 }}
-          alignItems={{ xs: "center", md: "flex-start" }}
+          spacing={{ xs: 6, md: 8 }}
           justifyContent="space-between"
-          sx={{ textAlign: { xs: "center", md: "left" } }}
+          alignItems={{ xs: "center", md: "flex-start" }}
         >
-          {/* Brand */}
-          <Box sx={{ maxWidth: 520 }}>
+          <Box sx={{ maxWidth: 380, textAlign: { xs: "center", md: "left" } }}>
             <Typography
               variant="h6"
-              component="p"
-              sx={{
-                fontWeight: 900,
-                letterSpacing: 0.3,
-                fontSize: { xs: "1.35rem", sm: "1.5rem" },
-                lineHeight: 1.15,
-                mb: 1,
-              }}
-            >
-              Insight Web Solutions
-            </Typography>
-
-            <Typography
-              variant="body2"
-              component="p"
-              sx={{
-                fontSize: { xs: "1rem", sm: "1.05rem" },
-                lineHeight: 1.6,
-                opacity: 0.92,
-              }}
-            >
-              Websites that are fast, accessible (508/WCAG), and built to convert.
-            </Typography>
-          </Box>
-
-          {/* Nav */}
-          <Box component="nav" aria-label="Footer navigation">
-            <Typography
-              component="p"
-              sx={{
-                fontWeight: 900,
-                fontSize: { xs: "1.1rem", sm: "1.2rem" },
-                mb: 1.5,
-                letterSpacing: 0.2,
-              }}
-            >
-              Explore
-            </Typography>
-
-            <Stack
-              direction={{ xs: "column", sm: "row", md: "column" }}
-              spacing={{ xs: 1.5, sm: 2.5, md: 1.75 }}
-              alignItems={{ xs: "center", sm: "center", md: "flex-start" }}
-            >
-              {navLinks.map((item) => (
-                <FooterLink key={item.label} item={item} />
-              ))}
-            </Stack>
-          </Box>
-        </Stack>
-
-        <Divider sx={{ my: { xs: 4, md: 5 }, borderColor: "rgba(255,255,255,0.18)" }} />
-
-        {/* Bottom: legal + copyright */}
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          spacing={{ xs: 2, sm: 3 }}
-          alignItems={{ xs: "center", sm: "center" }}
-          justifyContent="space-between"
-          sx={{ textAlign: { xs: "center", sm: "left" } }}
-        >
-          <Typography
-            variant="body2"
-            component="p"
-            sx={{ fontSize: { xs: "0.95rem", sm: "1rem" }, opacity: 0.92 }}
-            itemProp="copyrightNotice"
-          >
-            © {currentYear}{" "}
-            <MuiLink
-              component={NavLink}
-              to="/"
-              end
-              color="inherit"
-              underline="hover"
               sx={{
                 fontWeight: 800,
-                "&:focus-visible": {
-                  outline: "3px solid white",
-                  outlineOffset: 3,
-                  borderRadius: 1,
-                },
+                fontSize: { xs: "1.4rem", md: "1.55rem" },
+                letterSpacing: 0.5,
+                color: "common.white",
+                mb: 1.5,
               }}
-              itemProp="copyrightHolder"
             >
               Insight Web Solutions
-            </MuiLink>
-            . All rights reserved.
-          </Typography>
+            </Typography>
+            <Typography variant="body2" sx={{ lineHeight: 1.7, opacity: 0.85 }}>
+              Fast. Accessible. Built to convert.
+            </Typography>
+          </Box>
 
           <Stack
+            component="nav"
+            aria-label="Footer navigation"
             direction={{ xs: "column", sm: "row" }}
-            spacing={{ xs: 1.25, sm: 2.5 }}
+            spacing={{ xs: 2.5, sm: 5, md: 6 }}
             alignItems="center"
+            justifyContent={{ xs: "center", md: "center" }}
+            flexWrap="wrap"
           >
+            {navLinks.map((item) => (
+              <FooterLink key={item.label} item={item} />
+            ))}
+          </Stack>
+        </Stack>
+
+        <Divider sx={{ my: { xs: 5, md: 6 }, borderColor: "grey.800" }} />
+
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={{ xs: 3, sm: 4 }}
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Typography variant="body2" sx={{ opacity: 0.7 }}>
+            © {currentYear} Insight Web Solutions. All rights reserved.
+          </Typography>
+
+          <Stack direction="row" spacing={4} alignItems="center">
             <MuiLink
               component={NavLink}
               to="/privacy"
               color="inherit"
               underline="hover"
               sx={{
-                fontWeight: 700,
-                fontSize: { xs: "0.95rem", sm: "1rem" },
-                "&:hover": { color: "secondary.main" },
-                "&:focus-visible": {
-                  outline: "3px solid white",
-                  outlineOffset: 3,
-                  borderRadius: 1,
-                },
+                fontSize: "0.95rem",
+                fontWeight: 500,
+                transition: "color 0.25s ease",
+                "&:hover": { color: "secondary.light" },
               }}
             >
               Privacy Policy
@@ -260,14 +178,10 @@ const Footer = () => {
               color="inherit"
               underline="hover"
               sx={{
-                fontWeight: 700,
-                fontSize: { xs: "0.95rem", sm: "1rem" },
-                "&:hover": { color: "secondary.main" },
-                "&:focus-visible": {
-                  outline: "3px solid white",
-                  outlineOffset: 3,
-                  borderRadius: 1,
-                },
+                fontSize: "0.95rem",
+                fontWeight: 500,
+                transition: "color 0.25s ease",
+                "&:hover": { color: "secondary.light" },
               }}
             >
               Terms of Service

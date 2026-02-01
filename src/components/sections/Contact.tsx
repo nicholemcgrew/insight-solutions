@@ -1,3 +1,8 @@
+// ===============================================
+// OPTION A: Text ON TOP of the form (single column)
+// File: Contact.tsx
+// ===============================================
+
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -12,17 +17,24 @@ import {
   OutlinedInput,
   Paper,
   Select,
-  SelectChangeEvent,
   TextField,
   Typography,
+  Checkbox,
+  ListItemText,
+  Stack,
 } from "@mui/material";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import servicesData from "../../data/servicesData.json";
 import { Service } from "../../types/services";
 import { useNavbarOffset } from "../../hooks/useNavbarOffset";
 
-// ──────────────────────────────────────────────
+/* -----------------------------
+   Types
+----------------------------- */
 
 type FormData = {
   name: string;
@@ -31,25 +43,35 @@ type FormData = {
   message: string;
 };
 
-type FormErrors = {
-  name: string;
-  email: string;
-  services?: string;
-  message: string;
-};
+type FormErrors = Partial<Record<keyof FormData, string>>;
 
 const FORMSPREE_URL = "https://formspree.io/f/xpwowzwo";
 
-// Derive service options (fallback if no "value" field)
-const serviceOptions = (servicesData as Service[]).map((s) => ({
+/* -----------------------------
+   Options
+----------------------------- */
+
+const normalize = (s: string) =>
+  s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+
+const coreServices = (servicesData as Service[]).map((s) => ({
   title: s.title,
-  value:
-    s.value ??
-    s.title
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, ""),
+  value: s.value ?? normalize(s.title),
 }));
+
+const extraServices = [
+  { title: "Data & Analytics", value: "data-analytics" },
+  { title: "Accessibility Audit", value: "accessibility-audit" },
+  { title: "UX & Conversion Improvements", value: "ux-conversion" },
+  { title: "Ongoing Support & Maintenance", value: "maintenance" },
+];
+
+const serviceOptions = [...coreServices, ...extraServices];
+const titleByValue = Object.fromEntries(serviceOptions.map((o) => [o.value, o.title]));
+
+/* -----------------------------
+   Component
+----------------------------- */
 
 const Contact = () => {
   const [formData, setFormData] = useState<FormData>({
@@ -59,119 +81,81 @@ const Contact = () => {
     message: "",
   });
 
-  const [errors, setErrors] = useState<FormErrors>({
-    name: "",
-    email: "",
-    message: "",
-  });
-
+  const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const nameInputRef = useRef<HTMLInputElement>(null);
-  const contactTopRef = useRef<HTMLDivElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const topRef = useRef<HTMLDivElement>(null);
 
   const location = useLocation();
-  const { navbarHeight, scrollMarginTop } = useNavbarOffset();
+  const { navbarHeight } = useNavbarOffset();
 
-  const { serviceFromQuery } = useMemo(() => {
+  const serviceFromQuery = useMemo(() => {
     const params = new URLSearchParams(location.search);
-    return {
-      serviceFromQuery: params.get("service"),
-    };
+    return params.get("service");
   }, [location.search]);
 
-  const handleServiceChange = (
-    event: SelectChangeEvent<typeof formData.services>,
-  ) => {
-    const {
-      target: { value },
-    } = event;
+  /* -----------------------------
+     Helpers
+  ----------------------------- */
 
-    setFormData((prev) => ({
-      ...prev,
-      services: typeof value === "string" ? value.split(",") : value,
-    }));
-    setErrors((prev) => ({ ...prev, services: "" }));
+  const update = (key: keyof FormData, value: any) => {
+    setFormData((p) => ({ ...p, [key]: value }));
+    setErrors((p) => ({ ...p, [key]: "" }));
   };
 
-  const validateForm = () => {
-    const nextErrors: FormErrors = { name: "", email: "", message: "" };
-    let ok = true;
+  const validate = () => {
+    const e: FormErrors = {};
 
-    if (!formData.name.trim()) {
-      nextErrors.name = "Name is required.";
-      ok = false;
-    }
+    if (!formData.name.trim()) e.name = "Name is required.";
+    if (!formData.email.trim()) e.email = "Email is required.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+      e.email = "Invalid email address.";
 
-    if (!formData.email.trim()) {
-      nextErrors.email = "Email is required.";
-      ok = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      nextErrors.email = "Invalid email.";
-      ok = false;
-    }
+    if (!formData.message.trim() && formData.services.length === 0)
+      e.message = "Add a message or select services.";
 
-    if (!formData.message.trim() && formData.services.length === 0) {
-      nextErrors.message = "Please add a message or select services.";
-      ok = false;
-    }
-
-    setErrors(nextErrors);
-    return ok;
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
+
+  /* -----------------------------
+     Submit
+  ----------------------------- */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError("");
     setSubmitted(false);
 
-    if (!validateForm()) return;
+    if (!validate()) return;
 
-    // Build message with selected services
-    let finalMessage = formData.message.trim();
+    const selected = formData.services.map((v) => titleByValue[v] ?? v);
 
-    if (formData.services.length > 0) {
-      const selectedTitles = formData.services
-        .map((val) => {
-          const found = (servicesData as Service[]).find((s) => {
-            const computed =
-              s.value ??
-              s.title
-                .toLowerCase()
-                .replace(/\s+/g, "-")
-                .replace(/[^a-z0-9-]/g, "");
-            return computed === val;
-          });
-          return found?.title ?? val;
-        })
-        .filter(Boolean);
-
-      if (selectedTitles.length > 0) {
-        const servicesLine = `Interested in: ${selectedTitles.join(", ")}.\n\n`;
-        finalMessage =
-          servicesLine +
-          (finalMessage ? finalMessage : "Please provide more details.");
-      }
-    }
-
-    const payload = {
-      name: formData.name,
-      email: formData.email,
-      message: finalMessage,
-    };
+    const message =
+      selected.length > 0
+        ? `Interested in: ${selected.join(", ")}.\n\n${
+            formData.message || "Please provide more details."
+          }`
+        : formData.message;
 
     try {
       setIsSubmitting(true);
-      await axios.post(FORMSPREE_URL, payload, {
-        headers: { Accept: "application/json" },
-      });
+      await axios.post(
+        FORMSPREE_URL,
+        {
+          name: formData.name,
+          email: formData.email,
+          message,
+        },
+        { headers: { Accept: "application/json" } }
+      );
 
       setSubmitted(true);
       setFormData({ name: "", email: "", services: [], message: "" });
-      setErrors({ name: "", email: "", message: "" });
-
+      setErrors({});
       setTimeout(() => setSubmitted(false), 6000);
     } catch {
       setSubmitError("Failed to send message. Please try again.");
@@ -180,44 +164,32 @@ const Contact = () => {
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: "" }));
-  };
+  /* -----------------------------
+     Prefill + snap
+  ----------------------------- */
 
-  // Prefill + snap to the top of the form (not the footer)
   useEffect(() => {
     if (!serviceFromQuery) return;
 
     const decoded = decodeURIComponent(serviceFromQuery);
-    const matching = serviceOptions.find(
-      (opt) => opt.title === decoded || opt.value === decoded,
-    );
+    const match = serviceOptions.find((o) => o.title === decoded || o.value === decoded);
 
-    if (matching) {
-      setFormData((prev) => ({
-        ...prev,
-        services: Array.from(new Set([...prev.services, matching.value])),
+    if (match) {
+      setFormData((p) => ({
+        ...p,
+        services: Array.from(new Set([...p.services, match.value])),
       }));
     }
 
-    // Ensure we land with the top of Contact visible under the fixed navbar
     requestAnimationFrame(() => {
-      const el = contactTopRef.current;
-      if (!el) return;
-
-      const offset = navbarHeight + 12;
-      const y = el.getBoundingClientRect().top + window.scrollY - offset;
-
-      window.scrollTo({ top: Math.max(y, 0), behavior: "smooth" });
-
-      // Helpful for keyboard users
-      nameInputRef.current?.focus({ preventScroll: true });
+      topRef.current?.focus({ preventScroll: true });
+      nameRef.current?.focus({ preventScroll: true });
     });
-  }, [serviceFromQuery, navbarHeight]);
+  }, [serviceFromQuery]);
+
+  /* -----------------------------
+     Render
+  ----------------------------- */
 
   return (
     <Box
@@ -225,142 +197,127 @@ const Contact = () => {
       id="contact"
       aria-labelledby="contact-title"
       sx={{
-        position: "relative",
-        scrollMarginTop: `${scrollMarginTop}px`,
-        py: { xs: 8, md: 10 },
+        minHeight: `calc(100dvh - ${navbarHeight}px)`,
+        display: "flex",
+        alignItems: "center",
+        scrollMarginTop: `${navbarHeight + 16}px`,
       }}
     >
-      {/* Anchor that we scroll to (top of contact section) */}
-      <Box
-        id="contact-top"
-        ref={contactTopRef}
-        tabIndex={-1}
-        aria-hidden="true"
-        sx={{ position: "absolute", top: 0, left: 0 }}
-      />
+      <Box ref={topRef} tabIndex={-1} aria-hidden />
 
-      <Container maxWidth="xl">
-        <Grid2 container spacing={{ xs: 3, md: 4 }} alignItems="center">
-          {/* Left column – heading + pitch */}
-          <Grid2 size={{ xs: 12, md: 5 }}>
-            <Typography
-              id="contact-title"
-              component="h2"
-              variant="h3"
-              sx={{ fontWeight: 900, mb: 1.5 }}
-            >
-              Get a Quote
-            </Typography>
-            <Typography color="text.secondary" sx={{ lineHeight: 1.7 }}>
-              Tell me what you’re building and what you need help with. I’ll
-              reply within 24 hours with next steps.
-            </Typography>
-          </Grid2>
+      <Container maxWidth="lg">
+        <Paper
+          elevation={10}
+          sx={{
+            p: { xs: 3.5, md: 5 },
+            borderRadius: 4,
+          }}
+        >
+          <Stack spacing={2.5}>
+            {/* Header text sits ABOVE the form */}
+            <Box>
+              <Typography
+                id="contact-title"
+                component="h2"
+                variant="h3"
+                sx={{ fontWeight: 900 }}
+              >
+                Let’s Work Together
+              </Typography>
 
-          {/* Right column – form */}
-          <Grid2 size={{ xs: 12, md: 7 }}>
-            <Paper sx={{ p: { xs: 3, md: 3.5 }, borderRadius: 3 }}>
-              <Box aria-live="polite" sx={{ mb: 2 }}>
+              <Typography color="text.secondary" sx={{ lineHeight: 1.7, mt: 1 }}>
+                Share a few details and I’ll follow up within 24 hours with clear next steps.
+              </Typography>
+            </Box>
+
+            {/* Alerts + Form */}
+            <Stack spacing={2}>
+              <Box aria-live="polite">
                 {submitted && (
-                  <Alert severity="success">
-                    Message sent — I&apos;ll reply within 24h.
-                  </Alert>
+                  <Alert severity="success">Message sent. I’ll be in touch shortly.</Alert>
                 )}
                 {submitError && <Alert severity="error">{submitError}</Alert>}
               </Box>
 
               <Box component="form" onSubmit={handleSubmit} noValidate>
-                <Grid2 container spacing={2.5}>
-                  {/* Name + Email */}
+                <Grid2 container spacing={2.25}>
                   <Grid2 size={{ xs: 12, md: 6 }}>
                     <TextField
-                      inputRef={nameInputRef}
-                      name="name"
+                      inputRef={nameRef}
                       label="Name"
+                      fullWidth
+                      required
                       value={formData.name}
-                      onChange={handleChange}
+                      onChange={(e) => update("name", e.target.value)}
                       error={!!errors.name}
                       helperText={errors.name}
-                      fullWidth
-                      required
+                      InputProps={{
+                        startAdornment: <PersonOutlineIcon sx={{ mr: 1 }} />,
+                      }}
                     />
                   </Grid2>
 
                   <Grid2 size={{ xs: 12, md: 6 }}>
                     <TextField
-                      name="email"
                       label="Email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      error={!!errors.email}
-                      helperText={errors.email}
                       fullWidth
                       required
+                      value={formData.email}
+                      onChange={(e) => update("email", e.target.value)}
+                      error={!!errors.email}
+                      helperText={errors.email}
+                      InputProps={{
+                        startAdornment: <MailOutlineIcon sx={{ mr: 1 }} />,
+                      }}
                     />
                   </Grid2>
 
-                  {/* Services multi-select */}
                   <Grid2 size={12}>
-                    <FormControl fullWidth error={!!errors.services}>
-                      <InputLabel id="services-label">
-                        Interested in (select all that apply)
-                      </InputLabel>
+                    <FormControl fullWidth>
+                      <InputLabel>Services</InputLabel>
                       <Select
-                        labelId="services-label"
-                        id="services"
                         multiple
                         value={formData.services}
-                        onChange={handleServiceChange}
-                        input={
-                          <OutlinedInput label="Interested in (select all that apply)" />
+                        onChange={(e) =>
+                          update(
+                            "services",
+                            typeof e.target.value === "string"
+                              ? e.target.value.split(",")
+                              : e.target.value
+                          )
                         }
+                        input={<OutlinedInput label="Services" />}
                         renderValue={(selected) => (
-                          <Box
-                            sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
-                          >
-                            {selected.map((value) => {
-                              const title =
-                                serviceOptions.find((o) => o.value === value)
-                                  ?.title ?? value;
-                              return <Chip key={value} label={title} />;
-                            })}
+                          <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
+                            {selected.map((v) => (
+                              <Chip key={v} label={titleByValue[v]} />
+                            ))}
                           </Box>
                         )}
                       >
-                        {serviceOptions.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.title}
+                        {serviceOptions.map((o) => (
+                          <MenuItem key={o.value} value={o.value}>
+                            <Checkbox checked={formData.services.includes(o.value)} />
+                            <ListItemText primary={o.title} />
                           </MenuItem>
                         ))}
                       </Select>
-
-                      {errors.services && (
-                        <Typography
-                          variant="caption"
-                          color="error"
-                          sx={{ mt: 0.5, ml: 1.75 }}
-                        >
-                          {errors.services}
-                        </Typography>
-                      )}
                     </FormControl>
                   </Grid2>
 
-                  {/* Message */}
                   <Grid2 size={12}>
                     <TextField
-                      name="message"
-                      label="Message / Project details"
+                      label="Project details"
                       multiline
                       minRows={4}
-                      value={formData.message}
-                      onChange={handleChange}
-                      error={!!errors.message}
-                      helperText={
-                        errors.message ||
-                        "Include timeline, budget range, links, etc."
-                      }
                       fullWidth
+                      value={formData.message}
+                      onChange={(e) => update("message", e.target.value)}
+                      error={!!errors.message}
+                      helperText={errors.message}
+                      InputProps={{
+                        startAdornment: <WorkOutlineIcon sx={{ mr: 1, mt: 1 }} />,
+                      }}
                     />
                   </Grid2>
 
@@ -372,21 +329,20 @@ const Contact = () => {
                       size="large"
                       fullWidth
                       disabled={isSubmitting}
-                      sx={{ fontWeight: 900, py: 1.5, borderRadius: 999 }}
+                      sx={{
+                        py: 1.6,
+                        fontWeight: 900,
+                        borderRadius: 999,
+                      }}
                     >
                       {isSubmitting ? "Sending…" : "Send Message"}
                     </Button>
                   </Grid2>
                 </Grid2>
               </Box>
-
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-                Include links, examples, timeline, and budget range for fastest
-                quote.
-              </Typography>
-            </Paper>
-          </Grid2>
-        </Grid2>
+            </Stack>
+          </Stack>
+        </Paper>
       </Container>
     </Box>
   );

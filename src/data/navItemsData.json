@@ -4,7 +4,5 @@
   { "label": "Portfolio", "to": "portfolio" },
   { "label": "About", "to": "about" },
   { "label": "Pricing", "to": "/pricing" },
-  { "label": "Website Builder", "to": "/builder" },
   { "label": "Contact", "to": "contact" }
 ]
-
