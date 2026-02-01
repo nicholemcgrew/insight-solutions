@@ -21,6 +21,7 @@ import SupportIcon from "@mui/icons-material/SupportAgent";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 import pricingData from "../data/pricingData.json";
+import { useNavbarOffset } from "../hooks/useNavbarOffset";
 
 interface Service {
   title: string;
@@ -44,6 +45,7 @@ type IconKey = keyof typeof iconMap;
 
 const PricingPage = () => {
   const services = pricingData as unknown as Service[];
+  const { navbarHeight } = useNavbarOffset();
 
   return (
     <Box
@@ -51,9 +53,12 @@ const PricingPage = () => {
       id="pricing"
       aria-labelledby="pricing-heading"
       sx={{
-        py: { xs: 8, md: 12 },
         bgcolor: "background.default",
         overflowX: "hidden",
+
+        // Critical: ensure content starts below fixed navbar
+        pt: `calc(${navbarHeight}px + 24px)`,
+        pb: { xs: 8, md: 12 },
       }}
     >
       <Container maxWidth="lg">
@@ -71,7 +76,7 @@ const PricingPage = () => {
             mb: 2,
           }}
         >
-          Transparent Pricing
+          Pricing, Without Guesswork
         </Typography>
 
         <Typography
@@ -87,8 +92,8 @@ const PricingPage = () => {
             mb: { xs: 4, md: 6 },
           }}
         >
-          Clear, fair pricing for small businesses and beginners. No surprises —
-          just results.
+          Transparent starting points with room to grow. High quality work,
+          thoughtfully scoped, and priced with intention.
         </Typography>
 
         <Grid2
@@ -226,7 +231,7 @@ const PricingPage = () => {
                   <CardActions sx={{ p: { xs: 3, md: 3.5 }, pt: 0 }}>
                     <Button
                       component="a"
-                      href={`/?service=${encodeURIComponent(service.title)}#contact`}
+                      href={`/?service=${encodeURIComponent(service.title)}#contact-top`}
                       variant="contained"
                       color="secondary"
                       fullWidth
@@ -269,8 +274,8 @@ const PricingPage = () => {
           }}
         >
           Need something custom? I can tailor a package for accessibility, SEO,
-          performance, and ongoing updates. Use any “Get Quote” button to
-          prefill your service selection.
+          performance, and ongoing updates. Use any Get Quote button to prefill
+          your service selection.
         </Typography>
       </Container>
     </Box>

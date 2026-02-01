@@ -18,17 +18,20 @@ import PricingPage from "./pages/PricingPage";
 import Hero from "./components/sections/Hero";
 import Services from "./components/sections/services/Services";
 import Portfolio from "./components/sections/Portfolio";
+
+// Temporarily removed from public routes
 // import WebsiteBuilderPage from "./pages/WebsiteBuilderPage";
+
+import ScrollToHash from "./components/ScrollToHash";
 import "@google/model-viewer";
-import ScrollToHash from "@components/ScrollToHash";
 
 const App = () => {
   return (
     <HelmetProvider>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <ScrollToHash />
-        {/* Global SEO / meta */}
+
+        {/* Global SEO */}
         <Helmet>
           <html lang="en" />
           <meta charSet="utf-8" />
@@ -37,10 +40,11 @@ const App = () => {
           <link rel="canonical" href="https://insightwebsolutions.com" />
         </Helmet>
 
-        {/* Skip link (508) */}
+        {/* Accessibility skip link */}
         <Box
           component="a"
           href="#main-content"
+          aria-label="Skip to main content"
           sx={(t) => ({
             position: "fixed",
             top: -9999,
@@ -60,15 +64,17 @@ const App = () => {
               outlineOffset: 2,
             },
           })}
-          aria-label="Skip to main content"
         >
           Skip to main content
         </Box>
 
         <Navbar />
 
+        {/* Handles hash navigation and route-based scroll reset */}
+        <ScrollToHash />
+
         <Routes>
-          {/* HOME */}
+          {/* Home */}
           <Route
             path="/"
             element={
@@ -79,7 +85,7 @@ const App = () => {
                   </title>
                   <meta
                     name="description"
-                    content="Professional web development, WCAG-compliant accessibility, SEO, UX, and data analytics."
+                    content="Professional web development, accessibility, SEO, UX, and analytics."
                   />
                 </Helmet>
 
@@ -95,7 +101,7 @@ const App = () => {
             }
           />
 
-          {/* PRICING */}
+          {/* Pricing */}
           <Route
             path="/pricing"
             element={
@@ -104,7 +110,7 @@ const App = () => {
                   <title>Pricing | Insight Web Solutions</title>
                   <meta
                     name="description"
-                    content="Transparent pricing for web development, accessibility, SEO, UX, and analytics."
+                    content="Transparent pricing for web development and analytics services."
                   />
                 </Helmet>
 
@@ -116,26 +122,24 @@ const App = () => {
             }
           />
 
-          {/* WEBSITE BUILDER */}
+          {/* Website Builder intentionally disabled */}
+          {/*
           <Route
             path="/builder"
             element={
               <>
                 <Helmet>
                   <title>Website Builder | Insight Web Solutions</title>
-                  <meta
-                    name="description"
-                    content="Generate a custom website by filling out a simple form."
-                  />
                 </Helmet>
 
-                {/* <Box component="main" id="main-content" tabIndex={-1}>
-                  <WebsiteBuilderPage /> */}
+                <Box component="main" id="main-content" tabIndex={-1}>
+                  <WebsiteBuilderPage />
                   <Footer />
-                {/* </Box> */}
+                </Box>
               </>
             }
           />
+          */}
 
           {/* 404 */}
           <Route
@@ -156,24 +160,14 @@ const App = () => {
                     display: "flex",
                     alignItems: "center",
                     py: { xs: 8, md: 12 },
-                    bgcolor: "background.default",
                   }}
                 >
                   <Container maxWidth="sm" sx={{ textAlign: "center" }}>
-                    <Typography
-                      variant="h2"
-                      component="h1"
-                      sx={{ fontWeight: 900, mb: 1.5 }}
-                    >
+                    <Typography variant="h2" sx={{ fontWeight: 900, mb: 1.5 }}>
                       404 — Page Not Found
                     </Typography>
-                    <Typography
-                      variant="body1"
-                      color="text.secondary"
-                      sx={{ mb: 4 }}
-                    >
-                      That page doesn’t exist. Use the button below to go back
-                      home.
+                    <Typography color="text.secondary" sx={{ mb: 4 }}>
+                      That page doesn’t exist.
                     </Typography>
                     <Button
                       component={RouterLink}
