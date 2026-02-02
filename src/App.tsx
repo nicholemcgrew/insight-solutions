@@ -27,7 +27,6 @@ import TermsOfService from "./pages/TermsOfService";
 // import WebsiteBuilderPage from "./pages/WebsiteBuilderPage";
 
 import ScrollToHash from "./components/ScrollToHash";
-import "@google/model-viewer";
 
 const App = () => {
   return (
