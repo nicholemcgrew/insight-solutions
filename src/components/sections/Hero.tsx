@@ -506,9 +506,8 @@ const Hero = () => {
                   textAlign: "center",
                 }}
               >
-                We specialize in 508-compliant web development, high-SEO
-                strategies, custom dashboards, and comprehensive analytics to
-                drive your business forward.
+                Specializing in 508-compliant web development, SEO strategy,
+                custom dashboards, and analytics that drive smarter decisions.
               </Typography>
 
               <Box

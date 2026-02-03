@@ -116,7 +116,7 @@ const About = () => {
                 that are measurable and maintainable.
               </Typography>
 
-              <Typography
+              {/* <Typography
                 component="p"
                 sx={{
                   textAlign: "center",
@@ -128,7 +128,7 @@ const About = () => {
                 itemProp="jobTitle"
               >
                 Founder and Lead Developer
-              </Typography>
+              </Typography> */}
             </Stack>
           </Paper>
         </Box>
