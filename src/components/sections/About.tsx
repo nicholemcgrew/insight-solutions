@@ -94,7 +94,7 @@ const About = () => {
                 My work blends three core capabilities: WCAG compliant, SEO
                 optimized web development; data and financial analytics; and
                 system level problem solving. I’m driven by quality and
-                curiosity, and I love untangling complex problems. The result is
+                curiosity, and I love untangling complex solutions. The result is
                 high performing digital experiences and data systems that are
                 inclusive by design and backed by insights you can trust.
               </Typography>

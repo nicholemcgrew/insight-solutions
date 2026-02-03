@@ -1,8 +1,3 @@
-// ===============================================
-// OPTION A: Text ON TOP of the form (single column)
-// File: Contact.tsx
-// ===============================================
-
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -32,10 +27,6 @@ import servicesData from "../../data/servicesData.json";
 import { Service } from "../../types/services";
 import { useNavbarOffset } from "../../hooks/useNavbarOffset";
 
-/* -----------------------------
-   Types
------------------------------ */
-
 type FormData = {
   name: string;
   email: string;
@@ -45,33 +36,192 @@ type FormData = {
 
 type FormErrors = Partial<Record<keyof FormData, string>>;
 
+type ServiceOption = { title: string; value: string };
+
 const FORMSPREE_URL = "https://formspree.io/f/xpwowzwo";
 
-/* -----------------------------
-   Options
------------------------------ */
-
 const normalize = (s: string) =>
-  s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+  s
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9-]/g, "");
 
-const coreServices = (servicesData as Service[]).map((s) => ({
-  title: s.title,
-  value: s.value ?? normalize(s.title),
-}));
+const canonicalizeValue = (v: string) =>
+  v.toLowerCase().trim().replace(/_/g, "-").replace(/\s+/g, "-");
 
-const extraServices = [
-  { title: "Data & Analytics", value: "data-analytics" },
-  { title: "Accessibility Audit", value: "accessibility-audit" },
+const DISPLAY_OPTIONS: ServiceOption[] = [
+  { title: "Website Design & Development", value: "web-design-development" },
+  { title: "Accessibility Audit (508 / WCAG)", value: "accessibility-audit" },
+  { title: "SEO & Performance Optimization", value: "seo-performance" },
   { title: "UX & Conversion Improvements", value: "ux-conversion" },
+  { title: "Data & Analytics", value: "data-analytics" },
   { title: "Ongoing Support & Maintenance", value: "maintenance" },
 ];
 
-const serviceOptions = [...coreServices, ...extraServices];
-const titleByValue = Object.fromEntries(serviceOptions.map((o) => [o.value, o.title]));
+const SERVICE_ORDER: string[] = [
+  "web-design-development",
+  "accessibility-audit",
+  "seo-performance",
+  "ux-conversion",
+  "data-analytics",
+  "maintenance",
+];
 
-/* -----------------------------
-   Component
------------------------------ */
+const CORE_MATCHERS: Array<{
+  toValue: string;
+  matches: (s: { title: string; value: string }) => boolean;
+}> = [
+  {
+    toValue: "web-design-development",
+    matches: (s) => {
+      const t = s.title.toLowerCase();
+      const v = s.value.toLowerCase();
+      return (
+        t.includes("website") ||
+        t.includes("web design") ||
+        t.includes("web development") ||
+        t.includes("site design") ||
+        t.includes("site development") ||
+        v.includes("web") ||
+        v.includes("website")
+      );
+    },
+  },
+  {
+    toValue: "accessibility-audit",
+    matches: (s) => {
+      const t = s.title.toLowerCase();
+      const v = s.value.toLowerCase();
+      return (
+        t.includes("accessibility") ||
+        t.includes("508") ||
+        t.includes("wcag") ||
+        v.includes("access")
+      );
+    },
+  },
+  {
+    toValue: "seo-performance",
+    matches: (s) => {
+      const t = s.title.toLowerCase();
+      const v = s.value.toLowerCase();
+      return (
+        t.includes("seo") ||
+        t.includes("performance") ||
+        t.includes("speed") ||
+        t.includes("optimization") ||
+        v.includes("seo") ||
+        v.includes("performance")
+      );
+    },
+  },
+  {
+    toValue: "ux-conversion",
+    matches: (s) => {
+      const t = s.title.toLowerCase();
+      const v = s.value.toLowerCase();
+      return (
+        t.includes("ux") ||
+        t.includes("conversion") ||
+        t.includes("cro") ||
+        t.includes("user experience") ||
+        v.includes("ux") ||
+        v.includes("conversion")
+      );
+    },
+  },
+  {
+    toValue: "data-analytics",
+    matches: (s) => {
+      const t = s.title.toLowerCase();
+      const v = s.value.toLowerCase();
+      return (
+        t.includes("analytics") ||
+        t.includes("dashboard") ||
+        t.includes("report") ||
+        t.includes("data") ||
+        v.includes("analytics") ||
+        v.includes("dashboard") ||
+        v.includes("data")
+      );
+    },
+  },
+  {
+    toValue: "maintenance",
+    matches: (s) => {
+      const t = s.title.toLowerCase();
+      const v = s.value.toLowerCase();
+      return (
+        t.includes("maintenance") ||
+        t.includes("support") ||
+        t.includes("retainer") ||
+        t.includes("ongoing") ||
+        v.includes("maintenance") ||
+        v.includes("support")
+      );
+    },
+  },
+];
+
+function buildServiceOptionsFromCore(coreRaw: ServiceOption[]) {
+  // Only keep core services that match your 6 canonical services
+  const canonicalHits = new Map<string, ServiceOption>();
+
+  for (const item of coreRaw) {
+    for (const rule of CORE_MATCHERS) {
+      if (rule.matches(item)) {
+        if (!canonicalHits.has(rule.toValue)) {
+          const display = DISPLAY_OPTIONS.find((d) => d.value === rule.toValue);
+          canonicalHits.set(rule.toValue, {
+            title: display?.title ?? item.title,
+            value: rule.toValue,
+          });
+        }
+        break;
+      }
+    }
+  }
+
+  // Ensure all canonical services exist even if core JSON doesn’t have them
+  const merged = new Map<string, ServiceOption>();
+  DISPLAY_OPTIONS.forEach((o) => merged.set(o.value, o));
+  canonicalHits.forEach((o, v) => merged.set(v, o));
+
+  // Dedupe hard by canonical value and normalized title
+  const seenTitle = new Set<string>();
+  const list: ServiceOption[] = [];
+  for (const o of merged.values()) {
+    const val = canonicalizeValue(o.value);
+    const titleKey = o.title.trim().toLowerCase();
+    if (SERVICE_ORDER.includes(val) && !seenTitle.has(titleKey)) {
+      seenTitle.add(titleKey);
+      list.push({ title: o.title, value: val });
+    }
+  }
+
+  // Enforce your preferred order
+  const idx = new Map<string, number>();
+  SERVICE_ORDER.forEach((v, i) => idx.set(v, i));
+  list.sort((a, b) => (idx.get(a.value)! ?? 999) - (idx.get(b.value)! ?? 999));
+
+  return list;
+}
+
+const coreServicesRaw: ServiceOption[] = (servicesData as Service[]).map(
+  (s) => ({
+    title: s.title,
+    value: canonicalizeValue(s.value ?? normalize(s.title)),
+  }),
+);
+
+const serviceOptions: ServiceOption[] =
+  buildServiceOptionsFromCore(coreServicesRaw);
+
+const titleByValue: Record<string, string> = Object.fromEntries(
+  serviceOptions.map((o) => [o.value, o.title]),
+);
 
 const Contact = () => {
   const [formData, setFormData] = useState<FormData>({
@@ -97,16 +247,14 @@ const Contact = () => {
     return params.get("service");
   }, [location.search]);
 
-  /* -----------------------------
-     Helpers
-  ----------------------------- */
-
   const update = (key: keyof FormData, value: any) => {
+    // Keep form updates simple and clear errors as user edits
     setFormData((p) => ({ ...p, [key]: value }));
     setErrors((p) => ({ ...p, [key]: "" }));
   };
 
   const validate = () => {
+    // Basic validation: name/email required; message OR at least one service
     const e: FormErrors = {};
 
     if (!formData.name.trim()) e.name = "Name is required.";
@@ -120,10 +268,6 @@ const Contact = () => {
     setErrors(e);
     return Object.keys(e).length === 0;
   };
-
-  /* -----------------------------
-     Submit
-  ----------------------------- */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,12 +289,8 @@ const Contact = () => {
       setIsSubmitting(true);
       await axios.post(
         FORMSPREE_URL,
-        {
-          name: formData.name,
-          email: formData.email,
-          message,
-        },
-        { headers: { Accept: "application/json" } }
+        { name: formData.name, email: formData.email, message },
+        { headers: { Accept: "application/json" } },
       );
 
       setSubmitted(true);
@@ -164,15 +304,15 @@ const Contact = () => {
     }
   };
 
-  /* -----------------------------
-     Prefill + snap
-  ----------------------------- */
-
   useEffect(() => {
+    // Prefill service from query param (supports either title or value)
     if (!serviceFromQuery) return;
 
     const decoded = decodeURIComponent(serviceFromQuery);
-    const match = serviceOptions.find((o) => o.title === decoded || o.value === decoded);
+    const decodedVal = canonicalizeValue(decoded);
+    const match = serviceOptions.find(
+      (o) => o.title === decoded || o.value === decodedVal,
+    );
 
     if (match) {
       setFormData((p) => ({
@@ -186,10 +326,6 @@ const Contact = () => {
       nameRef.current?.focus({ preventScroll: true });
     });
   }, [serviceFromQuery]);
-
-  /* -----------------------------
-     Render
-  ----------------------------- */
 
   return (
     <Box
@@ -214,7 +350,6 @@ const Contact = () => {
           }}
         >
           <Stack spacing={2.5}>
-            {/* Header text sits ABOVE the form */}
             <Box>
               <Typography
                 id="contact-title"
@@ -225,16 +360,21 @@ const Contact = () => {
                 Let’s Work Together
               </Typography>
 
-              <Typography color="text.secondary" sx={{ lineHeight: 1.7, mt: 1 }}>
-                Share a few details and I’ll follow up within 24 hours with clear next steps.
+              <Typography
+                color="text.secondary"
+                sx={{ lineHeight: 1.7, mt: 1 }}
+              >
+                Share a few details and I’ll follow up within 24 hours with
+                clear next steps.
               </Typography>
             </Box>
 
-            {/* Alerts + Form */}
             <Stack spacing={2}>
               <Box aria-live="polite">
                 {submitted && (
-                  <Alert severity="success">Message sent. I’ll be in touch shortly.</Alert>
+                  <Alert severity="success">
+                    Message sent. I’ll be in touch shortly.
+                  </Alert>
                 )}
                 {submitError && <Alert severity="error">{submitError}</Alert>}
               </Box>
@@ -275,6 +415,7 @@ const Contact = () => {
                   <Grid2 size={12}>
                     <FormControl fullWidth>
                       <InputLabel>Services</InputLabel>
+
                       <Select
                         multiple
                         value={formData.services}
@@ -283,22 +424,76 @@ const Contact = () => {
                             "services",
                             typeof e.target.value === "string"
                               ? e.target.value.split(",")
-                              : e.target.value
+                              : e.target.value,
                           )
                         }
                         input={<OutlinedInput label="Services" />}
                         renderValue={(selected) => (
-                          <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
+                          <Box
+                            sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}
+                          >
                             {selected.map((v) => (
-                              <Chip key={v} label={titleByValue[v]} />
+                              <Chip
+                                key={v}
+                                label={titleByValue[v] ?? v}
+                                sx={{
+                                  maxWidth: "100%",
+                                  "& .MuiChip-label": {
+                                    maxWidth: "100%",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                  },
+                                }}
+                              />
                             ))}
                           </Box>
                         )}
+                        MenuProps={{
+                          // Make the dropdown usable on mobile: full-width, scrollable, wrapping labels
+                          PaperProps: {
+                            sx: {
+                              maxWidth: "calc(100vw - 32px)",
+                              width: { xs: "calc(100vw - 32px)", sm: 560 },
+                              maxHeight: "60vh",
+                            },
+                          },
+                          MenuListProps: {
+                            sx: { pr: 1 },
+                          },
+                          anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left",
+                          },
+                          transformOrigin: {
+                            vertical: "top",
+                            horizontal: "left",
+                          },
+                        }}
                       >
                         {serviceOptions.map((o) => (
-                          <MenuItem key={o.value} value={o.value}>
-                            <Checkbox checked={formData.services.includes(o.value)} />
-                            <ListItemText primary={o.title} />
+                          <MenuItem
+                            key={o.value}
+                            value={o.value}
+                            sx={{
+                              alignItems: "flex-start",
+                              gap: 1,
+                              py: 1.25,
+                              whiteSpace: "normal",
+                            }}
+                          >
+                            <Checkbox
+                              checked={formData.services.includes(o.value)}
+                            />
+                            <ListItemText
+                              primary={o.title}
+                              primaryTypographyProps={{
+                                sx: {
+                                  whiteSpace: "normal",
+                                  wordBreak: "break-word",
+                                  lineHeight: 1.25,
+                                },
+                              }}
+                            />
                           </MenuItem>
                         ))}
                       </Select>
@@ -316,7 +511,9 @@ const Contact = () => {
                       error={!!errors.message}
                       helperText={errors.message}
                       InputProps={{
-                        startAdornment: <WorkOutlineIcon sx={{ mr: 1, mt: 1 }} />,
+                        startAdornment: (
+                          <WorkOutlineIcon sx={{ mr: 1, mt: 1 }} />
+                        ),
                       }}
                     />
                   </Grid2>
