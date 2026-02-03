@@ -7,7 +7,7 @@ type WordStyle = {
   text: string;
   color: string;
   doodle:
-    | "stars"
+    | "squiggle"
     | "underline"
     | "highlight"
     | "arrow"
@@ -27,7 +27,7 @@ function prefersReducedMotion() {
 const Hero = () => {
   const wordStyles: WordStyle[] = useMemo(
     () => [
-      { text: "stunning", color: "#F59E0B", doodle: "stars" },
+      { text: "stunning", color: "#F59E0B", doodle: "squiggle" },
       { text: "accessible", color: "#34D399", doodle: "underline" },
       { text: "fast", color: "#60A5FA", doodle: "arrow" },
       { text: "data driven", color: "#A78BFA", doodle: "highlight" },
@@ -112,12 +112,16 @@ const Hero = () => {
           "100%": { opacity: 1, transform: "translateY(0) scale(1)" },
         },
         "@keyframes doodlePop": {
-          "0%": { opacity: 0, transform: "scale(0.98)" },
+          "0%": { opacity: 0, transform: "scale(0.985)" },
           "100%": { opacity: 1, transform: "scale(1)" },
         },
         "@keyframes doodleWiggle": {
           "0%": { transform: "translateX(-4px)" },
           "100%": { transform: "translateX(4px)" },
+        },
+        "@keyframes squiggleDraw": {
+          "0%": { strokeDashoffset: 140, opacity: 0.7 },
+          "100%": { strokeDashoffset: 0, opacity: 0.95 },
         },
       })}
     >
@@ -219,33 +223,45 @@ const Hero = () => {
                       >
                         {current.text}
 
-                        {current.doodle === "stars" && (
+                        {/* NEW: full-width hand-drawn squiggle underline */}
+                        {current.doodle === "squiggle" && (
                           <Box
                             component="svg"
                             sx={{
                               position: "absolute",
-                              inset: { xs: -14, sm: -18 },
-                              width: "140%",
-                              height: "140%",
+                              left: -2,
+                              right: -2,
+                              bottom: { xs: -16, sm: -18 },
+                              width: "calc(100% + 4px)", // <- takes up the whole word
+                              height: 26,
+                              overflow: "visible",
+                              pointerEvents: "none",
                               animation: prefersReducedMotion()
                                 ? "none"
-                                : "doodlePop 400ms ease-out",
-                              pointerEvents: "none",
+                                : "doodlePop 260ms ease-out",
+                              opacity: 0.98,
                             }}
-                            viewBox="0 0 140 100"
+                            viewBox="0 0 100 20"
+                            preserveAspectRatio="none"
                             aria-hidden="true"
                           >
-                            {[0, 45, 90, 135, 180, 225, 270, 315].map(
-                              (rot, i) => (
-                                <path
-                                  key={i}
-                                  d="M10 0 L13 7 L20 7 L15 11 L17 18 L10 14 L3 18 L5 11 L0 7 L7 7 Z"
-                                  fill={current.color}
-                                  transform={`translate(70,50) rotate(${rot}) translate(0,-35)`}
-                                  opacity={0.8}
-                                />
-                              ),
-                            )}
+                            <path
+                              d="M2 12 C 10 4, 20 18, 30 12 S 50 6, 60 12 S 80 18, 98 10"
+                              fill="none"
+                              stroke={current.color}
+                              strokeWidth="6"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeDasharray="140"
+                              strokeDashoffset={
+                                prefersReducedMotion() ? 0 : 140
+                              }
+                              style={{
+                                animation: prefersReducedMotion()
+                                  ? "none"
+                                  : "squiggleDraw 450ms ease-out forwards",
+                              }}
+                            />
                           </Box>
                         )}
 
@@ -347,9 +363,6 @@ const Hero = () => {
                               height: 26,
                               overflow: "visible",
                               pointerEvents: "none",
-                              animation: prefersReducedMotion()
-                                ? "none"
-                                : "doodleWiggle 900ms ease-in-out alternate infinite",
                               opacity: 0.95,
                             }}
                             viewBox="0 0 100 30"
@@ -378,9 +391,6 @@ const Hero = () => {
                               height: 26,
                               overflow: "visible",
                               pointerEvents: "none",
-                              animation: prefersReducedMotion()
-                                ? "none"
-                                : "doodleWiggle 1000ms ease-in-out alternate infinite",
                               opacity: 0.95,
                             }}
                             viewBox="0 0 100 30"
