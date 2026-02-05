@@ -61,7 +61,7 @@ const About = () => {
                 }}
                 itemProp="name"
               >
-                Hi, I’m Nichole, Founder of Insight Web Solutions
+                Insight Web Solutions
               </Typography>
 
               <Typography
@@ -76,8 +76,8 @@ const About = () => {
                 }}
                 itemProp="description"
               >
-                I build high-performance, accessible websites and help teams
-                make smarter decisions with clean, reliable data.
+                High performance, accessible websites and analytics that turn
+                information into insight.
               </Typography>
 
               <Typography
@@ -91,12 +91,12 @@ const About = () => {
                   mx: "auto",
                 }}
               >
-                My work blends three core capabilities: WCAG compliant, SEO
-                optimized web development; data and financial analytics; and
-                system level problem solving. I’m driven by quality and
-                curiosity, and I love untangling complex solutions. The result is
-                high performing digital experiences and data systems that are
-                inclusive by design and backed by insights you can trust.
+                Delivering WCAG compliant, SEO optimized web development; data
+                and financial analytics; and system level problem solving.
+                Driven by quality and curiosity, and a passion for untangling
+                complex solutions. The result is high performing digital
+                experiences and data systems that are inclusive by design and
+                backed by insights you can trust.
               </Typography>
 
               <Typography
@@ -112,8 +112,7 @@ const About = () => {
                 }}
               >
                 Whether you need a polished website, stronger search visibility,
-                or better reporting and data flow, I will help you ship outcomes
-                that are measurable and maintainable.
+                or better reporting and data flow, we’ve got you covered.
               </Typography>
 
               {/* <Typography

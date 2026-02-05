@@ -3,7 +3,6 @@ import {
   Typography,
   Card,
   CardContent,
-  CardMedia,
   Button,
   Chip,
   Stack,
@@ -23,6 +22,29 @@ interface Project {
   link: string;
   desktop: string;
   mobile: string;
+
+  // OPTIONAL (recommended for crisp images on retina displays)
+  desktop2x?: string;
+  mobile2x?: string;
+}
+
+// Per-project overrides for the mobile overlay crop/position.
+// Add entries here when one screenshot needs special framing.
+function getMobileOverlayObjectPosition(projectTitle: string): string {
+  const t = projectTitle.toLowerCase();
+
+  // Example: your personal portfolio needs a different crop so it shows the “important stuff”
+  // Tweak until it looks right: "center 18%", "right 12%", etc.
+  if (t.includes("my personal portfolio")) return "center 18%";
+
+  // Default: show top of page
+  return "center top";
+}
+
+// Same idea for desktop image if you ever need it (optional).
+function getDesktopObjectPosition(projectTitle: string): string {
+  // default keeps “top of page” visible for full-bleed covers
+  return "center top";
 }
 
 const Portfolio = () => {
@@ -40,6 +62,7 @@ const Portfolio = () => {
         alignItems: "center",
         bgcolor: "background.default",
         px: { xs: 2, sm: 3, md: 4, lg: 6 },
+        py: { xs: 6, md: 7 },
       }}
     >
       <Box sx={{ width: "100%", maxWidth: 1600, mx: "auto" }}>
@@ -50,20 +73,20 @@ const Portfolio = () => {
           sx={{
             fontWeight: 800,
             fontSize: { xs: "2rem", sm: "2.4rem", md: "2.8rem" },
-            mb: 4,
+            mb: { xs: 3.5, md: 5 },
           }}
         >
           Portfolio
         </Typography>
 
-        <Grid2 container spacing={{ xs: 3, md: 3 }}>
+        <Grid2 container spacing={{ xs: 3, md: 3.25 }}>
           {projects.map((project) => {
             const title = project.title.toLowerCase();
 
-            // Keep your portfolio image EXACTLY how it was (contain)
+            // Keep your personal portfolio screenshot exactly how it was (contain)
             const isPersonalPortfolio = title.includes("my personal portfolio");
 
-            // These should fill 100% of the image area (cover)
+            // Full-bleed projects should fill the frame (cover)
             const isFullBleed =
               !isPersonalPortfolio &&
               (title.includes("energy star") ||
@@ -71,9 +94,18 @@ const Portfolio = () => {
                 project.link.includes("energystar.gov") ||
                 project.link.includes("rose-salon.netlify.app"));
 
-            // Card sizing tuned for 3-across on desktop
-            const CARD_HEIGHT = 500;
-            const IMAGE_HEIGHT = 250;
+            // Slightly shorter cards/images on mobile (more compact, less fuzzy scaling)
+            const CARD_HEIGHT = { xs: 510, sm: 540, md: 620 };
+            const IMAGE_HEIGHT = { xs: 250, sm: 280, md: 320 };
+
+            // Smaller mobile overlay on xs/sm (helps sharpness because we’re not upscaling as much)
+            const MOBILE_OVERLAY_WIDTH = { xs: 86, sm: 104, md: 128 }; // px
+            const MOBILE_OVERLAY_INSET = { xs: 10, sm: 12, md: 14 }; // px
+
+            const mobileOverlayObjectPosition =
+              getMobileOverlayObjectPosition(project.title);
+
+            const desktopObjectPosition = getDesktopObjectPosition(project.title);
 
             return (
               <Grid2 key={project.title} size={{ xs: 12, md: 4 }}>
@@ -94,42 +126,64 @@ const Portfolio = () => {
                 >
                   {/* IMAGE */}
                   <Box sx={{ position: "relative", height: IMAGE_HEIGHT }}>
-                    <CardMedia
+                    {/* Desktop image (use Box component="img" so srcSet is easy) */}
+                    <Box
                       component="img"
-                      image={project.desktop}
+                      src={project.desktop}
+                      srcSet={
+                        project.desktop2x
+                          ? `${project.desktop} 1x, ${project.desktop2x} 2x`
+                          : undefined
+                      }
+                      sizes="(min-width: 900px) 33vw, 100vw"
                       alt={`${project.title} screenshot`}
                       loading="lazy"
+                      decoding="async"
+                      style={{ width: "100%", height: "100%" }}
                       sx={{
+                        display: "block",
                         width: "100%",
                         height: "100%",
                         bgcolor: "#f5f5f5",
-
-                        // ✅ Portfolio stays perfect (contain)
-                        // ✅ Others fill 100% (cover)
                         objectFit: isFullBleed ? "cover" : "contain",
-
-                        // ✅ Show the TOP of the page (beginning) instead of the middle/end
-                        // When using cover, this controls what part gets cropped in.
-                        objectPosition: isFullBleed ? "center top" : "center",
+                        objectPosition: desktopObjectPosition,
                       }}
                     />
 
-                    <CardMedia
+                    {/* Mobile overlay */}
+                    <Box
                       component="img"
-                      image={project.mobile}
+                      src={project.mobile}
+                      srcSet={
+                        project.mobile2x
+                          ? `${project.mobile} 1x, ${project.mobile2x} 2x`
+                          : undefined
+                      }
+                      sizes="128px"
                       alt={`${project.title} mobile screenshot`}
                       loading="lazy"
+                      decoding="async"
                       sx={{
                         position: "absolute",
-                        bottom: 14,
-                        right: 14,
-                        width: "26%",
-                        maxWidth: 120,
+                        bottom: MOBILE_OVERLAY_INSET,
+                        right: MOBILE_OVERLAY_INSET,
+
+                        width: MOBILE_OVERLAY_WIDTH,
+                        aspectRatio: "9 / 19.5",
+                        height: "auto",
+
                         borderRadius: 2,
-                        border: "3px solid white",
+                        border: { xs: "2px solid white", md: "3px solid white" },
                         boxShadow: 6,
                         bgcolor: "white",
-                        objectFit: "contain",
+
+                        // Preview behavior
+                        objectFit: "cover",
+                        objectPosition: mobileOverlayObjectPosition,
+
+                        // Avoid blurry scaling artifacts in some browsers
+                        transform: "translateZ(0)",
+                        backfaceVisibility: "hidden",
                       }}
                     />
                   </Box>
@@ -138,11 +192,11 @@ const Portfolio = () => {
                   <CardContent
                     sx={{
                       flex: 1,
-                      px: 2.5,
-                      py: 2,
+                      px: 2.75,
+                      py: 2.25,
                       display: "flex",
                       flexDirection: "column",
-                      gap: 0.9,
+                      gap: 1,
                       minHeight: 0,
                     }}
                   >
@@ -166,7 +220,7 @@ const Portfolio = () => {
                       sx={{
                         lineHeight: 1.6,
                         display: "-webkit-box",
-                        WebkitLineClamp: 3,
+                        WebkitLineClamp: { xs: 4, md: 4 },
                         WebkitBoxOrient: "vertical",
                         overflow: "hidden",
                       }}
@@ -188,26 +242,26 @@ const Portfolio = () => {
                       {project.role}
                     </Typography>
 
-                    {/* TECH — single row, scrollable */}
-                    <Box sx={{ overflowX: "auto", pb: 0.5 }}>
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        sx={{ width: "max-content" }}
-                        aria-label={`${project.title} technologies`}
-                      >
-                        {project.tech.slice(0, 8).map((tech) => (
-                          <Chip
-                            key={tech}
-                            label={tech}
-                            size="small"
-                            color="secondary"
-                            variant="outlined"
-                            sx={{ fontWeight: 600 }}
-                          />
-                        ))}
-                      </Stack>
-                    </Box>
+                    {/* TECH — wraps nicely */}
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      useFlexGap
+                      flexWrap="wrap"
+                      aria-label={`${project.title} technologies`}
+                      sx={{ mt: 0.5, rowGap: 1 }}
+                    >
+                      {project.tech.slice(0, 8).map((tech) => (
+                        <Chip
+                          key={tech}
+                          label={tech}
+                          size="small"
+                          color="secondary"
+                          variant="outlined"
+                          sx={{ fontWeight: 600 }}
+                        />
+                      ))}
+                    </Stack>
 
                     <Box sx={{ flexGrow: 1 }} />
 
@@ -222,6 +276,7 @@ const Portfolio = () => {
                         fontWeight: 700,
                         textTransform: "none",
                         borderRadius: 2,
+                        py: 1.2,
                       }}
                     >
                       View Project

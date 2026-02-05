@@ -13,8 +13,8 @@
   },
   {
     "title": "Data & Analytics",
-    "description": "SQL, ETL, reporting, and spreadsheet automation that turn raw data into usable insight.",
-    "icon": "Storage",
+    "description": "Dashboards, reporting, and data workflows that deliver clear, decision-ready insights.",
+    "icon": "BarChart",
     "value": "data-analytics"
   }
 ]

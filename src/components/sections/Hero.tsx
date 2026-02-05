@@ -504,6 +504,7 @@ const Hero = () => {
                   maxWidth: 920,
                   opacity: 0.95,
                   textAlign: "center",
+                  pt: "1rem"
                 }}
               >
                 Specializing in 508-compliant web development, SEO strategy,
