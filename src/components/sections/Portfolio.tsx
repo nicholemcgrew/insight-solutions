@@ -22,28 +22,21 @@ interface Project {
   link: string;
   desktop: string;
   mobile: string;
-
-  // OPTIONAL (recommended for crisp images on retina displays)
   desktop2x?: string;
   mobile2x?: string;
 }
 
-// Per-project overrides for the mobile overlay crop/position.
-// Add entries here when one screenshot needs special framing.
 function getMobileOverlayObjectPosition(projectTitle: string): string {
   const t = projectTitle.toLowerCase();
 
-  // Example: your personal portfolio needs a different crop so it shows the “important stuff”
-  // Tweak until it looks right: "center 18%", "right 12%", etc.
+  // Portfolio mobile screenshots often need a slight down-bias so the hero/content shows.
+  // Tweak this percent if needed.
   if (t.includes("my personal portfolio")) return "center 18%";
 
-  // Default: show top of page
   return "center top";
 }
 
-// Same idea for desktop image if you ever need it (optional).
-function getDesktopObjectPosition(projectTitle: string): string {
-  // default keeps “top of page” visible for full-bleed covers
+function getDesktopObjectPosition(_projectTitle: string): string {
   return "center top";
 }
 
@@ -81,31 +74,35 @@ const Portfolio = () => {
 
         <Grid2 container spacing={{ xs: 3, md: 3.25 }}>
           {projects.map((project) => {
-            const title = project.title.toLowerCase();
+            const titleLower = project.title.toLowerCase();
 
-            // Keep your personal portfolio screenshot exactly how it was (contain)
-            const isPersonalPortfolio = title.includes("my personal portfolio");
+            // Keep portfolio desktop screenshot as contain
+            const isPersonalPortfolio = titleLower.includes(
+              "my personal portfolio",
+            );
 
             // Full-bleed projects should fill the frame (cover)
             const isFullBleed =
               !isPersonalPortfolio &&
-              (title.includes("energy star") ||
-                title.includes("rose salon") ||
+              (titleLower.includes("energy star") ||
+                titleLower.includes("rose salon") ||
                 project.link.includes("energystar.gov") ||
                 project.link.includes("rose-salon.netlify.app"));
 
-            // Slightly shorter cards/images on mobile (more compact, less fuzzy scaling)
+            // Compact on mobile
             const CARD_HEIGHT = { xs: 510, sm: 540, md: 620 };
             const IMAGE_HEIGHT = { xs: 250, sm: 280, md: 320 };
 
-            // Smaller mobile overlay on xs/sm (helps sharpness because we’re not upscaling as much)
-            const MOBILE_OVERLAY_WIDTH = { xs: 86, sm: 104, md: 128 }; // px
-            const MOBILE_OVERLAY_INSET = { xs: 10, sm: 12, md: 14 }; // px
+            // Mobile overlay sizing/placement
+            const MOBILE_OVERLAY_WIDTH = { xs: 86, sm: 104, md: 128 };
+            const MOBILE_OVERLAY_INSET = { xs: 10, sm: 12, md: 14 };
 
-            const mobileOverlayObjectPosition =
-              getMobileOverlayObjectPosition(project.title);
-
-            const desktopObjectPosition = getDesktopObjectPosition(project.title);
+            const mobileOverlayObjectPosition = getMobileOverlayObjectPosition(
+              project.title,
+            );
+            const desktopObjectPosition = getDesktopObjectPosition(
+              project.title,
+            );
 
             return (
               <Grid2 key={project.title} size={{ xs: 12, md: 4 }}>
@@ -126,7 +123,7 @@ const Portfolio = () => {
                 >
                   {/* IMAGE */}
                   <Box sx={{ position: "relative", height: IMAGE_HEIGHT }}>
-                    {/* Desktop image (use Box component="img" so srcSet is easy) */}
+                    {/* Desktop image */}
                     <Box
                       component="img"
                       src={project.desktop}
@@ -165,6 +162,8 @@ const Portfolio = () => {
                       decoding="async"
                       sx={{
                         position: "absolute",
+                        zIndex: 2,
+                        display: "block",
                         bottom: MOBILE_OVERLAY_INSET,
                         right: MOBILE_OVERLAY_INSET,
 
@@ -173,15 +172,16 @@ const Portfolio = () => {
                         height: "auto",
 
                         borderRadius: 2,
-                        border: { xs: "2px solid white", md: "3px solid white" },
+                        border: {
+                          xs: "2px solid white",
+                          md: "3px solid white",
+                        },
                         boxShadow: 6,
                         bgcolor: "white",
 
-                        // Preview behavior
                         objectFit: "cover",
                         objectPosition: mobileOverlayObjectPosition,
 
-                        // Avoid blurry scaling artifacts in some browsers
                         transform: "translateZ(0)",
                         backfaceVisibility: "hidden",
                       }}
@@ -242,7 +242,6 @@ const Portfolio = () => {
                       {project.role}
                     </Typography>
 
-                    {/* TECH — wraps nicely */}
                     <Stack
                       direction="row"
                       spacing={1}

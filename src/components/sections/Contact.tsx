@@ -60,14 +60,7 @@ const DISPLAY_OPTIONS: ServiceOption[] = [
   { title: "Ongoing Support & Maintenance", value: "maintenance" },
 ];
 
-const SERVICE_ORDER: string[] = [
-  "web-design-development",
-  "accessibility-audit",
-  "seo-performance",
-  "ux-conversion",
-  "data-analytics",
-  "maintenance",
-];
+const SERVICE_ORDER = DISPLAY_OPTIONS.map((o) => o.value);
 
 const CORE_MATCHERS: Array<{
   toValue: string;
@@ -75,105 +68,54 @@ const CORE_MATCHERS: Array<{
 }> = [
   {
     toValue: "web-design-development",
-    matches: (s) => {
-      const t = s.title.toLowerCase();
-      const v = s.value.toLowerCase();
-      return (
-        t.includes("website") ||
-        t.includes("web design") ||
-        t.includes("web development") ||
-        t.includes("site design") ||
-        t.includes("site development") ||
-        v.includes("web") ||
-        v.includes("website")
-      );
-    },
+    matches: (s) =>
+      /web|website|site/.test(`${s.title} ${s.value}`.toLowerCase()),
   },
   {
     toValue: "accessibility-audit",
-    matches: (s) => {
-      const t = s.title.toLowerCase();
-      const v = s.value.toLowerCase();
-      return (
-        t.includes("accessibility") ||
-        t.includes("508") ||
-        t.includes("wcag") ||
-        v.includes("access")
-      );
-    },
+    matches: (s) =>
+      /access|508|wcag/.test(`${s.title} ${s.value}`.toLowerCase()),
   },
   {
     toValue: "seo-performance",
-    matches: (s) => {
-      const t = s.title.toLowerCase();
-      const v = s.value.toLowerCase();
-      return (
-        t.includes("seo") ||
-        t.includes("performance") ||
-        t.includes("speed") ||
-        t.includes("optimization") ||
-        v.includes("seo") ||
-        v.includes("performance")
-      );
-    },
+    matches: (s) =>
+      /seo|performance|speed|optimization/.test(
+        `${s.title} ${s.value}`.toLowerCase(),
+      ),
   },
   {
     toValue: "ux-conversion",
-    matches: (s) => {
-      const t = s.title.toLowerCase();
-      const v = s.value.toLowerCase();
-      return (
-        t.includes("ux") ||
-        t.includes("conversion") ||
-        t.includes("cro") ||
-        t.includes("user experience") ||
-        v.includes("ux") ||
-        v.includes("conversion")
-      );
-    },
+    matches: (s) =>
+      /ux|conversion|cro|user experience/.test(
+        `${s.title} ${s.value}`.toLowerCase(),
+      ),
   },
   {
     toValue: "data-analytics",
-    matches: (s) => {
-      const t = s.title.toLowerCase();
-      const v = s.value.toLowerCase();
-      return (
-        t.includes("analytics") ||
-        t.includes("dashboard") ||
-        t.includes("report") ||
-        t.includes("data") ||
-        v.includes("analytics") ||
-        v.includes("dashboard") ||
-        v.includes("data")
-      );
-    },
+    matches: (s) =>
+      /data|analytics|dashboard|report/.test(
+        `${s.title} ${s.value}`.toLowerCase(),
+      ),
   },
   {
     toValue: "maintenance",
-    matches: (s) => {
-      const t = s.title.toLowerCase();
-      const v = s.value.toLowerCase();
-      return (
-        t.includes("maintenance") ||
-        t.includes("support") ||
-        t.includes("retainer") ||
-        t.includes("ongoing") ||
-        v.includes("maintenance") ||
-        v.includes("support")
-      );
-    },
+    matches: (s) =>
+      /maintenance|support|retainer|ongoing/.test(
+        `${s.title} ${s.value}`.toLowerCase(),
+      ),
   },
 ];
 
 function buildServiceOptionsFromCore(coreRaw: ServiceOption[]) {
-  // Only keep core services that match your 6 canonical services
   const canonicalHits = new Map<string, ServiceOption>();
 
   for (const item of coreRaw) {
     for (const rule of CORE_MATCHERS) {
       if (rule.matches(item)) {
         if (!canonicalHits.has(rule.toValue)) {
-          const display = DISPLAY_OPTIONS.find((d) => d.value === rule.toValue);
+          const display = DISPLAY_OPTIONS.find(
+            (d) => d.value === rule.toValue,
+          );
           canonicalHits.set(rule.toValue, {
             title: display?.title ?? item.title,
             value: rule.toValue,
@@ -184,24 +126,23 @@ function buildServiceOptionsFromCore(coreRaw: ServiceOption[]) {
     }
   }
 
-  // Ensure all canonical services exist even if core JSON doesn’t have them
   const merged = new Map<string, ServiceOption>();
   DISPLAY_OPTIONS.forEach((o) => merged.set(o.value, o));
   canonicalHits.forEach((o, v) => merged.set(v, o));
 
-  // Dedupe hard by canonical value and normalized title
   const seenTitle = new Set<string>();
   const list: ServiceOption[] = [];
+
   for (const o of merged.values()) {
     const val = canonicalizeValue(o.value);
     const titleKey = o.title.trim().toLowerCase();
+
     if (SERVICE_ORDER.includes(val) && !seenTitle.has(titleKey)) {
       seenTitle.add(titleKey);
       list.push({ title: o.title, value: val });
     }
   }
 
-  // Enforce your preferred order
   const idx = new Map<string, number>();
   SERVICE_ORDER.forEach((v, i) => idx.set(v, i));
   list.sort((a, b) => (idx.get(a.value)! ?? 999) - (idx.get(b.value)! ?? 999));
@@ -216,8 +157,7 @@ const coreServicesRaw: ServiceOption[] = (servicesData as Service[]).map(
   }),
 );
 
-const serviceOptions: ServiceOption[] =
-  buildServiceOptionsFromCore(coreServicesRaw);
+const serviceOptions = buildServiceOptionsFromCore(coreServicesRaw);
 
 const titleByValue: Record<string, string> = Object.fromEntries(
   serviceOptions.map((o) => [o.value, o.title]),
@@ -230,7 +170,6 @@ const Contact = () => {
     services: [],
     message: "",
   });
-
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -248,23 +187,18 @@ const Contact = () => {
   }, [location.search]);
 
   const update = (key: keyof FormData, value: any) => {
-    // Keep form updates simple and clear errors as user edits
     setFormData((p) => ({ ...p, [key]: value }));
     setErrors((p) => ({ ...p, [key]: "" }));
   };
 
   const validate = () => {
-    // Basic validation: name/email required; message OR at least one service
     const e: FormErrors = {};
-
     if (!formData.name.trim()) e.name = "Name is required.";
     if (!formData.email.trim()) e.email = "Email is required.";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
       e.email = "Invalid email address.";
-
     if (!formData.message.trim() && formData.services.length === 0)
       e.message = "Add a message or select services.";
-
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -273,11 +207,9 @@ const Contact = () => {
     e.preventDefault();
     setSubmitError("");
     setSubmitted(false);
-
     if (!validate()) return;
 
     const selected = formData.services.map((v) => titleByValue[v] ?? v);
-
     const message =
       selected.length > 0
         ? `Interested in: ${selected.join(", ")}.\n\n${
@@ -292,7 +224,6 @@ const Contact = () => {
         { name: formData.name, email: formData.email, message },
         { headers: { Accept: "application/json" } },
       );
-
       setSubmitted(true);
       setFormData({ name: "", email: "", services: [], message: "" });
       setErrors({});
@@ -305,22 +236,18 @@ const Contact = () => {
   };
 
   useEffect(() => {
-    // Prefill service from query param (supports either title or value)
     if (!serviceFromQuery) return;
-
     const decoded = decodeURIComponent(serviceFromQuery);
     const decodedVal = canonicalizeValue(decoded);
     const match = serviceOptions.find(
       (o) => o.title === decoded || o.value === decodedVal,
     );
-
     if (match) {
       setFormData((p) => ({
         ...p,
         services: Array.from(new Set([...p.services, match.value])),
       }));
     }
-
     requestAnimationFrame(() => {
       topRef.current?.focus({ preventScroll: true });
       nameRef.current?.focus({ preventScroll: true });
@@ -342,202 +269,126 @@ const Contact = () => {
       <Box ref={topRef} tabIndex={-1} aria-hidden />
 
       <Container maxWidth="lg">
-        <Paper
-          elevation={10}
-          sx={{
-            p: { xs: 3.5, md: 5 },
-            borderRadius: 4,
-          }}
-        >
+        <Paper elevation={10} sx={{ p: { xs: 3.5, md: 5 }, borderRadius: 4 }}>
           <Stack spacing={2.5}>
             <Box>
-              <Typography
-                id="contact-title"
-                component="h2"
-                variant="h3"
-                sx={{ fontWeight: 900 }}
-              >
+              <Typography id="contact-title" component="h2" variant="h3" sx={{ fontWeight: 900 }}>
                 Let’s Work Together
               </Typography>
-
-              <Typography
-                color="text.secondary"
-                sx={{ lineHeight: 1.7, mt: 1 }}
-              >
-                Share a few details and I’ll follow up within 24 hours with
-                clear next steps.
+              <Typography color="text.secondary" sx={{ lineHeight: 1.7, mt: 1 }}>
+                Share a few details and a response will follow within 24 hours
+                with clear next steps.
               </Typography>
             </Box>
 
-            <Stack spacing={2}>
-              <Box aria-live="polite">
-                {submitted && (
-                  <Alert severity="success">
-                    Message sent. I’ll be in touch shortly.
-                  </Alert>
-                )}
-                {submitError && <Alert severity="error">{submitError}</Alert>}
-              </Box>
+            <Box aria-live="polite">
+              {submitted && (
+                <Alert severity="success">
+                  Message sent. A response will follow shortly.
+                </Alert>
+              )}
+              {submitError && <Alert severity="error">{submitError}</Alert>}
+            </Box>
 
-              <Box component="form" onSubmit={handleSubmit} noValidate>
-                <Grid2 container spacing={2.25}>
-                  <Grid2 size={{ xs: 12, md: 6 }}>
-                    <TextField
-                      inputRef={nameRef}
-                      label="Name"
-                      fullWidth
-                      required
-                      value={formData.name}
-                      onChange={(e) => update("name", e.target.value)}
-                      error={!!errors.name}
-                      helperText={errors.name}
-                      InputProps={{
-                        startAdornment: <PersonOutlineIcon sx={{ mr: 1 }} />,
-                      }}
-                    />
-                  </Grid2>
-
-                  <Grid2 size={{ xs: 12, md: 6 }}>
-                    <TextField
-                      label="Email"
-                      fullWidth
-                      required
-                      value={formData.email}
-                      onChange={(e) => update("email", e.target.value)}
-                      error={!!errors.email}
-                      helperText={errors.email}
-                      InputProps={{
-                        startAdornment: <MailOutlineIcon sx={{ mr: 1 }} />,
-                      }}
-                    />
-                  </Grid2>
-
-                  <Grid2 size={12}>
-                    <FormControl fullWidth>
-                      <InputLabel>Services</InputLabel>
-
-                      <Select
-                        multiple
-                        value={formData.services}
-                        onChange={(e) =>
-                          update(
-                            "services",
-                            typeof e.target.value === "string"
-                              ? e.target.value.split(",")
-                              : e.target.value,
-                          )
-                        }
-                        input={<OutlinedInput label="Services" />}
-                        renderValue={(selected) => (
-                          <Box
-                            sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}
-                          >
-                            {selected.map((v) => (
-                              <Chip
-                                key={v}
-                                label={titleByValue[v] ?? v}
-                                sx={{
-                                  maxWidth: "100%",
-                                  "& .MuiChip-label": {
-                                    maxWidth: "100%",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                  },
-                                }}
-                              />
-                            ))}
-                          </Box>
-                        )}
-                        MenuProps={{
-                          // Make the dropdown usable on mobile: full-width, scrollable, wrapping labels
-                          PaperProps: {
-                            sx: {
-                              maxWidth: "calc(100vw - 32px)",
-                              width: { xs: "calc(100vw - 32px)", sm: 560 },
-                              maxHeight: "60vh",
-                            },
-                          },
-                          MenuListProps: {
-                            sx: { pr: 1 },
-                          },
-                          anchorOrigin: {
-                            vertical: "bottom",
-                            horizontal: "left",
-                          },
-                          transformOrigin: {
-                            vertical: "top",
-                            horizontal: "left",
-                          },
-                        }}
-                      >
-                        {serviceOptions.map((o) => (
-                          <MenuItem
-                            key={o.value}
-                            value={o.value}
-                            sx={{
-                              alignItems: "flex-start",
-                              gap: 1,
-                              py: 1.25,
-                              whiteSpace: "normal",
-                            }}
-                          >
-                            <Checkbox
-                              checked={formData.services.includes(o.value)}
-                            />
-                            <ListItemText
-                              primary={o.title}
-                              primaryTypographyProps={{
-                                sx: {
-                                  whiteSpace: "normal",
-                                  wordBreak: "break-word",
-                                  lineHeight: 1.25,
-                                },
-                              }}
-                            />
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid2>
-
-                  <Grid2 size={12}>
-                    <TextField
-                      label="Project details"
-                      multiline
-                      minRows={4}
-                      fullWidth
-                      value={formData.message}
-                      onChange={(e) => update("message", e.target.value)}
-                      error={!!errors.message}
-                      helperText={errors.message}
-                      InputProps={{
-                        startAdornment: (
-                          <WorkOutlineIcon sx={{ mr: 1, mt: 1 }} />
-                        ),
-                      }}
-                    />
-                  </Grid2>
-
-                  <Grid2 size={12}>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="secondary"
-                      size="large"
-                      fullWidth
-                      disabled={isSubmitting}
-                      sx={{
-                        py: 1.6,
-                        fontWeight: 900,
-                        borderRadius: 999,
-                      }}
-                    >
-                      {isSubmitting ? "Sending…" : "Send Message"}
-                    </Button>
-                  </Grid2>
+            <Box component="form" onSubmit={handleSubmit} noValidate>
+              <Grid2 container spacing={2.25}>
+                <Grid2 size={{ xs: 12, md: 6 }}>
+                  <TextField
+                    inputRef={nameRef}
+                    label="Name"
+                    fullWidth
+                    required
+                    value={formData.name}
+                    onChange={(e) => update("name", e.target.value)}
+                    error={!!errors.name}
+                    helperText={errors.name}
+                    InputProps={{
+                      startAdornment: <PersonOutlineIcon sx={{ mr: 1 }} />,
+                    }}
+                  />
                 </Grid2>
-              </Box>
-            </Stack>
+
+                <Grid2 size={{ xs: 12, md: 6 }}>
+                  <TextField
+                    label="Email"
+                    fullWidth
+                    required
+                    value={formData.email}
+                    onChange={(e) => update("email", e.target.value)}
+                    error={!!errors.email}
+                    helperText={errors.email}
+                    InputProps={{
+                      startAdornment: <MailOutlineIcon sx={{ mr: 1 }} />,
+                    }}
+                  />
+                </Grid2>
+
+                <Grid2 size={12}>
+                  <FormControl fullWidth>
+                    <InputLabel>Services</InputLabel>
+                    <Select
+                      multiple
+                      value={formData.services}
+                      onChange={(e) =>
+                        update(
+                          "services",
+                          typeof e.target.value === "string"
+                            ? e.target.value.split(",")
+                            : e.target.value,
+                        )
+                      }
+                      input={<OutlinedInput label="Services" />}
+                      renderValue={(selected) => (
+                        <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
+                          {selected.map((v) => (
+                            <Chip key={v} label={titleByValue[v] ?? v} />
+                          ))}
+                        </Box>
+                      )}
+                    >
+                      {serviceOptions.map((o) => (
+                        <MenuItem key={o.value} value={o.value}>
+                          <Checkbox checked={formData.services.includes(o.value)} />
+                          <ListItemText primary={o.title} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid2>
+
+                <Grid2 size={12}>
+                  <TextField
+                    label="Project details"
+                    multiline
+                    minRows={4}
+                    fullWidth
+                    value={formData.message}
+                    onChange={(e) => update("message", e.target.value)}
+                    error={!!errors.message}
+                    helperText={errors.message}
+                    InputProps={{
+                      startAdornment: (
+                        <WorkOutlineIcon sx={{ mr: 1, mt: 1 }} />
+                      ),
+                    }}
+                  />
+                </Grid2>
+
+                <Grid2 size={12}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="secondary"
+                    size="large"
+                    fullWidth
+                    disabled={isSubmitting}
+                    sx={{ py: 1.6, fontWeight: 900, borderRadius: 999 }}
+                  >
+                    {isSubmitting ? "Sending…" : "Send Message"}
+                  </Button>
+                </Grid2>
+              </Grid2>
+            </Box>
           </Stack>
         </Paper>
       </Container>
