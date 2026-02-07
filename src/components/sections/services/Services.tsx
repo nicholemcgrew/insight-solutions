@@ -26,9 +26,7 @@ import SectionHeader from "../SectionHeader";
 import ServiceCardGrid from "./ServiceCardGrid";
 
 const iconMap: Record<Service["icon"], React.ReactNode> = {
-  Web: (
-    <WebIcon fontSize="large" color="primary" aria-hidden focusable="false" />
-  ),
+  Web: <WebIcon fontSize="large" color="primary" aria-hidden focusable="false" />,
   Accessibility: (
     <AccessibilityIcon
       fontSize="large"
@@ -38,12 +36,7 @@ const iconMap: Record<Service["icon"], React.ReactNode> = {
     />
   ),
   Search: (
-    <SearchIcon
-      fontSize="large"
-      color="primary"
-      aria-hidden
-      focusable="false"
-    />
+    <SearchIcon fontSize="large" color="primary" aria-hidden focusable="false" />
   ),
   DesignServices: (
     <DesignServicesIcon
@@ -56,28 +49,13 @@ const iconMap: Record<Service["icon"], React.ReactNode> = {
 
   // Chart / analytics options (use any of these strings in servicesData.json)
   BarChart: (
-    <BarChartIcon
-      fontSize="large"
-      color="primary"
-      aria-hidden
-      focusable="false"
-    />
+    <BarChartIcon fontSize="large" color="primary" aria-hidden focusable="false" />
   ),
   ShowChart: (
-    <ShowChartIcon
-      fontSize="large"
-      color="primary"
-      aria-hidden
-      focusable="false"
-    />
+    <ShowChartIcon fontSize="large" color="primary" aria-hidden focusable="false" />
   ),
   Insights: (
-    <InsightsIcon
-      fontSize="large"
-      color="primary"
-      aria-hidden
-      focusable="false"
-    />
+    <InsightsIcon fontSize="large" color="primary" aria-hidden focusable="false" />
   ),
   QueryStats: (
     <QueryStatsIcon
@@ -104,12 +82,7 @@ const iconMap: Record<Service["icon"], React.ReactNode> = {
     />
   ),
   Analytics: (
-    <AnalyticsIcon
-      fontSize="large"
-      color="primary"
-      aria-hidden
-      focusable="false"
-    />
+    <AnalyticsIcon fontSize="large" color="primary" aria-hidden focusable="false" />
   ),
 
   Collections: (
@@ -121,20 +94,10 @@ const iconMap: Record<Service["icon"], React.ReactNode> = {
     />
   ),
   Support: (
-    <SupportIcon
-      fontSize="large"
-      color="primary"
-      aria-hidden
-      focusable="false"
-    />
+    <SupportIcon fontSize="large" color="primary" aria-hidden focusable="false" />
   ),
   Storage: (
-    <StorageIcon
-      fontSize="large"
-      color="primary"
-      aria-hidden
-      focusable="false"
-    />
+    <StorageIcon fontSize="large" color="primary" aria-hidden focusable="false" />
   ),
 };
 
@@ -146,6 +109,24 @@ const Services = () => {
 
   // Keep CTA URL rules consistent across cards.
   const getHref = (title: string) => buildContactHref(title);
+
+  // Force a clean 2-line subtitle on mobile without hurting a11y
+  const servicesSubtitle = (
+    <>
+      <Box
+        component="span"
+        sx={{ display: { xs: "block", sm: "inline" } }}
+      >
+        Intelligently designed.
+      </Box>{" "}
+      <Box
+        component="span"
+        sx={{ display: { xs: "block", sm: "inline" } }}
+      >
+        Driven by data.
+      </Box>
+    </>
+  );
 
   return (
     <Box
@@ -174,15 +155,16 @@ const Services = () => {
             id="services-title"
             as="h2"
             title="Services"
-            subtitle="Intelligently designed. Driven by data."
+            subtitle={servicesSubtitle as unknown as string}
           />
-<Box sx={{ mt: { xs: 2, md: 3 } }}>
-          <ServiceCardGrid
-            services={services}
-            reducedMotion={reducedMotion}
-            getHref={getHref}
-            iconMap={iconMap}
-          />
+
+          <Box sx={{ mt: { xs: 2, md: 3 } }}>
+            <ServiceCardGrid
+              services={services}
+              reducedMotion={reducedMotion}
+              getHref={getHref}
+              iconMap={iconMap}
+            />
           </Box>
         </Stack>
       </Container>

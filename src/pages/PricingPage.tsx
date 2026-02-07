@@ -106,7 +106,7 @@ const PricingPage = () => {
             mb: { xs: 4, md: 6 },
           }}
         >
-          High quality work, thoughtfully scoped, and priced with intention.
+          High quality work, strategically built to deliver results.
         </Typography>
 
         <Grid2
