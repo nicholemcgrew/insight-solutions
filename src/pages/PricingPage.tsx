@@ -89,11 +89,24 @@ const PricingPage = () => {
             color: "text.secondary",
             fontSize: { xs: "1.1rem", sm: "1.2rem" },
             lineHeight: 1.6,
+          }}
+        >
+          Transparent starting points, tailored to your goals.
+        </Typography>
+        <Typography
+          variant="h6"
+          component="p"
+          align="center"
+          maxWidth="52rem"
+          mx="auto"
+          sx={{
+            color: "text.secondary",
+            fontSize: { xs: "1.1rem", sm: "1.2rem" },
+            lineHeight: 1.6,
             mb: { xs: 4, md: 6 },
           }}
         >
-          Transparent starting points with room to grow. High quality work,
-          thoughtfully scoped, and priced with intention.
+          High quality work, thoughtfully scoped, and priced with intention.
         </Typography>
 
         <Grid2

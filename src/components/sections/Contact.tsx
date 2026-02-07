@@ -113,9 +113,7 @@ function buildServiceOptionsFromCore(coreRaw: ServiceOption[]) {
     for (const rule of CORE_MATCHERS) {
       if (rule.matches(item)) {
         if (!canonicalHits.has(rule.toValue)) {
-          const display = DISPLAY_OPTIONS.find(
-            (d) => d.value === rule.toValue,
-          );
+          const display = DISPLAY_OPTIONS.find((d) => d.value === rule.toValue);
           canonicalHits.set(rule.toValue, {
             title: display?.title ?? item.title,
             value: rule.toValue,
@@ -150,12 +148,10 @@ function buildServiceOptionsFromCore(coreRaw: ServiceOption[]) {
   return list;
 }
 
-const coreServicesRaw: ServiceOption[] = (servicesData as Service[]).map(
-  (s) => ({
-    title: s.title,
-    value: canonicalizeValue(s.value ?? normalize(s.title)),
-  }),
-);
+const coreServicesRaw: ServiceOption[] = (servicesData as Service[]).map((s) => ({
+  title: s.title,
+  value: canonicalizeValue(s.value ?? normalize(s.title)),
+}));
 
 const serviceOptions = buildServiceOptionsFromCore(coreServicesRaw);
 
@@ -178,13 +174,34 @@ const Contact = () => {
   const nameRef = useRef<HTMLInputElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
 
+  // Avoid focus-jumps if user starts interacting quickly
+  const userInteractedRef = useRef(false);
+  const markInteracted = () => {
+    userInteractedRef.current = true;
+  };
+
+  // Allow applying a *new* service param, but don't keep reapplying the same one
+  const lastAppliedServiceRef = useRef<string | null>(null);
+
   const location = useLocation();
   const { navbarHeight } = useNavbarOffset();
 
+  // Reads "service" from BOTH:
+  // 1) normal query string: "/?service=x#contact"
+  // 2) hash query string: "/#contact?service=x" or "/#/contact?service=x"
   const serviceFromQuery = useMemo(() => {
-    const params = new URLSearchParams(location.search);
-    return params.get("service");
-  }, [location.search]);
+    const searchParams = new URLSearchParams(location.search);
+    const fromSearch = searchParams.get("service");
+    if (fromSearch) return fromSearch;
+
+    const hash = location.hash || "";
+    const qIndex = hash.indexOf("?");
+    if (qIndex === -1) return null;
+
+    const hashQuery = hash.slice(qIndex + 1);
+    const hashParams = new URLSearchParams(hashQuery);
+    return hashParams.get("service");
+  }, [location.search, location.hash]);
 
   const update = (key: keyof FormData, value: any) => {
     setFormData((p) => ({ ...p, [key]: value }));
@@ -237,21 +254,33 @@ const Contact = () => {
 
   useEffect(() => {
     if (!serviceFromQuery) return;
+
     const decoded = decodeURIComponent(serviceFromQuery);
     const decodedVal = canonicalizeValue(decoded);
+
+    // Only skip if it's the same service we already applied
+    if (lastAppliedServiceRef.current === decodedVal) return;
+
     const match = serviceOptions.find(
       (o) => o.title === decoded || o.value === decodedVal,
     );
+
+    // Mark applied even if no match, so we don't loop on weird values
+    lastAppliedServiceRef.current = decodedVal;
+
     if (match) {
       setFormData((p) => ({
         ...p,
         services: Array.from(new Set([...p.services, match.value])),
       }));
+
+      // Focus only if they haven't already started interacting
+      requestAnimationFrame(() => {
+        if (userInteractedRef.current) return;
+        topRef.current?.focus({ preventScroll: true });
+        nameRef.current?.focus({ preventScroll: true });
+      });
     }
-    requestAnimationFrame(() => {
-      topRef.current?.focus({ preventScroll: true });
-      nameRef.current?.focus({ preventScroll: true });
-    });
   }, [serviceFromQuery]);
 
   return (
@@ -265,6 +294,8 @@ const Contact = () => {
         alignItems: "center",
         scrollMarginTop: `${navbarHeight + 16}px`,
       }}
+      onPointerDown={markInteracted}
+      onKeyDown={markInteracted}
     >
       <Box ref={topRef} tabIndex={-1} aria-hidden />
 
@@ -272,7 +303,12 @@ const Contact = () => {
         <Paper elevation={10} sx={{ p: { xs: 3.5, md: 5 }, borderRadius: 4 }}>
           <Stack spacing={2.5}>
             <Box>
-              <Typography id="contact-title" component="h2" variant="h3" sx={{ fontWeight: 900 }}>
+              <Typography
+                id="contact-title"
+                component="h2"
+                variant="h3"
+                sx={{ fontWeight: 900 }}
+              >
                 Let’s Work Together
               </Typography>
               <Typography color="text.secondary" sx={{ lineHeight: 1.7, mt: 1 }}>
@@ -299,6 +335,7 @@ const Contact = () => {
                     fullWidth
                     required
                     value={formData.name}
+                    onFocus={markInteracted}
                     onChange={(e) => update("name", e.target.value)}
                     error={!!errors.name}
                     helperText={errors.name}
@@ -314,6 +351,7 @@ const Contact = () => {
                     fullWidth
                     required
                     value={formData.email}
+                    onFocus={markInteracted}
                     onChange={(e) => update("email", e.target.value)}
                     error={!!errors.email}
                     helperText={errors.email}
@@ -329,6 +367,7 @@ const Contact = () => {
                     <Select
                       multiple
                       value={formData.services}
+                      onOpen={markInteracted}
                       onChange={(e) =>
                         update(
                           "services",
@@ -363,13 +402,12 @@ const Contact = () => {
                     minRows={4}
                     fullWidth
                     value={formData.message}
+                    onFocus={markInteracted}
                     onChange={(e) => update("message", e.target.value)}
                     error={!!errors.message}
                     helperText={errors.message}
                     InputProps={{
-                      startAdornment: (
-                        <WorkOutlineIcon sx={{ mr: 1, mt: 1 }} />
-                      ),
+                      startAdornment: <WorkOutlineIcon sx={{ mr: 1, mt: 1 }} />,
                     }}
                   />
                 </Grid2>

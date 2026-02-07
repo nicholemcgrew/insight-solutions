@@ -1,9 +1,12 @@
-export function buildContactHref(serviceTitle?: string) {
-  const params = new URLSearchParams({ cta: "true" });
+const canonicalizeValue = (v: string) =>
+  v.toLowerCase().trim().replace(/_/g, "-").replace(/\s+/g, "-");
 
-  if (serviceTitle) {
-    params.set("service", encodeURIComponent(serviceTitle));
-  }
+export function buildContactHref(serviceTitleOrValue?: string) {
+  const base = "/"; 
+  const hash = "#contact";
 
-  return `/?${params.toString()}#contact`;
+  if (!serviceTitleOrValue) return `${base}${hash}`;
+
+  const service = encodeURIComponent(canonicalizeValue(serviceTitleOrValue));
+  return `${base}?service=${service}${hash}`;
 }

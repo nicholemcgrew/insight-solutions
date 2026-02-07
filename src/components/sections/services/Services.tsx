@@ -174,7 +174,7 @@ const Services = () => {
             id="services-title"
             as="h2"
             title="Services"
-            subtitle="Design and data working together to drive clarity, confidence, and growth."
+            subtitle="Intelligently designed. Driven by data."
           />
 <Box sx={{ mt: { xs: 2, md: 3 } }}>
           <ServiceCardGrid

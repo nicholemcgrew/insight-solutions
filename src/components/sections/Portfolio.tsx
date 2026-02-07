@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import Grid2 from "@mui/material/Grid2";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { useMemo, useState } from "react";
 
 import portfolioData from "../../data/portfolioData.json";
 
@@ -21,18 +22,14 @@ interface Project {
   tech: string[];
   link: string;
   desktop: string;
-  mobile: string;
+  mobile?: string | null;
   desktop2x?: string;
   mobile2x?: string;
 }
 
 function getMobileOverlayObjectPosition(projectTitle: string): string {
   const t = projectTitle.toLowerCase();
-
-  // Portfolio mobile screenshots often need a slight down-bias so the hero/content shows.
-  // Tweak this percent if needed.
   if (t.includes("my personal portfolio")) return "center 18%";
-
   return "center top";
 }
 
@@ -42,6 +39,15 @@ function getDesktopObjectPosition(_projectTitle: string): string {
 
 const Portfolio = () => {
   const projects = portfolioData as Project[];
+
+  // If a mobile overlay image fails to load, hide ONLY that overlay (prevents white box).
+  const [failedMobileByTitle, setFailedMobileByTitle] = useState<
+    Record<string, boolean>
+  >({});
+
+  const isMobileOverlayEnabled = useMemo(() => {
+    return (p: Project) => !!p.mobile && !failedMobileByTitle[p.title];
+  }, [failedMobileByTitle]);
 
   return (
     <Box
@@ -76,12 +82,10 @@ const Portfolio = () => {
           {projects.map((project) => {
             const titleLower = project.title.toLowerCase();
 
-            // Keep portfolio desktop screenshot as contain
             const isPersonalPortfolio = titleLower.includes(
               "my personal portfolio",
             );
 
-            // Full-bleed projects should fill the frame (cover)
             const isFullBleed =
               !isPersonalPortfolio &&
               (titleLower.includes("energy star") ||
@@ -89,11 +93,9 @@ const Portfolio = () => {
                 project.link.includes("energystar.gov") ||
                 project.link.includes("rose-salon.netlify.app"));
 
-            // Compact on mobile
             const CARD_HEIGHT = { xs: 510, sm: 540, md: 620 };
             const IMAGE_HEIGHT = { xs: 250, sm: 280, md: 320 };
 
-            // Mobile overlay sizing/placement
             const MOBILE_OVERLAY_WIDTH = { xs: 86, sm: 104, md: 128 };
             const MOBILE_OVERLAY_INSET = { xs: 10, sm: 12, md: 14 };
 
@@ -147,45 +149,54 @@ const Portfolio = () => {
                       }}
                     />
 
-                    {/* Mobile overlay */}
-                    <Box
-                      component="img"
-                      src={project.mobile}
-                      srcSet={
-                        project.mobile2x
-                          ? `${project.mobile} 1x, ${project.mobile2x} 2x`
-                          : undefined
-                      }
-                      sizes="128px"
-                      alt={`${project.title} mobile screenshot`}
-                      loading="lazy"
-                      decoding="async"
-                      sx={{
-                        position: "absolute",
-                        zIndex: 2,
-                        display: "block",
-                        bottom: MOBILE_OVERLAY_INSET,
-                        right: MOBILE_OVERLAY_INSET,
+                    {/* Mobile overlay (same behavior as before; hides if the image fails) */}
+                    {isMobileOverlayEnabled(project) && (
+                      <Box
+                        component="img"
+                        src={project.mobile as string}
+                        srcSet={
+                          project.mobile2x
+                            ? `${project.mobile} 1x, ${project.mobile2x} 2x`
+                            : undefined
+                        }
+                        sizes="128px"
+                        alt={`${project.title} mobile screenshot`}
+                        loading="lazy"
+                        decoding="async"
+                        onError={() =>
+                          setFailedMobileByTitle((p) => ({
+                            ...p,
+                            [project.title]: true,
+                          }))
+                        }
+                        sx={{
+                          position: "absolute",
+                          zIndex: 2,
+                          display: "block",
+                          bottom: MOBILE_OVERLAY_INSET,
+                          right: MOBILE_OVERLAY_INSET,
 
-                        width: MOBILE_OVERLAY_WIDTH,
-                        aspectRatio: "9 / 19.5",
-                        height: "auto",
+                          width: MOBILE_OVERLAY_WIDTH,
+                          maxWidth: "none",
+                          aspectRatio: "9 / 19.5",
+                          height: "auto",
 
-                        borderRadius: 2,
-                        border: {
-                          xs: "2px solid white",
-                          md: "3px solid white",
-                        },
-                        boxShadow: 6,
-                        bgcolor: "white",
+                          borderRadius: 2,
+                          border: {
+                            xs: "2px solid white",
+                            md: "3px solid white",
+                          },
+                          boxShadow: 6,
+                          bgcolor: "white",
 
-                        objectFit: "cover",
-                        objectPosition: mobileOverlayObjectPosition,
+                          objectFit: "cover",
+                          objectPosition: mobileOverlayObjectPosition,
 
-                        transform: "translateZ(0)",
-                        backfaceVisibility: "hidden",
-                      }}
-                    />
+                          transform: "translateZ(0)",
+                          backfaceVisibility: "hidden",
+                        }}
+                      />
+                    )}
                   </Box>
 
                   {/* CONTENT */}
