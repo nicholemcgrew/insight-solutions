@@ -1,4 +1,4 @@
-import { Container, Typography, Link as MuiLink } from "@mui/material";
+import { Container, Typography, Link as MuiLink, Box } from "@mui/material";
 
 const PrivacyPolicy = () => {
   return (
@@ -104,9 +104,22 @@ const PrivacyPolicy = () => {
       </Typography>
       <Typography variant="body1" paragraph>
         Email:{" "}
-        <MuiLink href="mailto:hello@insightwebsolutions.com">
-          hello@insightwebsolutions.com
-        </MuiLink>
+        <Box
+          component="span"
+          sx={{
+            display: "inline-block",
+            minWidth: 44,
+            minHeight: 44,
+            mx: -1,
+            my: -1,
+            px: 1,
+            py: 1,
+          }}
+        >
+          <MuiLink href="mailto:hello@insightwebsolutions.com">
+            hello@insightwebsolutions.com
+          </MuiLink>
+        </Box>
       </Typography>
 
       <Typography variant="body2" color="text.secondary" mt={8}>
