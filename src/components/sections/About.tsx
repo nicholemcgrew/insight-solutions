@@ -61,7 +61,7 @@ const About = () => {
                 }}
                 itemProp="name"
               >
-                Insight Studios
+                Insight Solutions
               </Typography>
 
               <Typography

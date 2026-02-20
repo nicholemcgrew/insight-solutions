@@ -17,11 +17,16 @@ import { Service } from "../../../types/services";
 type Props = {
   services: Service[];
   reducedMotion: boolean;
-  getHref: (title: string) => string; // should return "/?service=...#contact"
+  getHref: (title: string) => string;
   iconMap: Record<Service["icon"], React.ReactNode>;
 };
 
-const ServiceCardGrid = ({ services, reducedMotion, getHref, iconMap }: Props) => {
+const ServiceCardGrid = ({
+  services,
+  reducedMotion,
+  getHref,
+  iconMap,
+}: Props) => {
   return (
     <Grid2
       container
@@ -35,7 +40,7 @@ const ServiceCardGrid = ({ services, reducedMotion, getHref, iconMap }: Props) =
         return (
           <Grid2
             key={`${service.title}-${index}`}
-            size={{ xs: 12, sm: 6, md: 4 }} // 3 across on desktop
+            size={{ xs: 12, sm: 6, md: 4 }}
             sx={{ display: "flex" }}
           >
             <Card
@@ -130,24 +135,23 @@ const ServiceCardGrid = ({ services, reducedMotion, getHref, iconMap }: Props) =
 
               <CardActions sx={{ p: { xs: 3, md: 3.25 }, pt: 0 }}>
                 <Button
-  component="a"
-  href={getHref(service.title)}
-  variant="contained"
-  color="secondary"
-  fullWidth
-  size="large"
-  aria-label={`Get a quote for ${service.title}`}
-  sx={{
-    py: 1.35,
-    fontWeight: 900,
-    fontSize: { xs: "1.02rem", md: "1.05rem" },
-    textTransform: "none",
-    borderRadius: 999,
-  }}
->
-  Get Quote
-</Button>
-
+                  component="a"
+                  href={getHref(service.title)}
+                  variant="contained"
+                  color="secondary"
+                  fullWidth
+                  size="large"
+                  sx={{
+                    py: 1.5,
+                    minHeight: 48,
+                    fontWeight: 900,
+                    fontSize: { xs: "1.02rem", md: "1.05rem" },
+                    textTransform: "none",
+                    borderRadius: 999,
+                  }}
+                >
+                  Get Quote
+                </Button>
               </CardActions>
             </Card>
           </Grid2>

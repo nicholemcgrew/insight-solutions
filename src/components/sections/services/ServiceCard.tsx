@@ -9,13 +9,16 @@ interface ServiceCardProps {
   reducedMotion: boolean;
 }
 
-export default function ServiceCard({ service, href, icon, reducedMotion }: ServiceCardProps) {
-  // Make each card a single accessible link with consistent sizing and aligned CTAs.
+export default function ServiceCard({
+  service,
+  href,
+  icon,
+  reducedMotion,
+}: ServiceCardProps) {
   return (
     <ButtonBase
       component="a"
       href={href}
-      aria-label={`Get a quote for ${service.title}`}
       sx={(t) => ({
         width: "100%",
         display: "flex",
@@ -84,5 +87,3 @@ export default function ServiceCard({ service, href, icon, reducedMotion }: Serv
     </ButtonBase>
   );
 }
-
-export {};

@@ -23,7 +23,7 @@ import navItemsData from "../../data/navItemsData.json";
 
 interface NavItem {
   label: string;
-  to: string; 
+  to: string;
 }
 
 export const NAVBAR_HEIGHT = {
@@ -79,8 +79,6 @@ function scrollToSectionAndFocus(id: string, headerOffset: number) {
   );
 }
 
-// Determine which section is “active” based on scroll position.
-// Works for either #main-content scroller or window.
 function getActiveSectionFromScroll(
   sectionIds: string[],
   headerOffset: number,
@@ -89,11 +87,9 @@ function getActiveSectionFromScroll(
   const isUsingMainScroller =
     !!scroller && scroller.scrollHeight > scroller.clientHeight;
 
-  // Home rule: near top => "home"
   const scrollTop = isUsingMainScroller ? scroller!.scrollTop : window.scrollY;
   if (scrollTop <= 8) return "home";
 
-  // Pick the last section whose top is above the header line
   let best: { id: string; top: number } | null = null;
 
   for (const id of sectionIds) {
@@ -104,9 +100,7 @@ function getActiveSectionFromScroll(
     const rect = el.getBoundingClientRect();
     const top = rect.top - headerOffset;
 
-    if (top <= 8 && (!best || top > best.top)) {
-      best = { id, top };
-    }
+    if (top <= 8 && (!best || top > best.top)) best = { id, top };
   }
 
   return best?.id ?? "home";
@@ -129,7 +123,6 @@ export default function Navbar() {
     [navItems],
   );
 
-  // Keep the “scrolled” styling correct
   useEffect(() => {
     const scroller = document.getElementById("main-content");
     const isUsingMainScroller =
@@ -137,7 +130,6 @@ export default function Navbar() {
 
     const getScrollTop = () =>
       isUsingMainScroller ? scroller!.scrollTop : window.scrollY;
-
     const onScroll = () => setIsScrolled(getScrollTop() > 8);
 
     onScroll();
@@ -147,9 +139,6 @@ export default function Navbar() {
     return () => target.removeEventListener("scroll", onScroll as any);
   }, []);
 
-  // SOURCE OF TRUTH for active underline:
-  // - If URL has a hash for a known section, use it.
-  // - Otherwise derive from scroll position (covers refresh + browser scroll restoration).
   const rafRef = useRef<number | null>(null);
   useEffect(() => {
     if (location.pathname !== "/") {
@@ -172,10 +161,8 @@ export default function Navbar() {
       setActiveSection(fromScroll);
     };
 
-    // run immediately after mount/navigation
     requestAnimationFrame(applyFromHashOrScroll);
 
-    // and keep in sync on scroll (simple rAF throttle)
     const scroller = document.getElementById("main-content");
     const isUsingMainScroller =
       !!scroller && scroller.scrollHeight > scroller.clientHeight;
@@ -212,7 +199,6 @@ export default function Navbar() {
   };
 
   const setHashWithoutJump = (id: string) => {
-    // Keep URL in sync without the browser doing its own jump scrolling
     const newHash = `#${id}`;
     if (window.location.hash === newHash) return;
     window.history.replaceState(null, "", newHash);
@@ -258,7 +244,6 @@ export default function Navbar() {
 
     if (location.pathname !== "/") {
       navigate(`/#${to}`);
-      // Let the route paint, then do our accessible scroll + focus
       setTimeout(doScroll, 0);
       return;
     }
@@ -270,8 +255,13 @@ export default function Navbar() {
     position: "relative",
     display: "inline-flex",
     alignItems: "center",
-    px: 1.1,
-    py: 0.7,
+    justifyContent: "center",
+    minHeight: 48,
+    minWidth: 88,
+    px: { xs: 1.5, md: 2 },
+    py: 1,
+    mx: -1,
+    my: -1,
     textDecoration: "none",
     color: "common.white",
     fontWeight: 850,
@@ -279,16 +269,12 @@ export default function Navbar() {
     letterSpacing: "0.01em",
     borderRadius: 12,
     transition: "background-color 140ms ease",
-
-    "&:hover": {
-      backgroundColor: "rgba(255,255,255,0.10)",
-    },
-
+    "&:hover": { backgroundColor: "rgba(255,255,255,0.10)" },
     "&::after": {
       content: '""',
       position: "absolute",
-      left: 10,
-      right: 10,
+      left: 12,
+      right: 12,
       bottom: 6,
       height: 3,
       borderRadius: 999,
@@ -338,7 +324,7 @@ export default function Navbar() {
 
           <IconButton
             onClick={() => setMobileOpen(false)}
-            sx={{ color: "common.white" }}
+            sx={{ color: "common.white", width: 48, height: 48 }}
             aria-label="Close menu"
           >
             <CloseIcon />
@@ -357,9 +343,11 @@ export default function Navbar() {
                 onClick={() => handleNavClick(item.to)}
                 aria-current={getAriaCurrent(item.to)}
                 sx={{
-                  py: 1.6,
-                  px: 2,
+                  py: 2,
+                  px: 3,
                   borderRadius: 2,
+                  minHeight: 56,
+                  minWidth: "100%",
                   bgcolor: active ? "rgba(20,184,166,0.14)" : "transparent",
                   "&:hover": {
                     bgcolor: active
@@ -390,7 +378,7 @@ export default function Navbar() {
             setMobileOpen(false);
             navigate("/?cta=true#contact");
           }}
-          sx={{ fontWeight: 900, py: 1.3 }}
+          sx={{ fontWeight: 900, py: 1.5, minHeight: 56 }}
         >
           Get a Free Consult
         </Button>
@@ -455,10 +443,13 @@ export default function Navbar() {
                   fontSize: { xs: "1.25rem", sm: "1.45rem", md: "1.65rem" },
                   lineHeight: 1.1,
                   whiteSpace: "nowrap",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  minHeight: 48,
+                  px: 2,
                 }}
-                aria-label="Go to home"
               >
-                Insight Studios
+                Insight Solutions
               </Typography>
             </Box>
 
@@ -471,7 +462,7 @@ export default function Navbar() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: 0.8,
+                  gap: 1,
                   px: { md: 2, lg: 3 },
                   minWidth: 0,
                 }}
@@ -516,10 +507,13 @@ export default function Navbar() {
                   size="medium"
                   sx={{
                     fontWeight: 900,
-                    px: 2.25,
+                    px: 3,
+                    py: 1.25,
                     borderRadius: 999,
                     whiteSpace: "nowrap",
                     fontSize: "1.02rem",
+                    minHeight: 48,
+                    minWidth: 140,
                   }}
                 >
                   Free Consult
@@ -529,7 +523,7 @@ export default function Navbar() {
               {isMobile && (
                 <IconButton
                   onClick={() => setMobileOpen((prev) => !prev)}
-                  sx={{ color: "common.white" }}
+                  sx={{ color: "common.white", width: 48, height: 48 }}
                   aria-label={mobileOpen ? "Close menu" : "Open menu"}
                   aria-controls={drawerId}
                   aria-expanded={mobileOpen ? "true" : undefined}

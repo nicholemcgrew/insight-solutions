@@ -40,7 +40,6 @@ function getDesktopObjectPosition(_projectTitle: string): string {
 const Portfolio = () => {
   const projects = portfolioData as Project[];
 
-  // If a mobile overlay image fails to load, hide ONLY that overlay (prevents white box).
   const [failedMobileByTitle, setFailedMobileByTitle] = useState<
     Record<string, boolean>
   >({});
@@ -73,6 +72,7 @@ const Portfolio = () => {
             fontWeight: 800,
             fontSize: { xs: "2rem", sm: "2.4rem", md: "2.8rem" },
             mb: { xs: 3.5, md: 5 },
+            color: "text.primary",
           }}
         >
           Portfolio
@@ -106,6 +106,10 @@ const Portfolio = () => {
               project.title,
             );
 
+            const techListId = `tech-list-${project.title
+              .toLowerCase()
+              .replace(/\s+/g, "-")}`;
+
             return (
               <Grid2 key={project.title} size={{ xs: 12, md: 4 }}>
                 <Card
@@ -123,9 +127,7 @@ const Portfolio = () => {
                     },
                   }}
                 >
-                  {/* IMAGE */}
                   <Box sx={{ position: "relative", height: IMAGE_HEIGHT }}>
-                    {/* Desktop image */}
                     <Box
                       component="img"
                       src={project.desktop}
@@ -149,7 +151,6 @@ const Portfolio = () => {
                       }}
                     />
 
-                    {/* Mobile overlay (same behavior as before; hides if the image fails) */}
                     {isMobileOverlayEnabled(project) && (
                       <Box
                         component="img"
@@ -175,12 +176,10 @@ const Portfolio = () => {
                           display: "block",
                           bottom: MOBILE_OVERLAY_INSET,
                           right: MOBILE_OVERLAY_INSET,
-
                           width: MOBILE_OVERLAY_WIDTH,
                           maxWidth: "none",
                           aspectRatio: "9 / 19.5",
                           height: "auto",
-
                           borderRadius: 2,
                           border: {
                             xs: "2px solid white",
@@ -188,10 +187,8 @@ const Portfolio = () => {
                           },
                           boxShadow: 6,
                           bgcolor: "white",
-
                           objectFit: "cover",
                           objectPosition: mobileOverlayObjectPosition,
-
                           transform: "translateZ(0)",
                           backfaceVisibility: "hidden",
                         }}
@@ -199,7 +196,6 @@ const Portfolio = () => {
                     )}
                   </Box>
 
-                  {/* CONTENT */}
                   <CardContent
                     sx={{
                       flex: 1,
@@ -212,7 +208,8 @@ const Portfolio = () => {
                     }}
                   >
                     <Typography
-                      variant="h6"
+                      variant="h5"
+                      component="h3"
                       sx={{
                         fontWeight: 700,
                         lineHeight: 1.2,
@@ -220,6 +217,7 @@ const Portfolio = () => {
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: "vertical",
                         overflow: "hidden",
+                        color: "text.primary",
                       }}
                     >
                       {project.title}
@@ -227,7 +225,7 @@ const Portfolio = () => {
 
                     <Typography
                       variant="body2"
-                      color="text.secondary"
+                      color="text.primary"
                       sx={{
                         lineHeight: 1.6,
                         display: "-webkit-box",
@@ -241,9 +239,8 @@ const Portfolio = () => {
 
                     <Typography
                       variant="body2"
+                      color="text.secondary"
                       sx={{
-                        fontStyle: "italic",
-                        opacity: 0.8,
                         display: "-webkit-box",
                         WebkitLineClamp: 1,
                         WebkitBoxOrient: "vertical",
@@ -253,25 +250,62 @@ const Portfolio = () => {
                       {project.role}
                     </Typography>
 
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      useFlexGap
-                      flexWrap="wrap"
-                      aria-label={`${project.title} technologies`}
-                      sx={{ mt: 0.5, rowGap: 1 }}
-                    >
-                      {project.tech.slice(0, 8).map((tech) => (
-                        <Chip
-                          key={tech}
-                          label={tech}
-                          size="small"
-                          color="secondary"
-                          variant="outlined"
-                          sx={{ fontWeight: 600 }}
-                        />
-                      ))}
-                    </Stack>
+                    <Box>
+                      <Typography
+                        component="span"
+                        id={techListId}
+                        sx={{
+                          position: "absolute",
+                          width: 1,
+                          height: 1,
+                          padding: 0,
+                          margin: -1,
+                          overflow: "hidden",
+                          clip: "rect(0, 0, 0, 0)",
+                          whiteSpace: "nowrap",
+                          border: 0,
+                        }}
+                      >
+                        Technologies used in {project.title}:
+                      </Typography>
+
+                      {/* role="list" is required so that aria-labelledby is
+                          permitted — aria-labelledby is only valid on elements
+                          with an explicit or implicit ARIA role that supports
+                          it. A plain <div> (Stack's default) has no role, which
+                          triggers the "ARIA attribute unsupported or prohibited"
+                          508 violation. Adding role="list" also restores list
+                          semantics that CSS resets strip from <ul>/<ol>. */}
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        useFlexGap
+                        flexWrap="wrap"
+                        role="list"
+                        aria-labelledby={techListId}
+                        sx={{ mt: 0.5, rowGap: 1 }}
+                      >
+                        {project.tech.slice(0, 8).map((tech) => (
+                          <Chip
+                            key={tech}
+                            label={tech}
+                            size="small"
+                            color="secondary"
+                            variant="outlined"
+                            role="listitem"
+                            sx={{
+                              fontWeight: 600,
+                              color: "text.primary",
+                              borderColor: "divider",
+                              bgcolor: "transparent",
+                              "&:hover": {
+                                bgcolor: "action.hover",
+                              },
+                            }}
+                          />
+                        ))}
+                      </Stack>
+                    </Box>
 
                     <Box sx={{ flexGrow: 1 }} />
 
@@ -287,6 +321,7 @@ const Portfolio = () => {
                         textTransform: "none",
                         borderRadius: 2,
                         py: 1.2,
+                        color: "secondary.contrastText",
                       }}
                     >
                       View Project

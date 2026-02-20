@@ -3,7 +3,10 @@ import { createTheme } from "@mui/material/styles";
 const theme = createTheme({
   palette: {
     primary: { main: "#0B1220", contrastText: "#FFFFFF" },
-    secondary: { main: "#14B8A6", contrastText: "#06201D" },
+    secondary: {
+      main: "#14B8A6",
+      contrastText: "#001412",
+    },
     background: { default: "#F8FAFC", paper: "#FFFFFF" },
     text: { primary: "#0F172A", secondary: "#475569" },
     divider: "rgba(15, 23, 42, 0.10)",
@@ -16,16 +19,35 @@ const theme = createTheme({
 
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    h1: { fontSize: "clamp(2.6rem, 5vw, 4.5rem)", fontWeight: 900, lineHeight: 1.12, letterSpacing: "-0.02em" },
-    h2: { fontSize: "clamp(2.05rem, 3.6vw, 3rem)", fontWeight: 800, lineHeight: 1.18, letterSpacing: "-0.01em" },
-    h3: { fontSize: "clamp(1.65rem, 2.8vw, 2.25rem)", fontWeight: 750, lineHeight: 1.22 },
+    h1: {
+      fontSize: "clamp(2.6rem, 5vw, 4.5rem)",
+      fontWeight: 900,
+      lineHeight: 1.12,
+      letterSpacing: "-0.02em",
+    },
+    h2: {
+      fontSize: "clamp(2.05rem, 3.6vw, 3rem)",
+      fontWeight: 800,
+      lineHeight: 1.18,
+      letterSpacing: "-0.01em",
+    },
+    h3: {
+      fontSize: "clamp(1.65rem, 2.8vw, 2.25rem)",
+      fontWeight: 750,
+      lineHeight: 1.22,
+    },
     h4: { fontSize: "1.6rem", fontWeight: 700 },
     h5: { fontSize: "1.35rem", fontWeight: 700 },
     h6: { fontSize: "1.15rem", fontWeight: 700 },
     body1: { fontSize: "1.125rem", lineHeight: 1.75 },
     body2: { fontSize: "1rem", lineHeight: 1.6 },
     caption: { fontSize: "0.9rem", color: "#475569" },
-    button: { fontSize: "0.95rem", fontWeight: 700, textTransform: "none", letterSpacing: "0.01em" },
+    button: {
+      fontSize: "0.95rem",
+      fontWeight: 700,
+      textTransform: "none",
+      letterSpacing: "0.01em",
+    },
   },
 
   shape: { borderRadius: 12 },
@@ -82,7 +104,8 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 8,
-          transition: "transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease",
+          transition:
+            "transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease",
         },
       },
     },
@@ -99,7 +122,11 @@ const theme = createTheme({
 
     MuiOutlinedInput: {
       styleOverrides: {
-        root: { borderRadius: 10, fontSize: "1rem", backgroundColor: "#FFFFFF" },
+        root: {
+          borderRadius: 10,
+          fontSize: "1rem",
+          backgroundColor: "#FFFFFF",
+        },
         input: { padding: "14px 16px" },
       },
     },

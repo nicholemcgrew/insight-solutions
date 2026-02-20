@@ -8,17 +8,17 @@ const TermsOfService = () => {
       </Typography>
 
       <Typography variant="body2" color="text.secondary" gutterBottom>
-        Last updated: February 1, 2026
+        Last updated: February 20, 2026
       </Typography>
 
       <Typography variant="body1" paragraph sx={{ mt: 4 }}>
-        Welcome to Insight Studios. These Terms of Service ("Terms") govern your
-        use of our website and the purchase of our services (web development,
-        SEO, accessibility audits, data/analytics work, etc.). By using our site
-        or engaging our services, you agree to these Terms.
+        Welcome to Insight Solutions. These Terms of Service ("Terms") govern
+        your use of our website and the purchase of our services (web
+        development, SEO, accessibility audits, data/analytics work, etc.). By
+        using our site or engaging our services, you agree to these Terms.
       </Typography>
 
-      <Typography variant="h5" component="h2" gutterBottom mt={5}>
+      <Typography variant="h4" component="h2" gutterBottom mt={5}>
         1. Services
       </Typography>
       <Typography variant="body1" paragraph>
@@ -27,7 +27,7 @@ const TermsOfService = () => {
         services as agreed in a proposal, quote, or contract.
       </Typography>
 
-      <Typography variant="h5" component="h2" gutterBottom mt={5}>
+      <Typography variant="h4" component="h2" gutterBottom mt={5}>
         2. Payment & Deposits
       </Typography>
       <Typography variant="body1" paragraph>
@@ -36,7 +36,7 @@ const TermsOfService = () => {
         milestones. Late payments may incur fees. All fees are in USD.
       </Typography>
 
-      <Typography variant="h5" component="h2" gutterBottom mt={5}>
+      <Typography variant="h4" component="h2" gutterBottom mt={5}>
         3. Revisions & Scope
       </Typography>
       <Typography variant="body1" paragraph>
@@ -45,7 +45,7 @@ const TermsOfService = () => {
         rate or as a new quote.
       </Typography>
 
-      <Typography variant="h5" component="h2" gutterBottom mt={5}>
+      <Typography variant="h4" component="h2" gutterBottom mt={5}>
         4. Intellectual Property
       </Typography>
       <Typography variant="body1" paragraph>
@@ -56,7 +56,7 @@ const TermsOfService = () => {
         agreed.
       </Typography>
 
-      <Typography variant="h5" component="h2" gutterBottom mt={5}>
+      <Typography variant="h4" component="h2" gutterBottom mt={5}>
         5. Client Responsibilities
       </Typography>
       <Typography variant="body1" paragraph>
@@ -65,7 +65,7 @@ const TermsOfService = () => {
         timelines and incur additional fees.
       </Typography>
 
-      <Typography variant="h5" component="h2" gutterBottom mt={5}>
+      <Typography variant="h4" component="h2" gutterBottom mt={5}>
         6. Limitation of Liability
       </Typography>
       <Typography variant="body1" paragraph>
@@ -75,7 +75,7 @@ const TermsOfService = () => {
         increases, or business results.
       </Typography>
 
-      <Typography variant="h5" component="h2" gutterBottom mt={5}>
+      <Typography variant="h4" component="h2" gutterBottom mt={5}>
         7. Termination
       </Typography>
       <Typography variant="body1" paragraph>
@@ -84,7 +84,7 @@ const TermsOfService = () => {
         are non-refundable.
       </Typography>
 
-      <Typography variant="h5" component="h2" gutterBottom mt={5}>
+      <Typography variant="h4" component="h2" gutterBottom mt={5}>
         8. Governing Law
       </Typography>
       <Typography variant="body1" paragraph>
@@ -92,7 +92,7 @@ const TermsOfService = () => {
         States.
       </Typography>
 
-      <Typography variant="h5" component="h2" gutterBottom mt={5}>
+      <Typography variant="h4" component="h2" gutterBottom mt={5}>
         9. Changes to Terms
       </Typography>
       <Typography variant="body1" paragraph>
@@ -100,7 +100,7 @@ const TermsOfService = () => {
         constitutes acceptance.
       </Typography>
 
-      <Typography variant="h5" component="h2" gutterBottom mt={5}>
+      <Typography variant="h4" component="h2" gutterBottom mt={5}>
         10. Contact
       </Typography>
       <Typography variant="body1" paragraph>
@@ -114,7 +114,7 @@ const TermsOfService = () => {
       </Typography>
 
       <Typography variant="body2" color="text.secondary" mt={8}>
-        Insight Studios • Oklahoma City, OK • © {new Date().getFullYear()}
+        Insight Solutions • Oklahoma City, OK • © {new Date().getFullYear()}
       </Typography>
     </Container>
   );

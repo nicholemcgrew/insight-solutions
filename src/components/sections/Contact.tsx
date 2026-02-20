@@ -148,10 +148,12 @@ function buildServiceOptionsFromCore(coreRaw: ServiceOption[]) {
   return list;
 }
 
-const coreServicesRaw: ServiceOption[] = (servicesData as Service[]).map((s) => ({
-  title: s.title,
-  value: canonicalizeValue(s.value ?? normalize(s.title)),
-}));
+const coreServicesRaw: ServiceOption[] = (servicesData as Service[]).map(
+  (s) => ({
+    title: s.title,
+    value: canonicalizeValue(s.value ?? normalize(s.title)),
+  }),
+);
 
 const serviceOptions = buildServiceOptionsFromCore(coreServicesRaw);
 
@@ -297,7 +299,11 @@ const Contact = () => {
       onPointerDown={markInteracted}
       onKeyDown={markInteracted}
     >
-      <Box ref={topRef} tabIndex={-1} aria-hidden />
+      {/* Focus target for programmatic scroll/focus — tabIndex={-1} allows
+          .focus() calls but keeps it out of the tab order. aria-hidden is
+          intentionally omitted: pairing aria-hidden with tabIndex is
+          prohibited by WAI-ARIA and triggers 508 violations. */}
+      <Box ref={topRef} tabIndex={-1} sx={{ outline: "none" }} />
 
       <Container maxWidth="lg">
         <Paper elevation={10} sx={{ p: { xs: 3.5, md: 5 }, borderRadius: 4 }}>
@@ -309,9 +315,12 @@ const Contact = () => {
                 variant="h3"
                 sx={{ fontWeight: 900 }}
               >
-                Let’s Work Together
+                Let's Work Together
               </Typography>
-              <Typography color="text.secondary" sx={{ lineHeight: 1.7, mt: 1 }}>
+              <Typography
+                color="text.secondary"
+                sx={{ lineHeight: 1.7, mt: 1 }}
+              >
                 Share a few details and a response will follow within 24 hours
                 with clear next steps.
               </Typography>
@@ -368,6 +377,7 @@ const Contact = () => {
                       multiple
                       value={formData.services}
                       onOpen={markInteracted}
+                      inputProps={{ "aria-label": "Services" }}
                       onChange={(e) =>
                         update(
                           "services",
@@ -378,7 +388,9 @@ const Contact = () => {
                       }
                       input={<OutlinedInput label="Services" />}
                       renderValue={(selected) => (
-                        <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
+                        <Box
+                          sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}
+                        >
                           {selected.map((v) => (
                             <Chip key={v} label={titleByValue[v] ?? v} />
                           ))}
@@ -387,7 +399,9 @@ const Contact = () => {
                     >
                       {serviceOptions.map((o) => (
                         <MenuItem key={o.value} value={o.value}>
-                          <Checkbox checked={formData.services.includes(o.value)} />
+                          <Checkbox
+                            checked={formData.services.includes(o.value)}
+                          />
                           <ListItemText primary={o.title} />
                         </MenuItem>
                       ))}

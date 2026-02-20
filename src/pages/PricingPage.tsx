@@ -143,7 +143,8 @@ function MiniCard({
             variant="contained"
             fullWidth
             sx={{
-              minHeight: 44,
+              minHeight: 48,
+              minWidth: 140,
               borderRadius: 2,
               fontWeight: 800,
               bgcolor: "primary.main",
@@ -164,7 +165,8 @@ function MiniCard({
               variant="outlined"
               fullWidth
               sx={{
-                minHeight: 44,
+                minHeight: 48,
+                minWidth: 140,
                 borderRadius: 2,
                 fontWeight: 800,
                 borderColor: "divider",
