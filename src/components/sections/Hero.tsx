@@ -520,7 +520,7 @@ const Hero = () => {
                   mt: { xs: 2.5, md: 3 },
                 }}
               >
-                <Button
+                {/* <Button
                   variant="contained"
                   color="secondary"
                   size="large"
@@ -533,10 +533,11 @@ const Hero = () => {
                   }}
                 >
                   View Pricing
-                </Button>
+                </Button> */}
 
                 <Button
-                  variant="outlined"
+                variant="contained"
+                  color="secondary"
                   size="large"
                   component="a"
                   href="/?cta=true#contact"
