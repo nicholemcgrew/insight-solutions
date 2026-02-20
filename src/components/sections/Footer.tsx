@@ -107,9 +107,9 @@ const Footer = () => {
             <Typography
               sx={{
                 fontWeight: 950,
-                fontSize: "1.12rem",
+                fontSize: "1.3rem",
                 color: "#FFFFFF",
-                lineHeight: 1.1,
+                lineHeight: 1.5,
                 whiteSpace: "nowrap",
               }}
             >
