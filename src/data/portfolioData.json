@@ -18,8 +18,7 @@
       "CI/CD"
     ],
     "link": "https://www.energystar.gov/productfinder/",
-    "desktop": "/images/projects/energy-star-desktop.png",
-    "mobile": "/images/projects/energy-star-mobile.png"
+    "desktop": "/images/projects/energy-star-desktop.png"
   },
   {
     "title": "Rose Salon",
@@ -35,18 +34,14 @@
       "SEO"
     ],
     "link": "https://rose-salon.netlify.app/",
-    "desktop": "/images/projects/rose-salon-desktop.png",
-    "mobile": "/images/projects/rose-salon-mobile.png"
+    "desktop": "/images/projects/rose-salon-desktop.png"
   },
   {
-  "title": "My Personal Portfolio",
-  "description": "My live portfolio built with React, TypeScript, and MUI. Fully responsive, SEO-optimized, WCAG-compliant, and designed to convert leads.",
-  "role": "Designer & Developer",
-  "tech": ["React", "TypeScript", "MUI", "SEO", "WCAG", "Responsive"],
-  "link": "https://nicholemcgrew.netlify.app/",
-  "desktop": "/images/projects/portfolio.png",
-  "mobile": "/images/projects/portfolio-mobile.png",
-  "mobile2x": "/images/projects/portfolio-mobile@2x.png"
-
-}
+    "title": "My Personal Portfolio",
+    "description": "My live portfolio built with React, TypeScript, and MUI. Fully responsive, SEO-optimized, WCAG-compliant, and designed to convert leads.",
+    "role": "Designer & Developer",
+    "tech": ["React", "TypeScript", "MUI", "SEO", "WCAG", "Responsive"],
+    "link": "https://nicholemcgrew.netlify.app/",
+    "desktop": "/images/projects/portfolio.png"
+  }
 ]
