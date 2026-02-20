@@ -5,7 +5,6 @@ import {
   Typography,
   Link as MuiLink,
   Stack,
-  Divider,
 } from "@mui/material";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import navItemsData from "../../data/navItemsData.json";
@@ -46,24 +45,23 @@ const Footer = () => {
   };
 
   const linkSx = {
+    minHeight: 44,
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 48,
-    minWidth: 48,
-    px: 2,
-    mx: -1,
-    borderRadius: 1,
-    color: "#e0e0e0",
+    px: 1.25,
+    borderRadius: 999,
+    color: "#D7DBE3",
     fontSize: "0.95rem",
-    fontWeight: 500,
+    fontWeight: 600,
     textDecoration: "none",
-    transition: "all 0.2s ease",
+    whiteSpace: "nowrap",
+    transition: "background-color 150ms ease, color 150ms ease",
     "&:hover": {
-      color: "#ffffff",
+      color: "#FFFFFF",
       bgcolor: "rgba(255,255,255,0.08)",
     },
-  };
+  } as const;
 
   const FooterLink = ({ item }: { item: NavItem }) => {
     const isRoute = item.to.startsWith("/");
@@ -93,64 +91,69 @@ const Footer = () => {
     <Box
       component="footer"
       sx={{
-        bgcolor: "#0a0a0f",
-        borderTop: "1px solid rgba(255,255,255,0.05)",
-        py: { xs: 6, md: 8 },
-        color: "#e0e0e0",
+        bgcolor: "#070A12",
+        color: "#D7DBE3",
+        py: { xs: 2.5, sm: 3.25 },
       }}
     >
-      <Container maxWidth="lg">
-        <Stack
-          direction={{ xs: "column", md: "row" }}
-          alignItems="center"
-          justifyContent="space-between"
-          spacing={{ xs: 4, md: 3 }}
-        >
-          <Typography
-            sx={{
-              fontWeight: 700,
-              fontSize: "1.1rem",
-              letterSpacing: "0.01em",
-              color: "#ffffff",
-            }}
+      <Container maxWidth="xl">
+        <Stack spacing={1.75}>
+          <Stack
+            direction={{ xs: "column", md: "row" }}
+            alignItems={{ xs: "flex-start", md: "center" }}
+            justifyContent="space-between"
+            spacing={{ xs: 1.25, md: 2 }}
           >
-            Insight Solutions
-          </Typography>
+            <Typography
+              sx={{
+                fontWeight: 950,
+                fontSize: "1.12rem",
+                color: "#FFFFFF",
+                lineHeight: 1.1,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Insight Solutions
+            </Typography>
+
+            <Stack
+              component="nav"
+              aria-label="Footer navigation"
+              direction="row"
+              alignItems="center"
+              justifyContent={{ xs: "flex-start", md: "center" }}
+              flexWrap="wrap"
+              gap={{ xs: 0.5, sm: 0.75 }}
+              sx={{ flex: 1, px: { md: 2 }, minWidth: 0 }}
+            >
+              {navLinks.map((item) => (
+                <FooterLink key={item.label} item={item} />
+              ))}
+
+              <MuiLink component={NavLink} to="/privacy" sx={linkSx}>
+                Privacy
+              </MuiLink>
+              <MuiLink component={NavLink} to="/terms" sx={linkSx}>
+                Terms
+              </MuiLink>
+            </Stack>
+          </Stack>
 
           <Stack
-            direction="row"
-            alignItems="center"
-            spacing={{ xs: 3, sm: 4, md: 5 }}
-            flexWrap="wrap"
-            justifyContent="center"
+            direction={{ xs: "column", md: "row" }}
+            alignItems={{ xs: "flex-start", md: "center" }}
+            justifyContent="space-between"
+            spacing={{ xs: 0.75, md: 1 }}
           >
-            {navLinks.map((item) => (
-              <FooterLink key={item.label} item={item} />
-            ))}
-          </Stack>
+            <Typography sx={{ fontSize: "0.82rem", opacity: 0.7 }}>
+              Fast. Accessible. Built to convert.
+            </Typography>
 
-          <Stack direction="row" spacing={3} alignItems="center">
-            <MuiLink component={NavLink} to="/privacy" sx={linkSx}>
-              Privacy
-            </MuiLink>
-            <MuiLink component={NavLink} to="/terms" sx={linkSx}>
-              Terms
-            </MuiLink>
+            <Typography sx={{ fontSize: "0.82rem", opacity: 0.7 }}>
+              © {currentYear} Insight Solutions. All rights reserved.
+            </Typography>
           </Stack>
         </Stack>
-
-        <Divider sx={{ my: 5, borderColor: "rgba(255,255,255,0.08)" }} />
-
-        <Typography
-          variant="body2"
-          align="center"
-          sx={{
-            color: "#ffffff",
-            fontSize: "0.875rem",
-          }}
-        >
-          © {currentYear} Insight Solutions. All rights reserved.
-        </Typography>
       </Container>
     </Box>
   );
