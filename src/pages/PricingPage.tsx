@@ -1,298 +1,290 @@
+import React, { useEffect } from "react";
 import {
   Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  CardActions,
   Button,
+  Card,
+  CardActions,
+  CardContent,
+  Chip,
+  Container,
+  Grid,
   Stack,
-  Divider,
+  Typography,
+  useTheme,
 } from "@mui/material";
-import Grid2 from "@mui/material/Grid2";
+import { Link as RouterLink } from "react-router-dom";
 
-import WebIcon from "@mui/icons-material/Web";
-import AccessibilityIcon from "@mui/icons-material/Accessibility";
-import SearchIcon from "@mui/icons-material/Search";
-import DesignServicesIcon from "@mui/icons-material/DesignServices";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import CollectionsIcon from "@mui/icons-material/CollectionsBookmark";
-import SupportIcon from "@mui/icons-material/SupportAgent";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+type Pill = { label: string };
 
-import pricingData from "../data/pricingData.json";
-import { useNavbarOffset } from "../hooks/useNavbarOffset";
-
-interface Service {
+function MiniCard({
+  eyebrow,
+  title,
+  priceLine,
+  subtitle,
+  pills,
+  ctaText,
+  ctaTo,
+  secondaryText,
+  secondaryTo,
+  highlight = false,
+}: {
+  eyebrow: string;
   title: string;
-  description: string;
-  price: string;
-  cta?: string;
-  icon: string;
-}
-
-const iconMap = {
-  Web: WebIcon,
-  Accessibility: AccessibilityIcon,
-  Search: SearchIcon,
-  DesignServices: DesignServicesIcon,
-  BarChart: BarChartIcon,
-  Collections: CollectionsIcon,
-  Support: SupportIcon,
-} as const;
-
-type IconKey = keyof typeof iconMap;
-
-const PricingPage = () => {
-  const services = pricingData as unknown as Service[];
-  const { navbarHeight } = useNavbarOffset();
+  priceLine: string;
+  subtitle: string;
+  pills: Pill[];
+  ctaText: string;
+  ctaTo: string;
+  secondaryText?: string;
+  secondaryTo?: string;
+  highlight?: boolean;
+}) {
+  const theme = useTheme();
 
   return (
-    <Box
-      component="main"
-      id="pricing"
-      aria-labelledby="pricing-heading"
+    <Card
+      component="section"
+      aria-label={title}
+      elevation={0}
       sx={{
-        bgcolor: "background.default",
-        overflowX: "hidden",
-
-        // Critical: ensure content starts below fixed navbar
-        pt: `calc(${navbarHeight}px + 24px)`,
-        pb: { xs: 8, md: 12 },
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
+        border: `1px solid ${highlight ? theme.palette.secondary.main : theme.palette.divider}`,
+        boxShadow: highlight
+          ? "0 14px 34px rgba(2, 6, 23, 0.12)"
+          : theme.shadows[2],
       }}
     >
+      {highlight ? (
+        <Chip
+          label="Most popular"
+          size="small"
+          sx={{
+            position: "absolute",
+            top: 14,
+            right: 14,
+            fontWeight: 800,
+            bgcolor: "secondary.main",
+            color: "secondary.contrastText",
+          }}
+        />
+      ) : null}
+
+      <CardContent sx={{ p: { xs: 2.25, sm: 2.75 } }}>
+        <Stack spacing={1.1}>
+          <Typography
+            variant="overline"
+            sx={{
+              fontWeight: 800,
+              color: "text.secondary",
+              letterSpacing: 0.8,
+            }}
+          >
+            {eyebrow}
+          </Typography>
+
+          <Typography
+            variant="h4"
+            component="h2"
+            sx={{ fontWeight: 850, lineHeight: 1.15 }}
+          >
+            {title}
+          </Typography>
+
+          <Typography variant="h5" sx={{ fontWeight: 900 }}>
+            {priceLine}
+          </Typography>
+
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            {subtitle}
+          </Typography>
+
+          <Stack
+            direction="row"
+            spacing={1}
+            useFlexGap
+            flexWrap="wrap"
+            sx={{ pt: 0.5 }}
+            aria-label={`${title} includes`}
+          >
+            {pills.map((p, i) => (
+              <Chip
+                key={i}
+                label={p.label}
+                size="small"
+                sx={{
+                  fontWeight: 750,
+                  bgcolor: "action.hover",
+                }}
+              />
+            ))}
+          </Stack>
+        </Stack>
+      </CardContent>
+
+      <CardActions
+        sx={{
+          px: { xs: 2.25, sm: 2.75 },
+          pb: { xs: 2.25, sm: 2.75 },
+          pt: 0,
+          mt: "auto",
+        }}
+      >
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={1}
+          sx={{ width: "100%" }}
+        >
+          <Button
+            component={RouterLink}
+            to={ctaTo}
+            variant="contained"
+            fullWidth
+            sx={{
+              minHeight: 44,
+              borderRadius: 2,
+              fontWeight: 800,
+              bgcolor: "primary.main",
+              color: "primary.contrastText",
+              "&:hover": {
+                bgcolor: "primary.main",
+                filter: "brightness(0.95)",
+              },
+            }}
+          >
+            {ctaText}
+          </Button>
+
+          {secondaryText && secondaryTo ? (
+            <Button
+              component={RouterLink}
+              to={secondaryTo}
+              variant="outlined"
+              fullWidth
+              sx={{
+                minHeight: 44,
+                borderRadius: 2,
+                fontWeight: 800,
+                borderColor: "divider",
+                color: "text.primary",
+                "&:hover": {
+                  borderColor: "text.secondary",
+                  bgcolor: "action.hover",
+                },
+              }}
+            >
+              {secondaryText}
+            </Button>
+          ) : null}
+        </Stack>
+      </CardActions>
+    </Card>
+  );
+}
+
+export default function PricingPage() {
+  useEffect(() => {
+    document.title = "Pricing | Insight Web Solutions";
+  }, []);
+
+  const webMonthlyPills: Pill[] = [
+    { label: "Full build or refresh" },
+    { label: "SEO" },
+    { label: "508 / WCAG" },
+    { label: "Audits" },
+    { label: "Ongoing support" },
+  ];
+
+  const webCustomPills: Pill[] = [
+    { label: "Landing pages" },
+    { label: "Rebuilds" },
+    { label: "Fixes & upgrades" },
+    { label: "SEO + 508 audits" },
+    { label: "Custom scope" },
+  ];
+
+  const analyticsPills: Pill[] = [
+    { label: "ETL / pipelines" },
+    { label: "Dashboards" },
+    { label: "Analytics audits" },
+    { label: "Data + financial analytics" },
+    { label: "Measurement strategy" },
+  ];
+
+  return (
+    <Box component="main" sx={{ py: { xs: 4.5, sm: 6 } }}>
       <Container maxWidth="lg">
-        <Typography
-          id="pricing-heading"
-          component="h1"
-          variant="h2"
-          align="center"
-          gutterBottom
-          sx={{
-            fontWeight: 900,
-            letterSpacing: 0.2,
-            fontSize: { xs: "2.25rem", sm: "2.75rem", md: "3.25rem" },
-            lineHeight: 1.12,
-            mb: 2,
-          }}
-        >
-          Pricing, Without Guesswork
-        </Typography>
+        <Stack spacing={1.5} sx={{ mb: { xs: 3, sm: 4 } }}>
+          <Typography
+            variant="h2"
+            component="h1"
+            sx={{ fontWeight: 900, lineHeight: 1.05 }}
+          >
+            Simple pricing. Zero decision fatigue.
+          </Typography>
 
-        <Typography
-          variant="h6"
-          component="p"
-          align="center"
-          maxWidth="52rem"
-          mx="auto"
-          sx={{
-            color: "text.secondary",
-            fontSize: { xs: "1.1rem", sm: "1.2rem" },
-            lineHeight: 1.6,
-          }}
-        >
-          Transparent starting points, tailored to your goals.
-        </Typography>
-        <Typography
-          variant="h6"
-          component="p"
-          align="center"
-          maxWidth="52rem"
-          mx="auto"
-          sx={{
-            color: "text.secondary",
-            fontSize: { xs: "1.1rem", sm: "1.2rem" },
-            lineHeight: 1.6,
-            mb: { xs: 4, md: 6 },
-          }}
-        >
-          High quality work, strategically built to deliver results.
-        </Typography>
+          <Typography
+            variant="body1"
+            sx={{ color: "text.secondary", maxWidth: "78ch" }}
+          >
+            Web work and analytics work are different services, so the pricing
+            is different too. One clear subscription for websites, custom quotes
+            for one-off work, and hourly consulting for analytics.
+          </Typography>
+        </Stack>
 
-        <Grid2
-          container
-          spacing={{ xs: 3, md: 4 }}
-          justifyContent="center"
-          sx={{ width: "100%", m: 0 }}
-        >
-          {services.map((service, index) => {
-            const IconComponent = iconMap[service.icon as IconKey] ?? WebIcon;
+        <Grid container spacing={2.5} alignItems="stretch">
+          <Grid item xs={12} md={4}>
+            <MiniCard
+              eyebrow="Web"
+              title="Website + SEO + Support"
+              priceLine="$199 / month"
+              subtitle="A single plan to launch your site and keep it improving."
+              pills={webMonthlyPills}
+              ctaText="Start"
+              ctaTo="/contact?service=web-monthly"
+              secondaryText="See work"
+              secondaryTo="/work"
+              highlight
+            />
+          </Grid>
 
-            return (
-              <Grid2
-                size={{ xs: 12, sm: 6, md: 4 }}
-                key={`${service.title}-${index}`}
-              >
-                <Card
-                  component="section"
-                  aria-label={`${service.title} pricing card`}
-                  sx={(t) => ({
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    borderRadius: 3,
-                    bgcolor: "background.paper",
-                    border: `1px solid ${t.palette.divider}`,
-                    boxShadow: 4,
-                    overflow: "hidden",
-                    transition: "transform 180ms ease, box-shadow 180ms ease",
-                    "&:hover": {
-                      boxShadow: 10,
-                      transform: "translateY(-6px)",
-                    },
-                    "&:focus-within": {
-                      outline: `3px solid ${t.palette.secondary.main}`,
-                      outlineOffset: 3,
-                    },
-                  })}
-                >
-                  <CardContent sx={{ flexGrow: 1, p: { xs: 3, md: 3.5 } }}>
-                    <Box
-                      sx={{ display: "flex", justifyContent: "center", mb: 2 }}
-                    >
-                      <Box
-                        sx={(t) => ({
-                          width: 64,
-                          height: 64,
-                          borderRadius: 999,
-                          display: "grid",
-                          placeItems: "center",
-                          bgcolor: t.palette.action.hover,
-                        })}
-                        aria-hidden="true"
-                      >
-                        <IconComponent
-                          sx={{ fontSize: 36, color: "primary.main" }}
-                        />
-                      </Box>
-                    </Box>
+          <Grid item xs={12} md={4}>
+            <MiniCard
+              eyebrow="Custom"
+              title="One-off Web Projects"
+              priceLine="Custom quote"
+              subtitle="Tell me what you need. I’ll propose a simple package."
+              pills={webCustomPills}
+              ctaText="Get a quote"
+              ctaTo="/contact?service=web-custom"
+              secondaryText="Services"
+              secondaryTo="/services#web"
+            />
+          </Grid>
 
-                    <Typography
-                      component="h2"
-                      variant="h5"
-                      align="center"
-                      sx={{
-                        fontWeight: 900,
-                        letterSpacing: 0.2,
-                        fontSize: { xs: "1.35rem", sm: "1.45rem" },
-                        lineHeight: 1.2,
-                        mb: 1,
-                        overflowWrap: "anywhere",
-                      }}
-                    >
-                      {service.title}
-                    </Typography>
+          <Grid item xs={12} md={4}>
+            <MiniCard
+              eyebrow="Data"
+              title="Analytics Consulting"
+              priceLine="Hourly"
+              subtitle="Clean tracking, dashboards, and insight for better decisions."
+              pills={analyticsPills}
+              ctaText="Talk data"
+              ctaTo="/contact?service=analytics"
+              secondaryText="Services"
+              secondaryTo="/services#analytics"
+            />
+          </Grid>
+        </Grid>
 
-                    <Typography
-                      variant="h3"
-                      align="center"
-                      sx={{
-                        color: "primary.main",
-                        fontWeight: 900,
-                        fontSize: { xs: "2rem", sm: "2.25rem" },
-                        lineHeight: 1.1,
-                        my: 2,
-                      }}
-                    >
-                      {service.price}
-                    </Typography>
-
-                    <Divider sx={{ my: 2 }} />
-
-                    <Typography
-                      variant="body1"
-                      align="center"
-                      sx={{
-                        color: "text.secondary",
-                        fontSize: { xs: "1.02rem", sm: "1.08rem" },
-                        lineHeight: 1.7,
-                        mb: 2.5,
-                        overflowWrap: "anywhere",
-                      }}
-                    >
-                      {service.description}
-                    </Typography>
-
-                    {service.cta ? (
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        alignItems="flex-start"
-                        sx={{ maxWidth: 420, mx: "auto" }}
-                      >
-                        <CheckCircleIcon
-                          color="secondary"
-                          sx={{ mt: "2px" }}
-                          aria-hidden="true"
-                        />
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: "text.primary",
-                            fontWeight: 700,
-                            fontSize: { xs: "0.98rem", sm: "1.02rem" },
-                            lineHeight: 1.5,
-                            overflowWrap: "anywhere",
-                          }}
-                        >
-                          {service.cta}
-                        </Typography>
-                      </Stack>
-                    ) : null}
-                  </CardContent>
-
-                  <CardActions sx={{ p: { xs: 3, md: 3.5 }, pt: 0 }}>
-                    <Button
-                      component="a"
-                      href={`/?service=${encodeURIComponent(service.title)}#contact-top`}
-                      variant="contained"
-                      color="secondary"
-                      fullWidth
-                      size="large"
-                      aria-label={`Get a quote for ${service.title}`}
-                      sx={{
-                        py: 1.6,
-                        fontWeight: 900,
-                        fontSize: { xs: "1.05rem", sm: "1.1rem" },
-                        textTransform: "none",
-                        borderRadius: 999,
-                        "&:focus-visible": {
-                          outline: "3px solid",
-                          outlineColor: "primary.main",
-                          outlineOffset: 3,
-                        },
-                      }}
-                    >
-                      Get Quote
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Grid2>
-            );
-          })}
-        </Grid2>
-
-        <Typography
-          variant="body2"
-          component="p"
-          align="center"
-          sx={{
-            mt: { xs: 5, md: 6 },
-            color: "text.secondary",
-            fontSize: { xs: "0.98rem", sm: "1rem" },
-            lineHeight: 1.6,
-            maxWidth: "60rem",
-            mx: "auto",
-            overflowWrap: "anywhere",
-          }}
-        >
-          Need something custom? I can tailor a package for accessibility, SEO,
-          performance, and ongoing updates. Use any Get Quote button to prefill
-          your service selection.
+        <Typography variant="caption" sx={{ display: "block", mt: 2.5 }}>
+          Ongoing support covers reasonable small changes and maintenance.
+          Larger additions can be scoped separately.
         </Typography>
       </Container>
     </Box>
   );
-};
-
-export default PricingPage;
+}

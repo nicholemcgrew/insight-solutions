@@ -84,7 +84,7 @@ const App = () => {
               <>
                 <Helmet>
                   <title>
-                    Insight Web Solutions | Web Development, Accessibility, SEO
+                    Insight Studios | Web Development, Accessibility, SEO
                   </title>
                   <meta
                     name="description"
@@ -110,7 +110,7 @@ const App = () => {
             element={
               <>
                 <Helmet>
-                  <title>Pricing | Insight Web Solutions</title>
+                  <title>Pricing | Insight Studios</title>
                   <meta
                     name="description"
                     content="Transparent pricing for web development and analytics services."
@@ -131,7 +131,7 @@ const App = () => {
             element={
               <>
                 <Helmet>
-                  <title>Privacy Policy | Insight Web Solutions</title>
+                  <title>Privacy Policy | Insight Studios</title>
                   <meta
                     name="description"
                     content="Our privacy policy and how we handle your data."
@@ -152,7 +152,7 @@ const App = () => {
             element={
               <>
                 <Helmet>
-                  <title>Terms of Service | Insight Web Solutions</title>
+                  <title>Terms of Service | Insight Studios</title>
                   <meta
                     name="description"
                     content="Terms governing use of our services and website."
@@ -181,7 +181,7 @@ const App = () => {
             element={
               <>
                 <Helmet>
-                  <title>404 | Insight Web Solutions</title>
+                  <title>404 | Insight Studios</title>
                   <meta name="robots" content="noindex" />
                 </Helmet>
 

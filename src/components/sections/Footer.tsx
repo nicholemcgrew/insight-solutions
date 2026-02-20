@@ -122,7 +122,7 @@ const Footer = () => {
                 mb: 1.5,
               }}
             >
-              Insight Web Solutions
+              Insight Studios
             </Typography>
             <Typography variant="body2" sx={{ lineHeight: 1.7, opacity: 0.85 }}>
               Fast. Accessible. Built to convert.
@@ -153,7 +153,7 @@ const Footer = () => {
           justifyContent="space-between"
         >
           <Typography variant="body2" sx={{ opacity: 0.7 }}>
-            © {currentYear} Insight Web Solutions. All rights reserved.
+            © {currentYear} Insight Studios. All rights reserved.
           </Typography>
 
           <Stack direction="row" spacing={4} alignItems="center">

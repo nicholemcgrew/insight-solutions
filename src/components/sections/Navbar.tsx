@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -21,10 +21,9 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import navItemsData from "../../data/navItemsData.json";
 
-
 interface NavItem {
   label: string;
-  to: string;
+  to: string; 
 }
 
 export const NAVBAR_HEIGHT = {
@@ -33,23 +32,21 @@ export const NAVBAR_HEIGHT = {
 };
 
 function prefersReducedMotion() {
-  return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+  return (
+    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false
+  );
 }
 
 function getHeaderOffsetPx(isMobile: boolean) {
   return isMobile ? NAVBAR_HEIGHT.mobile : NAVBAR_HEIGHT.desktop;
 }
 
-// 508: ensure the target becomes focusable, then focus it
 function focusTarget(el: HTMLElement | null) {
   if (!el) return;
-  // Make focusable if needed (common for sections/divs)
   if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
   el.focus({ preventScroll: true });
 }
 
-// Robust scroll for either #main-content scroller or window, and then focus the target.
-// This is the main “fully 508” missing piece: focus moves with in-page navigation.
 function scrollToSectionAndFocus(id: string, headerOffset: number) {
   const target = document.getElementById(id);
   if (!target) return;
@@ -60,48 +57,87 @@ function scrollToSectionAndFocus(id: string, headerOffset: number) {
   if (scroller && scroller.scrollHeight > scroller.clientHeight) {
     const scrollerTop = scroller.getBoundingClientRect().top;
     const targetTop = target.getBoundingClientRect().top;
-    const top = Math.max(0, scroller.scrollTop + (targetTop - scrollerTop) - headerOffset);
+    const top = Math.max(
+      0,
+      scroller.scrollTop + (targetTop - scrollerTop) - headerOffset,
+    );
 
     scroller.scrollTo({ top, behavior });
-    // Focus after scroll starts; preventScroll avoids “jumping”
-    window.setTimeout(() => focusTarget(target), prefersReducedMotion() ? 0 : 250);
+    window.setTimeout(
+      () => focusTarget(target),
+      prefersReducedMotion() ? 0 : 250,
+    );
     return;
   }
 
   const rect = target.getBoundingClientRect();
   const top = Math.max(0, window.scrollY + rect.top - headerOffset);
   window.scrollTo({ top, behavior });
-  window.setTimeout(() => focusTarget(target), prefersReducedMotion() ? 0 : 250);
+  window.setTimeout(
+    () => focusTarget(target),
+    prefersReducedMotion() ? 0 : 250,
+  );
+}
+
+// Determine which section is “active” based on scroll position.
+// Works for either #main-content scroller or window.
+function getActiveSectionFromScroll(
+  sectionIds: string[],
+  headerOffset: number,
+): string {
+  const scroller = document.getElementById("main-content");
+  const isUsingMainScroller =
+    !!scroller && scroller.scrollHeight > scroller.clientHeight;
+
+  // Home rule: near top => "home"
+  const scrollTop = isUsingMainScroller ? scroller!.scrollTop : window.scrollY;
+  if (scrollTop <= 8) return "home";
+
+  // Pick the last section whose top is above the header line
+  let best: { id: string; top: number } | null = null;
+
+  for (const id of sectionIds) {
+    if (id === "home") continue;
+    const el = document.getElementById(id);
+    if (!el) continue;
+
+    const rect = el.getBoundingClientRect();
+    const top = rect.top - headerOffset;
+
+    if (top <= 8 && (!best || top > best.top)) {
+      best = { id, top };
+    }
+  }
+
+  return best?.id ?? "home";
 }
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
+  const [activeSection, setActiveSection] = useState<string>("home");
   const [isScrolled, setIsScrolled] = useState(false);
 
   const theme = useTheme();
-
-  // Use lg so iPad and smaller use drawer
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
 
   const location = useLocation();
   const navigate = useNavigate();
 
   const navItems: NavItem[] = useMemo(() => navItemsData as NavItem[], []);
+  const sectionIds = useMemo(
+    () => navItems.filter((i) => !i.to.startsWith("/")).map((i) => i.to),
+    [navItems],
+  );
 
-  useEffect(() => {
-    if (location.pathname === "/") {
-      setActiveSection((prev) => prev || "home");
-    } else {
-      setActiveSection("");
-    }
-  }, [location.pathname]);
-
+  // Keep the “scrolled” styling correct
   useEffect(() => {
     const scroller = document.getElementById("main-content");
-    const isUsingMainScroller = !!scroller && scroller.scrollHeight > scroller.clientHeight;
+    const isUsingMainScroller =
+      !!scroller && scroller.scrollHeight > scroller.clientHeight;
 
-    const getScrollTop = () => (isUsingMainScroller ? scroller!.scrollTop : window.scrollY);
+    const getScrollTop = () =>
+      isUsingMainScroller ? scroller!.scrollTop : window.scrollY;
+
     const onScroll = () => setIsScrolled(getScrollTop() > 8);
 
     onScroll();
@@ -110,6 +146,56 @@ export default function Navbar() {
     target.addEventListener("scroll", onScroll as any, { passive: true });
     return () => target.removeEventListener("scroll", onScroll as any);
   }, []);
+
+  // SOURCE OF TRUTH for active underline:
+  // - If URL has a hash for a known section, use it.
+  // - Otherwise derive from scroll position (covers refresh + browser scroll restoration).
+  const rafRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      setActiveSection("");
+      return;
+    }
+
+    const headerOffset = getHeaderOffsetPx(isMobile);
+
+    const applyFromHashOrScroll = () => {
+      const rawHash = (location.hash || "").replace(/^#/, "");
+      const hashId = rawHash.includes("?") ? rawHash.split("?")[0] : rawHash;
+
+      if (hashId && sectionIds.includes(hashId)) {
+        setActiveSection(hashId);
+        return;
+      }
+
+      const fromScroll = getActiveSectionFromScroll(sectionIds, headerOffset);
+      setActiveSection(fromScroll);
+    };
+
+    // run immediately after mount/navigation
+    requestAnimationFrame(applyFromHashOrScroll);
+
+    // and keep in sync on scroll (simple rAF throttle)
+    const scroller = document.getElementById("main-content");
+    const isUsingMainScroller =
+      !!scroller && scroller.scrollHeight > scroller.clientHeight;
+    const target = isUsingMainScroller ? scroller! : window;
+
+    const onScroll = () => {
+      if (rafRef.current != null) return;
+      rafRef.current = window.requestAnimationFrame(() => {
+        rafRef.current = null;
+        applyFromHashOrScroll();
+      });
+    };
+
+    target.addEventListener("scroll", onScroll as any, { passive: true });
+    return () => {
+      target.removeEventListener("scroll", onScroll as any);
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    };
+  }, [location.pathname, location.hash, isMobile, sectionIds]);
 
   const isActiveItem = (to: string) => {
     if (location.pathname === "/") {
@@ -125,6 +211,13 @@ export default function Navbar() {
     return to.startsWith("/") ? ("page" as const) : ("location" as const);
   };
 
+  const setHashWithoutJump = (id: string) => {
+    // Keep URL in sync without the browser doing its own jump scrolling
+    const newHash = `#${id}`;
+    if (window.location.hash === newHash) return;
+    window.history.replaceState(null, "", newHash);
+  };
+
   const handleNavClick = (to: string) => {
     setMobileOpen(false);
 
@@ -138,11 +231,14 @@ export default function Navbar() {
 
     const doScroll = () => {
       setActiveSection(to);
+      setHashWithoutJump(to);
 
       if (to === "home") {
         const hero = document.getElementById("home");
         const scroller = document.getElementById("main-content");
-        const behavior: ScrollBehavior = prefersReducedMotion() ? "auto" : "smooth";
+        const behavior: ScrollBehavior = prefersReducedMotion()
+          ? "auto"
+          : "smooth";
 
         if (scroller && scroller.scrollHeight > scroller.clientHeight) {
           scroller.scrollTo({ top: 0, behavior });
@@ -150,8 +246,10 @@ export default function Navbar() {
           window.scrollTo({ top: 0, behavior });
         }
 
-        // 508: focus the hero section after scrolling
-        window.setTimeout(() => focusTarget(hero), prefersReducedMotion() ? 0 : 250);
+        window.setTimeout(
+          () => focusTarget(hero),
+          prefersReducedMotion() ? 0 : 250,
+        );
         return;
       }
 
@@ -159,7 +257,8 @@ export default function Navbar() {
     };
 
     if (location.pathname !== "/") {
-      navigate("/");
+      navigate(`/#${to}`);
+      // Let the route paint, then do our accessible scroll + focus
       setTimeout(doScroll, 0);
       return;
     }
@@ -218,16 +317,30 @@ export default function Navbar() {
           px: 3,
           py: 2.25,
           color: "common.white",
-          backgroundImage: "linear-gradient(135deg, #050A14, #0B1220 60%, #0B1220)",
+          backgroundImage:
+            "linear-gradient(135deg, #050A14, #0B1220 60%, #0B1220)",
           borderBottom: "1px solid rgba(255,255,255,0.12)",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Typography id={drawerTitleId} sx={{ fontWeight: 950, fontSize: "1.35rem" }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography
+            id={drawerTitleId}
+            sx={{ fontWeight: 950, fontSize: "1.35rem" }}
+          >
             Menu
           </Typography>
 
-          <IconButton onClick={() => setMobileOpen(false)} sx={{ color: "common.white" }} aria-label="Close menu">
+          <IconButton
+            onClick={() => setMobileOpen(false)}
+            sx={{ color: "common.white" }}
+            aria-label="Close menu"
+          >
             <CloseIcon />
           </IconButton>
         </Box>
@@ -248,7 +361,11 @@ export default function Navbar() {
                   px: 2,
                   borderRadius: 2,
                   bgcolor: active ? "rgba(20,184,166,0.14)" : "transparent",
-                  "&:hover": { bgcolor: active ? "rgba(20,184,166,0.20)" : "rgba(2,6,23,0.06)" },
+                  "&:hover": {
+                    bgcolor: active
+                      ? "rgba(20,184,166,0.20)"
+                      : "rgba(2,6,23,0.06)",
+                  },
                   "& .MuiListItemText-primary": {
                     fontWeight: 900,
                     fontSize: "1.12rem",
@@ -287,21 +404,26 @@ export default function Navbar() {
         position="fixed"
         elevation={0}
         sx={{
-          // Align height breakpoint with isMobile (lg)
           height: { xs: NAVBAR_HEIGHT.mobile, lg: NAVBAR_HEIGHT.desktop },
           zIndex: theme.zIndex.modal + 20,
           bgcolor: "transparent",
-          transition: "background-color 180ms ease, box-shadow 180ms ease, border-color 180ms ease",
+          transition:
+            "background-color 180ms ease, box-shadow 180ms ease, border-color 180ms ease",
           backgroundImage: isScrolled
             ? "linear-gradient(135deg, rgba(5,10,20,0.78), rgba(11,18,32,0.78))"
             : "linear-gradient(135deg, rgba(5,10,20,0.35), rgba(11,18,32,0.35))",
           backdropFilter: "saturate(160%) blur(14px)",
           WebkitBackdropFilter: "saturate(160%) blur(14px)",
-          borderBottom: isScrolled ? "1px solid rgba(255,255,255,0.16)" : "1px solid rgba(255,255,255,0.10)",
+          borderBottom: isScrolled
+            ? "1px solid rgba(255,255,255,0.16)"
+            : "1px solid rgba(255,255,255,0.10)",
           boxShadow: isScrolled ? "0 12px 34px rgba(0,0,0,0.22)" : "none",
         }}
       >
-        <Toolbar disableGutters sx={{ height: "100%", minHeight: "unset !important" }}>
+        <Toolbar
+          disableGutters
+          sx={{ height: "100%", minHeight: "unset !important" }}
+        >
           <Container
             maxWidth={false}
             sx={{
@@ -311,13 +433,17 @@ export default function Navbar() {
               px: { xs: 2, sm: 3, md: 5 },
             }}
           >
-            {/* left: logo always takes you home */}
-            <Box sx={{ display: "flex", alignItems: "center", minWidth: "fit-content" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                minWidth: "fit-content",
+              }}
+            >
               <Typography
                 component={NavLink}
                 to="/"
                 onClick={(e) => {
-                  // If already home, don't route; just scroll/focus hero
                   e.preventDefault();
                   handleNavClick("home");
                 }}
@@ -332,11 +458,10 @@ export default function Navbar() {
                 }}
                 aria-label="Go to home"
               >
-                Insight Web Solutions
+                Insight Studios
               </Typography>
             </Box>
 
-            {/* desktop nav */}
             {!isMobile && (
               <Box
                 component="nav"
@@ -376,12 +501,11 @@ export default function Navbar() {
                     >
                       {item.label}
                     </Box>
-                  )
+                  ),
                 )}
               </Box>
             )}
 
-            {/* right: CTA or hamburger */}
             <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
               {!isMobile && (
                 <Button
@@ -410,7 +534,11 @@ export default function Navbar() {
                   aria-controls={drawerId}
                   aria-expanded={mobileOpen ? "true" : undefined}
                 >
-                  {mobileOpen ? <CloseIcon sx={{ fontSize: 32 }} /> : <MenuIcon sx={{ fontSize: 32 }} />}
+                  {mobileOpen ? (
+                    <CloseIcon sx={{ fontSize: 32 }} />
+                  ) : (
+                    <MenuIcon sx={{ fontSize: 32 }} />
+                  )}
                 </IconButton>
               )}
             </Box>
