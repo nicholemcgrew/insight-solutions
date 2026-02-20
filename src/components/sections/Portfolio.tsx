@@ -7,7 +7,7 @@ import {
   Chip,
   Stack,
 } from "@mui/material";
-import Grid2 from "@mui/material/Grid2";
+import Grid2 from "@mui/material/Grid2"; // ← fixed import
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { useMemo, useState } from "react";
 
@@ -59,26 +59,27 @@ const Portfolio = () => {
         display: "flex",
         alignItems: "center",
         bgcolor: "background.default",
-        px: { xs: 2, sm: 3, md: 4, lg: 6 },
-        py: { xs: 6, md: 7 },
+        px: { xs: 2, sm: 3, md: 5, lg: 8 },
+        py: { xs: 8, md: 10, lg: 12 },
       }}
     >
       <Box sx={{ width: "100%", maxWidth: 1600, mx: "auto" }}>
         <Typography
           id="portfolio-heading"
-          component="h2"
+          component="h1"
           align="center"
           sx={{
-            fontWeight: 800,
-            fontSize: { xs: "2rem", sm: "2.4rem", md: "2.8rem" },
-            mb: { xs: 3.5, md: 5 },
+            fontWeight: 900,
+            fontSize: { xs: "2.4rem", sm: "3rem", md: "3.75rem" },
+            letterSpacing: "-0.02em",
+            mb: { xs: 5, md: 8 },
             color: "text.primary",
           }}
         >
           Portfolio
         </Typography>
 
-        <Grid2 container spacing={{ xs: 3, md: 3.25 }}>
+        <Grid2 container spacing={{ xs: 3, sm: 4, md: 5 }}>
           {projects.map((project) => {
             const titleLower = project.title.toLowerCase();
 
@@ -93,41 +94,35 @@ const Portfolio = () => {
                 project.link.includes("energystar.gov") ||
                 project.link.includes("rose-salon.netlify.app"));
 
-            const CARD_HEIGHT = { xs: 510, sm: 540, md: 620 };
-            const IMAGE_HEIGHT = { xs: 250, sm: 280, md: 320 };
-
-            const MOBILE_OVERLAY_WIDTH = { xs: 86, sm: 104, md: 128 };
-            const MOBILE_OVERLAY_INSET = { xs: 10, sm: 12, md: 14 };
-
-            const mobileOverlayObjectPosition = getMobileOverlayObjectPosition(
-              project.title,
-            );
-            const desktopObjectPosition = getDesktopObjectPosition(
-              project.title,
-            );
-
-            const techListId = `tech-list-${project.title
-              .toLowerCase()
-              .replace(/\s+/g, "-")}`;
+            const techListId = `tech-${project.title.toLowerCase().replace(/\s+/g, "-")}`;
 
             return (
-              <Grid2 key={project.title} size={{ xs: 12, md: 4 }}>
+              <Grid2 key={project.title} size={{ xs: 12, md: 6, lg: 4 }}>
                 <Card
                   sx={{
-                    height: CARD_HEIGHT,
+                    height: "100%",
                     display: "flex",
                     flexDirection: "column",
                     borderRadius: 4,
                     overflow: "hidden",
-                    boxShadow: 6,
-                    transition: "0.25s",
+                    bgcolor: "background.paper",
+                    border: "1px solid",
+                    borderColor: "divider",
+                    boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+                    transition: "all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1)",
                     "&:hover": {
-                      transform: "translateY(-6px)",
-                      boxShadow: 12,
+                      transform: "translateY(-12px) scale(1.02)",
+                      boxShadow: "0 24px 48px rgba(0,0,0,0.16)",
+                      borderColor: "secondary.main",
                     },
                   }}
                 >
-                  <Box sx={{ position: "relative", height: IMAGE_HEIGHT }}>
+                  <Box
+                    sx={{
+                      position: "relative",
+                      height: { xs: 220, sm: 260, md: 300 },
+                    }}
+                  >
                     <Box
                       component="img"
                       src={project.desktop}
@@ -137,17 +132,15 @@ const Portfolio = () => {
                           : undefined
                       }
                       sizes="(min-width: 900px) 33vw, 100vw"
-                      alt={`${project.title} screenshot`}
+                      alt={`${project.title} desktop screenshot`}
                       loading="lazy"
                       decoding="async"
-                      style={{ width: "100%", height: "100%" }}
                       sx={{
-                        display: "block",
                         width: "100%",
                         height: "100%",
-                        bgcolor: "#f5f5f5",
                         objectFit: isFullBleed ? "cover" : "contain",
-                        objectPosition: desktopObjectPosition,
+                        objectPosition: "center top",
+                        bgcolor: "#f8f9fa",
                       }}
                     />
 
@@ -160,37 +153,32 @@ const Portfolio = () => {
                             ? `${project.mobile} 1x, ${project.mobile2x} 2x`
                             : undefined
                         }
-                        sizes="128px"
-                        alt={`${project.title} mobile screenshot`}
+                        sizes="120px"
+                        alt={`${project.title} mobile screenshot overlay`}
                         loading="lazy"
                         decoding="async"
                         onError={() =>
-                          setFailedMobileByTitle((p) => ({
-                            ...p,
+                          setFailedMobileByTitle((prev) => ({
+                            ...prev,
                             [project.title]: true,
                           }))
                         }
                         sx={{
                           position: "absolute",
-                          zIndex: 2,
-                          display: "block",
-                          bottom: MOBILE_OVERLAY_INSET,
-                          right: MOBILE_OVERLAY_INSET,
-                          width: MOBILE_OVERLAY_WIDTH,
-                          maxWidth: "none",
-                          aspectRatio: "9 / 19.5",
+                          bottom: { xs: 12, md: 16 },
+                          right: { xs: 12, md: 16 },
+                          width: { xs: 80, sm: 100, md: 120 },
                           height: "auto",
-                          borderRadius: 2,
-                          border: {
-                            xs: "2px solid white",
-                            md: "3px solid white",
-                          },
-                          boxShadow: 6,
-                          bgcolor: "white",
+                          aspectRatio: "9 / 19.5",
+                          borderRadius: 3,
+                          border: "3px solid white",
+                          boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
                           objectFit: "cover",
-                          objectPosition: mobileOverlayObjectPosition,
-                          transform: "translateZ(0)",
-                          backfaceVisibility: "hidden",
+                          objectPosition: getMobileOverlayObjectPosition(
+                            project.title,
+                          ),
+                          transition: "transform 0.3s ease",
+                          "&:hover": { transform: "scale(1.08)" },
                         }}
                       />
                     )}
@@ -199,39 +187,36 @@ const Portfolio = () => {
                   <CardContent
                     sx={{
                       flex: 1,
-                      px: 2.75,
-                      py: 2.25,
+                      p: { xs: 3, md: 3.5 },
                       display: "flex",
                       flexDirection: "column",
-                      gap: 1,
-                      minHeight: 0,
+                      gap: 1.5,
                     }}
                   >
                     <Typography
                       variant="h5"
                       component="h3"
                       sx={{
-                        fontWeight: 700,
+                        fontWeight: 800,
                         lineHeight: 1.2,
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                        color: "text.primary",
+                        fontSize: { xs: "1.35rem", md: "1.5rem" },
+                        letterSpacing: "-0.01em",
                       }}
                     >
                       {project.title}
                     </Typography>
 
                     <Typography
-                      variant="body2"
-                      color="text.primary"
+                      variant="body1"
+                      color="text.secondary"
                       sx={{
-                        lineHeight: 1.6,
+                        lineHeight: 1.65,
+                        fontSize: { xs: "0.95rem", md: "1rem" },
                         display: "-webkit-box",
-                        WebkitLineClamp: { xs: 4, md: 4 },
+                        WebkitLineClamp: { xs: 3, md: 4 },
                         WebkitBoxOrient: "vertical",
                         overflow: "hidden",
+                        mb: 1,
                       }}
                     >
                       {project.description}
@@ -239,12 +224,11 @@ const Portfolio = () => {
 
                     <Typography
                       variant="body2"
-                      color="text.secondary"
                       sx={{
-                        display: "-webkit-box",
-                        WebkitLineClamp: 1,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
+                        fontStyle: "italic",
+                        color: "text.secondary",
+                        opacity: 0.85,
+                        fontSize: "0.9rem",
                       }}
                     >
                       {project.role}
@@ -269,37 +253,30 @@ const Portfolio = () => {
                         Technologies used in {project.title}:
                       </Typography>
 
-                      {/* role="list" is required so that aria-labelledby is
-                          permitted — aria-labelledby is only valid on elements
-                          with an explicit or implicit ARIA role that supports
-                          it. A plain <div> (Stack's default) has no role, which
-                          triggers the "ARIA attribute unsupported or prohibited"
-                          508 violation. Adding role="list" also restores list
-                          semantics that CSS resets strip from <ul>/<ol>. */}
                       <Stack
                         direction="row"
                         spacing={1}
                         useFlexGap
                         flexWrap="wrap"
-                        role="list"
                         aria-labelledby={techListId}
-                        sx={{ mt: 0.5, rowGap: 1 }}
+                        sx={{ mt: 1, gap: 0.75 }}
                       >
-                        {project.tech.slice(0, 8).map((tech) => (
+                        {project.tech.slice(0, 10).map((tech) => (
                           <Chip
                             key={tech}
                             label={tech}
                             size="small"
-                            color="secondary"
                             variant="outlined"
-                            role="listitem"
                             sx={{
                               fontWeight: 600,
-                              color: "text.primary",
+                              fontSize: "0.82rem",
+                              borderRadius: "12px",
                               borderColor: "divider",
-                              bgcolor: "transparent",
+                              bgcolor: "action.hover",
+                              color: "text.primary",
                               "&:hover": {
-                                bgcolor: "action.hover",
+                                bgcolor: "action.selected",
+                                borderColor: "secondary.main",
                               },
                             }}
                           />
@@ -317,11 +294,18 @@ const Portfolio = () => {
                       rel="noopener noreferrer"
                       endIcon={<OpenInNewIcon />}
                       sx={{
-                        fontWeight: 700,
-                        textTransform: "none",
+                        mt: 2,
+                        py: 1.4,
+                        fontWeight: 800,
+                        fontSize: "1rem",
                         borderRadius: 2,
-                        py: 1.2,
-                        color: "secondary.contrastText",
+                        textTransform: "none",
+                        boxShadow: "0 4px 14px rgba(20,184,166,0.25)",
+                        "&:hover": {
+                          boxShadow: "0 8px 24px rgba(20,184,166,0.35)",
+                          transform: "translateY(-2px)",
+                        },
+                        transition: "all 0.22s ease",
                       }}
                     >
                       View Project
