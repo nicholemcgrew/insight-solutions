@@ -43,17 +43,16 @@ const Portfolio = () => {
       aria-labelledby="portfolio-heading"
       tabIndex={-1}
       sx={{
-        // Exactly one viewport tall, offset by navbar
-        height: `calc(100dvh - ${navbarHeight}px)`,
-        // Scroll anchor lands flush under the navbar
-        scrollMarginTop: `${navbarHeight}px`,
+        // Removed forced height — let content determine size
+        minHeight: `calc(100dvh - ${navbarHeight}px)`, // keep min for feel, but not strict
+        scrollMarginTop: `${navbarHeight}px`, // keeps nav jump perfect
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         background:
           "linear-gradient(160deg, #dde6ff 0%, #f0f4ff 40%, #fce7f3 100%)",
         px: { xs: 2, sm: 3, md: 5, lg: 8 },
-        py: { xs: 4, md: 5 },
+        py: { xs: 6, md: 8, lg: 10 }, // increased padding slightly for breathing room
         overflow: "hidden",
       }}
     >
@@ -66,7 +65,7 @@ const Portfolio = () => {
             fontWeight: 900,
             fontSize: { xs: "2rem", sm: "2.6rem", md: "3.2rem" },
             letterSpacing: "-0.03em",
-            mb: { xs: 3, md: 4 },
+            mb: { xs: 4, md: 6 },
             color: "text.primary",
           }}
         >
