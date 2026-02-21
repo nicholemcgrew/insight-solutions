@@ -295,6 +295,7 @@ const Contact = () => {
         display: "flex",
         alignItems: "center",
         scrollMarginTop: `${navbarHeight + 16}px`,
+        mb: { xs: "1rem", sm: "1rem", md: 0 },
       }}
       onPointerDown={markInteracted}
       onKeyDown={markInteracted}
