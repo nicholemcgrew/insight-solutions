@@ -551,6 +551,12 @@ export default function Navbar() {
           "aria-modal": true,
           "aria-labelledby": drawerTitleId,
         }}
+        BackdropProps={{
+          sx: {
+            backgroundColor: "rgba(255, 255, 255, 0.85)", 
+            backdropFilter: "blur(8px)",
+          },
+        }}
       >
         {drawer}
       </Drawer>
